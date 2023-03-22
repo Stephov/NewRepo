@@ -1,10 +1,14 @@
-﻿using MaratukAdmin.Dto.Request;
+﻿using Azure;
+using MaratukAdmin.Controllers.admin;
+using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Managers.Abstract;
+using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace MaratukAdmin.Controllers
 {
@@ -27,6 +31,25 @@ namespace MaratukAdmin.Controllers
         /// <param name="email">User email</param>
         /// <param name="password">User password</param>
         /// <returns></returns>
+        /// 
+
+
+        [HttpGet("auth/profile")]
+        [AllowAnonymous]
+        public async Task<ActionResult> getUser()
+        {
+            var authHeader = HttpContext.Request.Headers["Authorization"];
+            
+
+            var result = _userManager.CheckUser(authHeader); 
+            if (result is null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
+        }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult> Login([FromBody] UserCredentialsRequest user)
@@ -39,7 +62,6 @@ namespace MaratukAdmin.Controllers
                 {
                     return BadRequest();
                 }
-
                 return Ok(response);
             }
             catch (ArgumentException ex)
@@ -67,7 +89,7 @@ namespace MaratukAdmin.Controllers
         {
             try
             {
-                await _userManager.RegisterAsync(user.Email, user.Password);
+                await _userManager.RegisterAsync(user.Email, user.Password,user.UserName,user.FullName);
 
                 return Ok(new { Email = user.Email, Password = user.Password });
             }

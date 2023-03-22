@@ -1,6 +1,7 @@
 ﻿using MaratukAdmin.Entities;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Models;
+using MaratukAdmin.Utils;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -78,19 +79,19 @@ namespace MaratukAdmin.Services
             return token;
         }
 
-        public IIdentity UserIdentity(string token)
+        public ClaimsPrincipal UserIdentity(string token)
         {
             try
-            {
-                token = token.Substring("Bearer ".Length);
+            {  
+               // token = token.Substring("Bearer ".Length);
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = GetValidationParameters();
 
-                IPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 
                 if (principal?.Identity?.IsAuthenticated ?? false)
                 {
-                    return principal.Identity;
+                    return principal;
                 }
 
                 return null;

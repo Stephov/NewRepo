@@ -6,6 +6,7 @@ using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Services;
 using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Principal;
 
 namespace MaratukAdmin.Managers.Concrete
 {
@@ -50,6 +51,23 @@ namespace MaratukAdmin.Managers.Concrete
             }
         }
 
+        public  IdentityUserInfo CheckUser(string token)
+        {
+            var isValidUser = _jwtTokenService.UserIdentity(token);
+            
+            if (isValidUser != null)
+            {
+                var user =  JWTUserExtractor.GetUserInfo(isValidUser);
+                
+                return user;
+            }
+
+                return null;
+            
+           
+           
+        }
+
         public async Task<AuthenticationResponse> LoginAsync(string email, string password)
         {
             var user = await _userRepository.GetUserAsync(email);
@@ -66,6 +84,7 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     UserId = user.Id,
                     Email = user.Email,
+                    Name = user.Name,
                 };
                 string? refreshToken = await _jwtTokenService.GetRefreshToken(tokenData);
                 string? accessToken = _jwtTokenService.GetAccessToken(tokenData);
@@ -86,7 +105,7 @@ namespace MaratukAdmin.Managers.Concrete
                 };
 
                 await _userRepository.AddRefreshToken(refresh);
-
+                response.name = user.Name;
                 return response;
             }
 
@@ -129,7 +148,7 @@ namespace MaratukAdmin.Managers.Concrete
             }
         }
 
-        public async Task RegisterAsync(string email, string password)
+        public async Task RegisterAsync(string email, string password,string userName,string fullName)
         {
             bool isUserExists = await _userRepository.IsUserExistsAsync(email);
 
@@ -143,6 +162,8 @@ namespace MaratukAdmin.Managers.Concrete
             var user = new User()
             {
                 Email = email,
+                UserName= userName,
+                Name = fullName,
                 Password = passwordHash,
                 PasswordSalt = salt
             };
