@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
 
@@ -15,6 +16,9 @@ namespace MaratukAdmin.AutoMapper
             CreateMap<UpdateFlightRequest, Flight>()
               .ForMember(dto => dto.Schedules, opt => opt.MapFrom(x => x.Schedules));
 
+       
+
+          
 
             CreateMap<ScheduleRequest, Schedule>();
 

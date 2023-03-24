@@ -18,11 +18,12 @@ namespace MaratukAdmin.Repositories.Concrete
             _entities = context.Set<T>();
         }
 
-        public virtual async Task<List<T>> GetAllAsync()
+        public virtual async Task<List<T>> GetAllAsync(params string[] includes)
         {
             try
             {
-                return await _entities.ToListAsync();
+                var query = ProcessQuery(_entities, includes);
+                return await query.ToListAsync();
             }catch(Exception e)
             {
                 string s = e.Message;

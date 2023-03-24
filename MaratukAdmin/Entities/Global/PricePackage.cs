@@ -5,5 +5,7 @@
         public string Name { get; set; }
         public string NameEng { get; set; }
         public int CountryId { get; set; }//create aviakompania
+
+        public virtual Country Country { get; set; }
     }
 }

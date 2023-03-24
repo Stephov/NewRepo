@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaratukAdmin.Business.Models.Common;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Exceptions;
@@ -42,9 +43,25 @@ namespace MaratukAdmin.Managers.Concrete
             return result;
         }
 
-        public async  Task<List<PricePackage>> GetAllPricePackagesAsync()
+        public async  Task<List<PricePackageResponse>> GetAllPricePackagesAsync()
         {
-            return await _mainRepository.GetAllAsync();
+            var results = await _mainRepository.GetAllAsync("Country");
+            var response  = new List<PricePackageResponse>();
+
+
+            foreach (var key in results)
+            {
+                response.Add(new PricePackageResponse()
+                {
+                    Id = key.Id,
+                    Name = key.Name,
+                    NameEng = key.NameEng,
+                    CountryId = key.CountryId,
+                    Country = key.Country.NameENG
+                });
+            }
+
+                return response;
         }
 
         public async  Task<PricePackage> GetPricePackageByIdAsync(int id)
