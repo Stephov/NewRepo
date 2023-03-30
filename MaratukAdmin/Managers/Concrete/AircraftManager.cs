@@ -32,5 +32,9 @@ namespace MaratukAdmin.Managers.Concrete
             return entity;
         }
 
+        public async Task<Aircraft> GetAircraftNameByIdAsync(int id)
+        {
+            return await _mainRepository.GetAsync(id);
+        }
     }
 }

@@ -16,11 +16,12 @@ namespace MaratukAdmin.AutoMapper
             CreateMap<UpdateFlightRequest, Flight>()
               .ForMember(dto => dto.Schedules, opt => opt.MapFrom(x => x.Schedules));
 
-       
 
-          
 
-            CreateMap<ScheduleRequest, Schedule>();
+
+
+            CreateMap<ScheduleRequest, Schedule>()
+                .ForMember(dto => dto.DayOfWeek, opt => opt.MapFrom(x => String.Join(",", x)));
 
 
             CreateMap<AddPricePackage, PricePackage>();

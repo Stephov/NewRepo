@@ -17,14 +17,14 @@ namespace MaratukAdmin.Repositories.Concrete
         public async Task<IEnumerable<Flight>> GetAllFlightsAsync()
         {
             return await _dbContext.Flight
-                .Include(f => f.Schedules)
+                //.Include(f => f.Schedules)
                 .ToListAsync();
         }
 
         public async Task<Flight> GetFlightByIdAsync(int id)
         {
             return await _dbContext.Flight
-                .Include(f => f.Schedules)
+                //.Include(f => f.Schedules)
                 .SingleOrDefaultAsync(f => f.Id == id);
         }
 

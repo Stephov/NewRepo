@@ -43,6 +43,13 @@ namespace MaratukAdmin.Controllers.admin
         }
 
 
+        [HttpGet("info/{id:int}")]
+        public async Task<ActionResult> GetFlightIifoById(int id)
+        {
+            var result = await _flightManager.GetFlightInfoByIdAsync(id);
+
+            return Ok(result);
+        }
 
 
 
@@ -54,9 +61,9 @@ namespace MaratukAdmin.Controllers.admin
             try
             {
                 //call manager
-                var result = _flightManager.AddFlightAsync(flightRequest);
+                var result = await _flightManager.AddFlightAsync(flightRequest);
 
-                return Ok(flightRequest);
+                return Ok(result);
             }
             catch (ArgumentException ex)
             {
@@ -82,7 +89,7 @@ namespace MaratukAdmin.Controllers.admin
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteFlightAsync(int id)
         {
-            bool result = await _flightManager.DeleteFlightAsync(id);
+            var result = await _flightManager.DeleteFlightAsync(id);
             return Ok(result);
         }
 

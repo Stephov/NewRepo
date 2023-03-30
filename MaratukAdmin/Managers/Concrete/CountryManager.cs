@@ -19,5 +19,10 @@ namespace MaratukAdmin.Managers.Concrete
         {
            return await _mainRepository.GetAllAsync();
         }
+
+        public async Task<Country> GetCountryNameByIdAsync(int id)
+        {
+            return await _mainRepository.GetAsync(id);
+        }
     }
 }

@@ -26,6 +26,11 @@ namespace MaratukAdmin.Managers.Concrete
             return entity;
         }
 
+        public async Task<Airline> GetAirlineNameByIdAsync(int id)
+        {
+           return await _mainRepository.GetAsync(id);
+        }
+
         public async Task<List<Airline>> GetAirlinesAsync()
         {
             return await _mainRepository.GetAllAsync();

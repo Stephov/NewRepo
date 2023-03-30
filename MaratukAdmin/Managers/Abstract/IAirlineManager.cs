@@ -7,5 +7,6 @@ namespace MaratukAdmin.Managers.Abstract
     {
         Task<List<Airline>> GetAirlinesAsync();
         Task<Airline> AddAirlineAsync(AddAirline airline);
+        Task<Airline> GetAirlineNameByIdAsync(int id);
     }
 }

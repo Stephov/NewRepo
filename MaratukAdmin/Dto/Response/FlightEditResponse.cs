@@ -1,9 +1,8 @@
-﻿using MaratukAdmin.Entities;
-
-namespace MaratukAdmin.Dto.Request
+﻿namespace MaratukAdmin.Dto.Response
 {
-    public class AddFlightRequest
+    public class FlightEditResponse
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public int DepartureCountryId { get; set; }
         public int DepartureCityId { get; set; }
@@ -15,6 +14,6 @@ namespace MaratukAdmin.Dto.Request
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }
 
-        public ICollection<ScheduleRequest> Schedules { get; set; }
+        public List<ScheduleEditResponse> scheduleInfos { get; set; }
     }
 }

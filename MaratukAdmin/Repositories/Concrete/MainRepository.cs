@@ -33,8 +33,15 @@ namespace MaratukAdmin.Repositories.Concrete
 
         public virtual async Task<T> AddAsync(T entity)
         {
-            _entities.Add(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _entities.Add(entity);
+                await _context.SaveChangesAsync();
+            }catch(Exception e)
+            {
+                string s = e.Message;
+            }
+            
 
             return entity;
         }

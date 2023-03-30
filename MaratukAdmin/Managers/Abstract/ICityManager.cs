@@ -5,5 +5,6 @@ namespace MaratukAdmin.Managers.Abstract
     public interface ICityManager
     {
         Task<List<City>> GetCityByCountryIdAsync(int countryId);
+        Task<City> GetCityNameByIdAsync(int id);
     }
 }

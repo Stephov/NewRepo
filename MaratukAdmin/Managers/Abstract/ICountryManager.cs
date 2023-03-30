@@ -6,5 +6,6 @@ namespace MaratukAdmin.Managers.Abstract
     public interface ICountryManager
     {
         Task<List<Country>> GetAllCountryesAsync();
+        Task<Country> GetCountryNameByIdAsync(int id);
     }
 }

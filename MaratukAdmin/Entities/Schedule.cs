@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Enums;
+﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Enums;
 
 namespace MaratukAdmin.Entities
 {
@@ -10,6 +11,12 @@ namespace MaratukAdmin.Entities
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
         public int FlightId { get; set; }
-        public Flight Flight { get; set; }
+
+
+        public void SetDayOfWeek(ScheduleRequest request)
+        {
+            DayOfWeek = string.Join(",", request.DayOfWeek);
+        }
+        // public Flight Flight { get; set; }
     }
 }

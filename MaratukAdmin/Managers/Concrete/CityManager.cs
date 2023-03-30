@@ -10,11 +10,13 @@ namespace MaratukAdmin.Managers.Concrete
     {
 
         private readonly ICityRepository _cityRepository;
+        private readonly IMainRepository<City> _mainRepository;
 
 
-        public CityManager(ICityRepository cityRepository)
+        public CityManager(ICityRepository cityRepository, IMainRepository<City> mainRepository)
         {
             _cityRepository = cityRepository;
+            _mainRepository = mainRepository;
         }
 
         public async Task<List<City>> GetCityByCountryIdAsync(int countryId)
@@ -27,6 +29,11 @@ namespace MaratukAdmin.Managers.Concrete
             }
 
             return result;
+        }
+
+        public async Task<City> GetCityNameByIdAsync(int id)
+        {
+            return await _mainRepository.GetAsync(id);
         }
     }
 }
