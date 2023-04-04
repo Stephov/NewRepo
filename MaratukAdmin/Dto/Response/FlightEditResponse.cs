@@ -14,6 +14,6 @@
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }
 
-        public List<ScheduleEditResponse> scheduleInfos { get; set; }
+        public List<ScheduleEditResponse> schedules { get; set; }
     }
 }

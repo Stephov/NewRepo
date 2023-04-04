@@ -9,6 +9,7 @@ using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Utils;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace MaratukAdmin.Managers.Concrete
 {
@@ -92,20 +93,40 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 throw new ApiBaseException(StatusCodes.Status404NotFound);
             }
-            var entity1 = _mapper.Map<Flight>(flight);
+
+            entity.Name = flight.Name;
+            entity.DepartureCountryId = flight.DepartureCountryId;
+            entity.DepartureCityId = flight.DepartureCityId;
+            entity.DepartureAirportId = flight.DepartureAirportId;
+            entity.DestinationCountryId = flight.DestinationCountryId;
+            entity.DestinationCityId = flight.DestinationCityId;
+            entity.DestinationAirportId = flight.DestinationAirportId;
+            entity.AirlineId = flight.AirlineId;
+            entity.FlightValue = flight.FlightValue;
+            entity.AircraftId = flight.AircraftId;
+
+            // create a new list to hold the schedules
+            var schedules = new List<Schedule>();
+
+            // map the ScheduleRequests to Schedules
+            foreach (var scheduleRequest in flight.Schedules)
+            {
+                var schedule = new Schedule();
+                schedule.FlightStartDate = scheduleRequest.FlightStartDate;
+                schedule.FlightEndDate = scheduleRequest.FlightEndDate;
+                schedule.DepartureTime = scheduleRequest.DepartureTime;
+                schedule.ArrivalTime = scheduleRequest.ArrivalTime;
 
 
-            entity.DepartureAirportId = entity1.DepartureAirportId;
-            entity.DepartureCityId = entity1.DepartureCityId;
-            entity.DepartureAirportId = entity1.DepartureAirportId;
-            entity.DestinationCountryId = entity1.DestinationCountryId;
-            entity.DestinationCityId = entity1.DestinationCityId;
-            entity.DestinationAirportId = entity1.DestinationAirportId;
-            entity.AirlineId = entity1.AirlineId;
-            entity.FlightValue = entity1.FlightValue;
-            entity.AircraftId = entity1.AircraftId;
+                // convert int[] DayOfWeek to string DayOfWeek
+                schedule.DayOfWeek = string.Join(",", scheduleRequest.DayOfWeek);
 
-            entity.Schedules = entity1.Schedules;
+                schedules.Add(schedule);
+            }
+
+            // add the schedules to the flight
+            entity.Schedules = schedules;
+
             //todo add all params
 
 
@@ -202,7 +223,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
             }
 
-            flightEditResponse.scheduleInfos = sheduledEdit;
+            flightEditResponse.schedules = sheduledEdit;
 
             return flightEditResponse;
 
@@ -226,13 +247,13 @@ namespace MaratukAdmin.Managers.Concrete
             flightInfoResponse.Name = entity.Name;
             flightInfoResponse.Id = entity.Id;
 
-            flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.NameENG;
-            flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.NameEng;
+            flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.Name;
+            flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.Name;
             flightInfoResponse.DepartureAirport = _airportManager.GetAirportNameByIdAsync(entity.DepartureAirportId).Result.Name;
 
 
-            flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.NameENG;
-            flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.NameEng;
+            flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.Name;
+            flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.Name;
             flightInfoResponse.DestinationAirport = _airportManager.GetAirportNameByIdAsync(entity.DestinationAirportId).Result.Name;
 
             flightInfoResponse.FlightValue = entity.FlightValue;

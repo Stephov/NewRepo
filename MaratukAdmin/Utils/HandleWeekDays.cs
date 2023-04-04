@@ -18,25 +18,25 @@ namespace MaratukAdmin.Utils
                 switch (weekDayIndex)
                 {
                     case 0:
-                        weekDayNames += "Sunday, ";
-                        break;
-                    case 1:
                         weekDayNames += "Monday, ";
                         break;
-                    case 2:
+                    case 1:
                         weekDayNames += "Tuesday, ";
                         break;
-                    case 3:
+                    case 2:
                         weekDayNames += "Wednesday, ";
                         break;
-                    case 4:
+                    case 3:
                         weekDayNames += "Thursday, ";
                         break;
-                    case 5:
+                    case 4:
                         weekDayNames += "Friday, ";
                         break;
-                    case 6:
+                    case 5:
                         weekDayNames += "Saturday, ";
+                        break;
+                    case 6:
+                        weekDayNames += "Sunday, ";
                         break;
                     default:
                         weekDayNames += "";

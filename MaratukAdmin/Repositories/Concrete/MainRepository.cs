@@ -62,12 +62,26 @@ namespace MaratukAdmin.Repositories.Concrete
 
         public virtual async Task<T> UpdateAsync(T entity)
         {
+            try
+            {
+                _entities.Attach(entity);
+                _context.Entry(entity).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+
+                return entity;
+            }catch(Exception e) {
+                string s = e.Message;
+
+            }
+
             _entities.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
             return entity;
+
         }
 
         public virtual async Task<T> GetAsync(int id, params string[] includes)
