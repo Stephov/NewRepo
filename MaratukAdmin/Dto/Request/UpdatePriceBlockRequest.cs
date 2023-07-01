@@ -2,8 +2,9 @@
 
 namespace MaratukAdmin.Dto.Request
 {
-    public class AddPriceBlockRequest
+    public class UpdatePriceBlockRequest
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public int PricelBlockTypeId { get; set; }
         public int PricePackageId { get; set; }

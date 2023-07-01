@@ -29,6 +29,12 @@ namespace MaratukAdmin.AutoMapper
             CreateMap<AddAirline, Airline>();
             CreateMap<AddAircraft, Aircraft>();
             CreateMap<AddAirport, Airport>();
+            CreateMap<AddTarif, Tarif>();
+            CreateMap<AddServiceClass, ServiceClass>();
+            CreateMap<AddSeason, Season>();
+            CreateMap<AddPriceBlockType, PriceBlockType>();
+            CreateMap<AddPartner, Partner>();
+            CreateMap<AddCurrency, Currency>();
 
 
         }

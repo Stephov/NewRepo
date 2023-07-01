@@ -21,7 +21,20 @@ namespace MaratukAdmin.Infrastructure
 
         public DbSet<Flight> Flight { get; set; }
 
+        public DbSet<PriceBlock> PriceBlocks { get; set; }
+
+
+        public DbSet<PriceBlockServices> PriceBlockServices { get; set; }
+
         public DbSet<Schedule> Schedule { get; set; }
+
+
+        public DbSet<Tarif> Tarif { get; set; } = null!;
+        public DbSet<ServiceClass> ServiceClass { get; set; } = null!;
+        public DbSet<Season> Season { get; set; } = null!;
+        public DbSet<PriceBlockType> PriceBlockType { get; set; } = null!;
+        public DbSet<Partner> Partner { get; set; } = null!;
+        public DbSet<Currency> Currency { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,12 +66,30 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<Flight>()
          .HasKey(r => r.Id);
 
+            modelBuilder.Entity<PriceBlock>()
+         .HasKey(r => r.Id);
+
             modelBuilder.Entity<Schedule>()
+     .HasKey(r => r.Id);
+
+            modelBuilder.Entity<PriceBlockServices>()
      .HasKey(r => r.Id);
 
             modelBuilder.Entity<City>()
                .HasKey(r => r.Id);
 
+            modelBuilder.Entity<Tarif>()
+          .HasKey(r => r.Id);
+            modelBuilder.Entity<ServiceClass>()
+          .HasKey(r => r.Id);
+            modelBuilder.Entity<Season>()
+          .HasKey(r => r.Id);
+            modelBuilder.Entity<PriceBlockType>()
+          .HasKey(r => r.Id);
+            modelBuilder.Entity<Partner>()
+          .HasKey(r => r.Id);
+            modelBuilder.Entity<Currency>()
+        .HasKey(r => r.Id);
         }
 
     }

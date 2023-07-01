@@ -23,13 +23,25 @@ namespace MaratukAdmin.Controllers.admin
         private readonly IAircraftManager _aircraftManager;
         private readonly IAirportManager _airportManager;
         private readonly IAirServiceManager _airServiceManager;
+        private readonly ITarifManager _tarifManager;
+        private readonly IServiceClassManager _serviceClassManager;
+        private readonly ISeasonManager _seasonManager;
+        private readonly IPriceBlockTypeManager _priceBlockTypeManager;
+        private readonly IPartnerManager _partnerManager;
+        private readonly ICurrencyManager _currencyManager;
         public AdminController(ICountryManager countryManager,
                                  ICityManager cityManager,
                                  IAirlineManager airlineManager,
                                  IAircraftManager aircraftManager,
                                  IAirServiceManager airServiceManager,
                                  IAirportManager airportManager,
-                                JwtTokenService jwtTokenService) : base(jwtTokenService)
+                                 ITarifManager tarifManager,
+                                 IServiceClassManager serviceClassManager,
+                                 ISeasonManager seasonManager,
+                                 IPriceBlockTypeManager priceBlockTypeManager,
+                                 IPartnerManager partnerManager,
+                                 ICurrencyManager currencyManager,
+        JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
             _countryManager = countryManager;
             _airlineManager = airlineManager;
@@ -37,6 +49,12 @@ namespace MaratukAdmin.Controllers.admin
             _aircraftManager = aircraftManager;
             _airportManager = airportManager;
             _airServiceManager = airServiceManager;
+            _tarifManager = tarifManager;
+            _serviceClassManager = serviceClassManager;
+            _seasonManager = seasonManager;
+            _priceBlockTypeManager = priceBlockTypeManager;
+            _partnerManager = partnerManager;
+            _currencyManager = currencyManager;
         }
 
 
@@ -56,7 +74,7 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<ActionResult> GetCity(int countryId)
         {
             var result = await _cityManager.GetCityByCountryIdAsync(countryId);
- 
+
             return Ok(result);
         }
 
@@ -64,6 +82,54 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<ActionResult> GetAirline()
         {
             var result = await _airlineManager.GetAirlinesAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("Tarif")]
+        public async Task<ActionResult> GetTarif()
+        {
+            var result = await _tarifManager.GetTarifAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("ServiceClass")]
+        public async Task<ActionResult> GetServiceClass()
+        {
+            var result = await _serviceClassManager.GetServiceClassAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("Season")]
+        public async Task<ActionResult> GetSeason()
+        {
+            var result = await _seasonManager.GetSeasonAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("PriceBlockType")]
+        public async Task<ActionResult> GetPriceBlockType()
+        {
+            var result = await _priceBlockTypeManager.GetPriceBlockTypeAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("Partner")]
+        public async Task<ActionResult> GetPartner()
+        {
+            var result = await _partnerManager.GetPartnerAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("Currency")]
+        public async Task<ActionResult> GetCurrency()
+        {
+            var result = await _currencyManager.GetCurrencyAsync();
 
             return Ok(result);
         }

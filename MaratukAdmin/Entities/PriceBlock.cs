@@ -1,8 +1,6 @@
-﻿using MaratukAdmin.Entities;
-
-namespace MaratukAdmin.Dto.Request
+﻿namespace MaratukAdmin.Entities
 {
-    public class AddPriceBlockRequest
+    public class PriceBlock : BaseDbEntity
     {
         public string Name { get; set; }
         public int PricelBlockTypeId { get; set; }
@@ -13,7 +11,6 @@ namespace MaratukAdmin.Dto.Request
         public int CurrencyId { get; set; }
         public string Comments { get; set; }
         public int TarifId { get; set; }
-
-        public ICollection<PriceBlockServiceRequest> PriceBlockService { get; set; }
+        public ICollection<PriceBlockServices> Services { get; set; }
     }
 }

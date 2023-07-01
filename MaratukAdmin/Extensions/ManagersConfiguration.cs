@@ -17,7 +17,14 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IAircraftManager, AircraftManager>()
             .AddScoped<IAirServiceManager, AirServiceManager>()
             .AddScoped<IPricePackageManager, PricePackageManager>()
-            .AddScoped<IAirportManager, AirportManager>();
+            .AddScoped<IAirportManager, AirportManager>()
+            .AddScoped<ITarifManager, TarifManager>()
+            .AddScoped<IServiceClassManager, ServiceClassManager>()
+            .AddScoped<ISeasonManager, SeasonManager>()
+            .AddScoped<IPriceBlockTypeManager, PriceBlockTypeManager>()
+            .AddScoped<IPartnerManager, PartnerManager>()
+            .AddScoped<ICurrencyManager, CurrencyManager>()
+            .AddScoped<IPriceBlockManager, PriceBlockManager>();
         }
     }
 }
