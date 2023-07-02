@@ -25,14 +25,14 @@ namespace MaratukAdmin.Controllers.admin
         }
 
 
-/*        [HttpGet]
-        public async Task<ActionResult> GetFlights()
+        [HttpGet]
+        public async Task<ActionResult> GetPriceBlocks()
         {
-            var result = await _flightManager.GetAllFlightAsync();
+            var result = await _priceBlockManager.GetAllPriceBlockAsync();
 
             return Ok(result);
         }
-*/
+
 
 /*        [HttpGet("{id:int}")]
         public async Task<ActionResult> GetFlightById(int id)

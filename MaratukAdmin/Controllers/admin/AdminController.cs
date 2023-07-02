@@ -94,10 +94,28 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+
+        [HttpGet("Tarif/{id:int}")]
+        public async Task<ActionResult> GetTarifById(int id)
+        {
+            var result = await _tarifManager.GetTarifNameByIdAsync(id);
+
+            return Ok(result);
+        }
+
+
         [HttpGet("ServiceClass")]
         public async Task<ActionResult> GetServiceClass()
         {
             var result = await _serviceClassManager.GetServiceClassAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("ServiceClass/{id:int}")]
+        public async Task<ActionResult> GetServiceClassById(int id)
+        {
+            var result = await _serviceClassManager.GetServiceClassNameByIdAsync(id);
 
             return Ok(result);
         }
@@ -110,6 +128,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("Season/{id:int}")]
+        public async Task<ActionResult> GetSeasonById(int id)
+        {
+            var result = await _seasonManager.GetSeasonNameByIdAsync(id);
+
+            return Ok(result);
+        }
+
         [HttpGet("PriceBlockType")]
         public async Task<ActionResult> GetPriceBlockType()
         {
@@ -117,6 +143,15 @@ namespace MaratukAdmin.Controllers.admin
 
             return Ok(result);
         }
+
+        [HttpGet("PriceBlockType/{id:int}")]
+        public async Task<ActionResult> GetPriceBlockTypeById(int id)
+        {
+            var result = await _priceBlockTypeManager.GetPriceBlockTypeNameByIdAsync(id);
+
+            return Ok(result);
+        }
+
 
         [HttpGet("Partner")]
         public async Task<ActionResult> GetPartner()
@@ -126,10 +161,26 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("Partner/{id:int}")]
+        public async Task<ActionResult> GetPartnerTypeById(int id)
+        {
+            var result = await _partnerManager.GetPartnerNameByIdAsync(id);
+
+            return Ok(result);
+        }
+
         [HttpGet("Currency")]
         public async Task<ActionResult> GetCurrency()
         {
             var result = await _currencyManager.GetCurrencyAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("Currency/{id:int}")]
+        public async Task<ActionResult> GetCurrencyById(int id)
+        {
+            var result = await _currencyManager.GetCurrencyNameByIdAsync(id);
 
             return Ok(result);
         }
