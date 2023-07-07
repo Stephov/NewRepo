@@ -34,22 +34,22 @@ namespace MaratukAdmin.Controllers.admin
         }
 
 
-        /*        [HttpGet("{id:int}")]
-                public async Task<ActionResult> GetFlightById(int id)
-                {
-                    var result = await _flightManager.GetFlightByIdAsync(id);
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> GetPriceBlockId(int id)
+        {
+            var result = await _priceBlockManager.GetPriceBlockByIdAsync(id);
 
-                    return Ok(result);
-                }*/
+            return Ok(result);
+        }
 
 
-        /*       [HttpGet("info/{id:int}")]
-               public async Task<ActionResult> GetFlightIifoById(int id)
-               {
-                   var result = await _flightManager.GetFlightInfoByIdAsync(id);
+  /*             [HttpGet("info/{id:int}")]
+        public async Task<ActionResult> GetFlightIifoById(int id)
+        {
+            var result = await _flightManager.GetFlightInfoByIdAsync(id);
 
-                   return Ok(result);
-               }*/
+            return Ok(result);
+        }*/
 
 
 
@@ -74,6 +74,7 @@ namespace MaratukAdmin.Controllers.admin
                 return BadRequest("Something went wrong");
             }
         }
+
 
 
         [HttpPut]

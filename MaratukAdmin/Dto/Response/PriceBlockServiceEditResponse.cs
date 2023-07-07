@@ -1,8 +1,6 @@
-﻿using MaratukAdmin.Entities;
-
-namespace MaratukAdmin.Dto.Request
+﻿namespace MaratukAdmin.Dto.Response
 {
-    public class PriceBlockServiceRequest
+    public class PriceBlockServiceEditResponse
     {
         public int Id { get; set; }
         public int DepartureCountryId { get; set; }
@@ -22,3 +20,4 @@ namespace MaratukAdmin.Dto.Request
         public int CountUpTo { get; set; }
     }
 }
+

@@ -196,123 +196,133 @@ namespace MaratukAdmin.Managers.Concrete
 
         }
 
-        /* 
-                       public async Task<FlightEditResponse> GetFlightByIdAsync(int id)
-                       {
-                           var entity = await _mainRepository.GetAsync(id, "Schedules");
-                           if (entity == null)
-                           {
-                               throw new ApiBaseException(StatusCodes.Status404NotFound);
-                           }
 
-                           var flightEditResponse = new FlightEditResponse();
-                           var sheduledEdit = new List<ScheduleEditResponse>();
+        public async Task<PriceBlockEditResponse> GetPriceBlockByIdAsync(int id)
+        {
+            var entity = await _mainRepository.GetAsync(id, "Services");
+            if (entity == null)
+            {
+                throw new ApiBaseException(StatusCodes.Status404NotFound);
+            }
 
-                           flightEditResponse.Name = entity.Name;
-                           flightEditResponse.Id = entity.Id;
+            var priceBlockEditResponse = new PriceBlockEditResponse();
+            var priceBlockServiceEdit = new List<PriceBlockServiceEditResponse>();
 
-                           flightEditResponse.DepartureCountryId = entity.DepartureCountryId;
-                           flightEditResponse.DepartureCityId = entity.DepartureCityId;
-                           flightEditResponse.DepartureAirportId = entity.DepartureAirportId;
+            priceBlockEditResponse.Name = entity.Name;
+            priceBlockEditResponse.Id = entity.Id;
 
-
-                           flightEditResponse.DestinationCountryId = entity.DestinationCountryId;
-                           flightEditResponse.DestinationCityId = entity.DestinationCityId;
-                           flightEditResponse.DestinationAirportId = entity.DestinationAirportId;
-
-                           flightEditResponse.FlightValue = entity.FlightValue;
-                           flightEditResponse.AirlineId = entity.AirlineId;
-                           flightEditResponse.AircraftId = entity.AircraftId;
+            priceBlockEditResponse.PricelBlockTypeId = entity.PricelBlockTypeId;
+            priceBlockEditResponse.PricePackageId = entity.PricePackageId;
+            priceBlockEditResponse.ServiceClassId = entity.ServiceClassId;
 
 
-                           if (entity.Schedules != null)
-                           {
-                               foreach (var shedul in entity.Schedules)
-                               {
-                                   var schedule = new ScheduleEditResponse()
-                                   {
-                                       FlightStartDate = shedul.FlightStartDate,
-                                       FlightEndDate = shedul.FlightEndDate,
-                                       DepartureTime = shedul.DepartureTime,
-                                       ArrivalTime = shedul.ArrivalTime,
-                                       DayOfWeek = shedul.DayOfWeek.Split(',').Select(int.Parse).ToArray()
-                               };
+            priceBlockEditResponse.SeasonId = entity.SeasonId;
+            priceBlockEditResponse.PartnerId = entity.PartnerId;
+            priceBlockEditResponse.CurrencyId = entity.CurrencyId;
+
+            priceBlockEditResponse.Comments = entity.Comments;
+            priceBlockEditResponse.TarifId = entity.TarifId;
 
 
-
-                                   sheduledEdit.Add(schedule);
-
-                               }
-                           }
-
-                           flightEditResponse.schedules = sheduledEdit;
-
-                           return flightEditResponse;
-
-                       }
-
-                       public async Task<FlightInfoResponse> GetFlightInfoByIdAsync(int id)
-                       {
-                           var entity = await _mainRepository.GetAsync(id, "Schedules");
-
-                           if (entity == null)
-                           {
-                               throw new ApiBaseException(StatusCodes.Status404NotFound);
-                           }
+            if (entity.Services != null)
+            {
+                foreach (var service in entity.Services)
+                {
+                    var priceBlockService = new PriceBlockServiceEditResponse()
+                    {
+                        Id = service.Id,
+                        DepartureCountryId = service.DepartureCountryId,
+                        DepartureCityId = service.DepartureCityId,
+                        DestinationCountryId = service.DestinationCountryId,
+                        DestinationCityId = service.DestinationCityId,
+                        CurrencyId = service.CurrencyId,
+                        Netto = service.Netto,
+                        Parcent = service.Parcent,
+                        Bruto = service.Bruto,
+                        StartDate = service.StartDate,
+                        EndDate = service.EndDate,
+                        SaleDate = service.SaleDate,
+                        AgeFrom = service.AgeFrom,
+                        AgeUpTo = service.AgeUpTo,
+                        CountFrom = service.CountFrom,
+                        CountUpTo = service.CountUpTo,
+                    };
 
 
 
-                           var flightInfoResponse = new FlightInfoResponse();
-                           var sheduledInfo = new List<ScheduleInfoResponse>();
+                    priceBlockServiceEdit.Add(priceBlockService);
 
+                }
+            }
 
-                           flightInfoResponse.Name = entity.Name;
-                           flightInfoResponse.Id = entity.Id;
+            priceBlockEditResponse.PriceBlockServiceEdit = priceBlockServiceEdit;
 
-                           flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.Name;
-                           flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.Name;
-                           flightInfoResponse.DepartureAirport = _airportManager.GetAirportNameByIdAsync(entity.DepartureAirportId).Result.Name;
+            return priceBlockEditResponse;
 
+        }
+        /*
+                      public async Task<FlightInfoResponse> GetFlightInfoByIdAsync(int id)
+                      {
+                          var entity = await _mainRepository.GetAsync(id, "Schedules");
 
-                           flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.Name;
-                           flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.Name;
-                           flightInfoResponse.DestinationAirport = _airportManager.GetAirportNameByIdAsync(entity.DestinationAirportId).Result.Name;
-
-                           flightInfoResponse.FlightValue = entity.FlightValue;
-                           flightInfoResponse.Airline = _airlineManager.GetAirlineNameByIdAsync(entity.AirlineId).Result.Name;
-                           flightInfoResponse.Aircraft = _aircraftManager.GetAircraftNameByIdAsync(entity.AircraftId).Result.Name;
-
-                          if (entity.Schedules != null)
-                           {
-                               foreach (var shedul in entity.Schedules)
-                               {
-                                   var schedule = new ScheduleInfoResponse()
-                                   {
-                                       FlightStartDate = shedul.FlightStartDate,
-                                       FlightEndDate = shedul.FlightEndDate,
-                                       DepartureTime = shedul.DepartureTime,
-                                       ArrivalTime = shedul.ArrivalTime,
-                                       DayOfWeek = HandleWeekDays.GetWeekDayNames(shedul.DayOfWeek),
-                                   };
+                          if (entity == null)
+                          {
+                              throw new ApiBaseException(StatusCodes.Status404NotFound);
+                          }
 
 
 
-                                   sheduledInfo.Add(schedule);
-
-                               }
-                           }
-
-                           flightInfoResponse.scheduleInfos = sheduledInfo;
+                          var flightInfoResponse = new FlightInfoResponse();
+                          var sheduledInfo = new List<ScheduleInfoResponse>();
 
 
+                          flightInfoResponse.Name = entity.Name;
+                          flightInfoResponse.Id = entity.Id;
+
+                          flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.Name;
+                          flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.Name;
+                          flightInfoResponse.DepartureAirport = _airportManager.GetAirportNameByIdAsync(entity.DepartureAirportId).Result.Name;
+
+
+                          flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.Name;
+                          flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.Name;
+                          flightInfoResponse.DestinationAirport = _airportManager.GetAirportNameByIdAsync(entity.DestinationAirportId).Result.Name;
+
+                          flightInfoResponse.FlightValue = entity.FlightValue;
+                          flightInfoResponse.Airline = _airlineManager.GetAirlineNameByIdAsync(entity.AirlineId).Result.Name;
+                          flightInfoResponse.Aircraft = _aircraftManager.GetAircraftNameByIdAsync(entity.AircraftId).Result.Name;
+
+                         if (entity.Schedules != null)
+                          {
+                              foreach (var shedul in entity.Schedules)
+                              {
+                                  var schedule = new ScheduleInfoResponse()
+                                  {
+                                      FlightStartDate = shedul.FlightStartDate,
+                                      FlightEndDate = shedul.FlightEndDate,
+                                      DepartureTime = shedul.DepartureTime,
+                                      ArrivalTime = shedul.ArrivalTime,
+                                      DayOfWeek = HandleWeekDays.GetWeekDayNames(shedul.DayOfWeek),
+                                  };
 
 
 
-                           return flightInfoResponse;
+                                  sheduledInfo.Add(schedule);
+
+                              }
+                          }
+
+                          flightInfoResponse.scheduleInfos = sheduledInfo;
 
 
 
 
-                       }*/
+
+                          return flightInfoResponse;
+
+
+
+
+                      }*/
     }
 }

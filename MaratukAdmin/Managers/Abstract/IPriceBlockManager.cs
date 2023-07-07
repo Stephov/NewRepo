@@ -8,7 +8,7 @@ namespace MaratukAdmin.Managers.Abstract
     public interface IPriceBlockManager
     {
         Task<List<PriceBlockResponse>> GetAllPriceBlockAsync();
-        //Task<FlightEditResponse> GetPriceBlockByIdAsync(int id);
+        Task<PriceBlockEditResponse> GetPriceBlockByIdAsync(int id);
         Task<PriceBlock> AddPriceBlockAsync(AddPriceBlockRequest priceBlock);
         Task<PriceBlock> UpdatePriceBlockAsync(UpdatePriceBlockRequest priceBlock);
         Task<bool> DeletePriceBlockAsync(int id);
