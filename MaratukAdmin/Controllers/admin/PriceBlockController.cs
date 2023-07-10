@@ -75,6 +75,28 @@ namespace MaratukAdmin.Controllers.admin
             }
         }
 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> CreatTestePriceBlockAsync([FromBody] AddPriceBlockRequest priceBlockRequest)
+        {
+            try
+            {
+                //call manager
+                var result = await _priceBlockManager.AddPriceBlockAsync(priceBlockRequest);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
 
 
         [HttpPut]

@@ -66,6 +66,13 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("healthy")]
+        public async Task<ActionResult> Healthy()
+        {
+            return Ok("healthy");
+        }
+
+
 
 
         [HttpGet("city")]
