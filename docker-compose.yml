@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  maratukadmin:
+    image: ${DOCKER_REGISTRY-}maratukadmin
+    build:
+      context: .
+      dockerfile: MaratukAdmin\Dockerfile
