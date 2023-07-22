@@ -16,6 +16,7 @@ namespace MaratukAdmin.Managers.Concrete
     public class PriceBlockManager : IPriceBlockManager
     {
         private readonly IMainRepository<PriceBlock> _mainRepository;
+        private readonly IPriceBlockRepository _priceBlockRepository;
         private readonly IMapper _mapper;
         private readonly ICountryManager _countryManager;
         private readonly IPriceBlockTypeManager _priceBlockTypeManager;
@@ -31,7 +32,9 @@ namespace MaratukAdmin.Managers.Concrete
                             IPricePackageManager pricePackageManager,
                             IServiceClassManager serviceClassManage,
                             IAirlineManager airlineManager,
-                            IAirportManager airportManager)
+                            IAirportManager airportManager,
+                            IPriceBlockRepository priceBlockRepository
+                            )
         {
             _mainRepository = mainRepository;
             _mapper = mapper;
@@ -41,6 +44,7 @@ namespace MaratukAdmin.Managers.Concrete
             _airlineManager = airlineManager;
             _airportManager = airportManager;
             _priceBlockTypeManager = priceBlockTypeManager;
+            _priceBlockRepository = priceBlockRepository;
         }
 
         public async Task<PriceBlock> AddPriceBlockAsync(AddPriceBlockRequest priceBlockRequest)
@@ -59,40 +63,6 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockDb.TarifId = priceBlockRequest.TarifId;
 
 
-            // create a new list to hold the schedules
-            var priceBlockServices = new List<PriceBlockServices>();
-
-            // map the ScheduleRequests to Schedules
-            foreach (var service in priceBlockRequest.PriceBlockService)
-            {
-                var priceBlockService = new PriceBlockServices();
-
-                priceBlockService.DepartureCountryId = service.DepartureCountryId;
-                priceBlockService.DepartureCityId = service.DepartureCityId;
-                priceBlockService.DestinationCountryId = service.DestinationCountryId;
-                priceBlockService.DestinationCityId = service.DestinationCityId;
-
-                priceBlockService.CurrencyId = service.CurrencyId;
-                priceBlockService.Netto = service.Netto;
-                priceBlockService.Parcent = service.Parcent;
-                priceBlockService.Bruto = service.Bruto;
-                priceBlockService.StartDate = service.StartDate;
-                priceBlockService.EndDate = service.EndDate;
-                priceBlockService.SaleDate = service.SaleDate;
-                priceBlockService.AgeFrom = service.AgeFrom;
-                priceBlockService.AgeUpTo = service.AgeUpTo;
-                priceBlockService.CountFrom = service.CountFrom;
-                priceBlockService.CountUpTo = service.CountUpTo;
-
-
-
-                priceBlockServices.Add(priceBlockService);
-            }
-
-            // add the schedules to the flight
-            priceBlockDb.Services = priceBlockServices;
-
-
 
             return await _mainRepository.AddAsync(priceBlockDb);
 
@@ -102,7 +72,7 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<PriceBlock> UpdatePriceBlockAsync(UpdatePriceBlockRequest price)
         {
-            var entity = await _mainRepository.GetAsync(price.Id, "Services");
+            var entity = await _mainRepository.GetAsync(price.Id);
             if (entity == null)
             {
                 throw new ApiBaseException(StatusCodes.Status404NotFound);
@@ -119,36 +89,8 @@ namespace MaratukAdmin.Managers.Concrete
             entity.Comments = price.Comments;
             entity.TarifId = price.TarifId;
 
-            // create a new list to hold the schedules
-            var priceBlockServices = new List<PriceBlockServices>();
-
             // map the ScheduleRequests to Schedules
-            foreach (var service in price.PriceBlockService)
-            {
-                var priceBlockService = new PriceBlockServices();
 
-                priceBlockService.DepartureCountryId = service.DepartureCountryId;
-                priceBlockService.DepartureCityId = service.DepartureCityId;
-                priceBlockService.DestinationCountryId = service.DestinationCountryId;
-                priceBlockService.DestinationCityId = service.DestinationCityId;
-
-                priceBlockService.CurrencyId = service.CurrencyId;
-                priceBlockService.Netto = service.Netto;
-                priceBlockService.Parcent = service.Parcent;
-                priceBlockService.Bruto = service.Bruto;
-                priceBlockService.StartDate = service.StartDate;
-                priceBlockService.EndDate = service.EndDate;
-                priceBlockService.SaleDate = service.SaleDate;
-                priceBlockService.AgeFrom = service.AgeFrom;
-                priceBlockService.AgeUpTo = service.AgeUpTo;
-                priceBlockService.CountFrom = service.CountFrom;
-                priceBlockService.CountUpTo = service.CountUpTo;
-
-                priceBlockServices.Add(priceBlockService);
-            }
-
-            // add the schedules to the flight
-            entity.Services = priceBlockServices;
 
             var result = await _mainRepository.UpdateAsync(entity);
 
@@ -173,33 +115,42 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<List<PriceBlockResponse>> GetAllPriceBlockAsync()
         {
-            var result = await _mainRepository.GetAllAsync();
-
-
-            var priceBlockResponses = new List<PriceBlockResponse>();
-
-
-            foreach (var priceBlock in result)
+            try
             {
-                var priceBlockRespons = new PriceBlockResponse()
-                {
-                    Name = priceBlock.Name,
-                    Id = priceBlock.Id,
-                    PriceBlockType = _priceBlockTypeManager.GetPriceBlockTypeNameByIdAsync(priceBlock.PricelBlockTypeId).Result.Name,
-                    PricePackageId = _pricePackageManager.GetPricePackageByIdAsync(priceBlock.PricePackageId).Result.Name,
-                    ServiceClassId = _serviceClassManager.GetServiceClassNameByIdAsync(priceBlock.ServiceClassId).Result.Name,
+                var result = await _mainRepository.GetAllAsync();
+                var priceBlockResponses = new List<PriceBlockResponse>();
 
-                };
-                priceBlockResponses.Add(priceBlockRespons);
+
+                foreach (var priceBlock in result)
+                {
+                    var priceBlockRespons = new PriceBlockResponse()
+                    {
+                        Name = priceBlock.Name,
+                        Id = priceBlock.Id,
+                        PriceBlockType = _priceBlockTypeManager.GetPriceBlockTypeNameByIdAsync(priceBlock.PricelBlockTypeId).Result.Name,
+                        PricePackageId = _pricePackageManager.GetPricePackageByIdAsync(priceBlock.PricePackageId).Result.Name,
+                        ServiceClassId = _serviceClassManager.GetServiceClassNameByIdAsync(priceBlock.ServiceClassId).Result.Name,
+
+                    };
+                    priceBlockResponses.Add(priceBlockRespons);
+                }
+                return priceBlockResponses;
             }
-            return priceBlockResponses;
+            catch (Exception ex)
+            {
+                var mes = ex.Message;
+            }
+            return null;
+
+
+
 
         }
 
 
         public async Task<PriceBlockEditResponse> GetPriceBlockByIdAsync(int id)
         {
-            var entity = await _mainRepository.GetAsync(id, "Services");
+            var entity = await _mainRepository.GetAsync(id);
             if (entity == null)
             {
                 throw new ApiBaseException(StatusCodes.Status404NotFound);
@@ -224,105 +175,136 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockEditResponse.TarifId = entity.TarifId;
 
 
-            if (entity.Services != null)
-            {
-                foreach (var service in entity.Services)
-                {
-                    var priceBlockService = new PriceBlockServiceEditResponse()
-                    {
-                        Id = service.Id,
-                        DepartureCountryId = service.DepartureCountryId,
-                        DepartureCityId = service.DepartureCityId,
-                        DestinationCountryId = service.DestinationCountryId,
-                        DestinationCityId = service.DestinationCityId,
-                        CurrencyId = service.CurrencyId,
-                        Netto = service.Netto,
-                        Parcent = service.Parcent,
-                        Bruto = service.Bruto,
-                        StartDate = service.StartDate,
-                        EndDate = service.EndDate,
-                        SaleDate = service.SaleDate,
-                        AgeFrom = service.AgeFrom,
-                        AgeUpTo = service.AgeUpTo,
-                        CountFrom = service.CountFrom,
-                        CountUpTo = service.CountUpTo,
-                    };
-
-
-
-                    priceBlockServiceEdit.Add(priceBlockService);
-
-                }
-            }
-
-            priceBlockEditResponse.PriceBlockServiceEdit = priceBlockServiceEdit;
-
             return priceBlockEditResponse;
 
         }
+
+        public async Task<PriceBlockServices> AddPriceBlockServicesAsync(AddPriceBlockServicesRequest priceBlockService)
+        {
+            var priceBlockServicesDb = new PriceBlockServices();
+
+            // map the properties from AddFlightRequest to Flight
+            priceBlockServicesDb.DepartureCountryId = priceBlockService.DepartureCountryId;
+            priceBlockServicesDb.DepartureCityId = priceBlockService.DepartureCityId;
+            priceBlockServicesDb.DestinationCountryId = priceBlockService.DestinationCountryId;
+            priceBlockServicesDb.DestinationCityId = priceBlockService.DestinationCityId;
+            priceBlockServicesDb.FlightId = priceBlockService.FligthId;
+            priceBlockServicesDb.PriceBlockId = priceBlockService.PriceBlockId;
+
+
+
+
+            return await _priceBlockRepository.CreatePriceBlockServicesAsync(priceBlockServicesDb);
+        }
+
+        public async Task<bool> DeletePriceBlockServiceAsync(int id)
+        {
+            return await _priceBlockRepository.DeletePriceBlockServicesAsync(id);
+        }
+
+        public async Task<List<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id)
+        {
+            var res = await _priceBlockRepository.GetServicesByPriceBlockIdAsync(id);
+
+            return res;
+        }
+
+        public async Task<ServicesPricingPolicy> CreateServicesPricingPolicyAsync(AddServicesPricingPolicy addServicesPricingPolicy)
+        {
+            ServicesPricingPolicy servicesPricingPolicyDB = new ServicesPricingPolicy();
+
+            servicesPricingPolicyDB.PriceBlockServicesId = addServicesPricingPolicy.PriceBlockServicesId;
+            servicesPricingPolicyDB.CurrencyId = addServicesPricingPolicy.CurrencyId;
+            servicesPricingPolicyDB.Netto = addServicesPricingPolicy.Netto;
+            servicesPricingPolicyDB.Parcent = addServicesPricingPolicy.Parcent;
+            servicesPricingPolicyDB.Bruto = addServicesPricingPolicy.Bruto;
+            servicesPricingPolicyDB.StartDate = addServicesPricingPolicy.StartDate;
+            servicesPricingPolicyDB.EndDate = addServicesPricingPolicy.EndDate;
+            servicesPricingPolicyDB.SaleDate = addServicesPricingPolicy.SaleDate;
+            servicesPricingPolicyDB.AgeFrom = addServicesPricingPolicy.AgeFrom;
+            servicesPricingPolicyDB.AgeUpTo = addServicesPricingPolicy.AgeUpTo;
+            servicesPricingPolicyDB.CountFrom = addServicesPricingPolicy.CountFrom;
+            servicesPricingPolicyDB.CountUpTo = addServicesPricingPolicy.CountUpTo;
+
+
+
+            return await _priceBlockRepository.CreateServicesPricingPolicyAsync(servicesPricingPolicyDB);
+
+
+        }
+
+        public async  Task<bool> DeleteServicesPricingPolicyAsync(int id)
+        {
+            return await _priceBlockRepository.DeleteServicesPricingPolicyAsync(id);
+        }
+
+        public async Task<List<ServicesPricingPolicy>> GetServicesPricingPolicyByPriceBlockServicesIdAsync(int id)
+        {
+            return await _priceBlockRepository.GetServicesPricingPolicyByPriceBlockServicesIdAsync(id);
+        }
         /*
-                      public async Task<FlightInfoResponse> GetFlightInfoByIdAsync(int id)
-                      {
-                          var entity = await _mainRepository.GetAsync(id, "Schedules");
+public async Task<FlightInfoResponse> GetFlightInfoByIdAsync(int id)
+{
+var entity = await _mainRepository.GetAsync(id, "Schedules");
 
-                          if (entity == null)
-                          {
-                              throw new ApiBaseException(StatusCodes.Status404NotFound);
-                          }
-
-
-
-                          var flightInfoResponse = new FlightInfoResponse();
-                          var sheduledInfo = new List<ScheduleInfoResponse>();
-
-
-                          flightInfoResponse.Name = entity.Name;
-                          flightInfoResponse.Id = entity.Id;
-
-                          flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.Name;
-                          flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.Name;
-                          flightInfoResponse.DepartureAirport = _airportManager.GetAirportNameByIdAsync(entity.DepartureAirportId).Result.Name;
-
-
-                          flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.Name;
-                          flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.Name;
-                          flightInfoResponse.DestinationAirport = _airportManager.GetAirportNameByIdAsync(entity.DestinationAirportId).Result.Name;
-
-                          flightInfoResponse.FlightValue = entity.FlightValue;
-                          flightInfoResponse.Airline = _airlineManager.GetAirlineNameByIdAsync(entity.AirlineId).Result.Name;
-                          flightInfoResponse.Aircraft = _aircraftManager.GetAircraftNameByIdAsync(entity.AircraftId).Result.Name;
-
-                         if (entity.Schedules != null)
-                          {
-                              foreach (var shedul in entity.Schedules)
-                              {
-                                  var schedule = new ScheduleInfoResponse()
-                                  {
-                                      FlightStartDate = shedul.FlightStartDate,
-                                      FlightEndDate = shedul.FlightEndDate,
-                                      DepartureTime = shedul.DepartureTime,
-                                      ArrivalTime = shedul.ArrivalTime,
-                                      DayOfWeek = HandleWeekDays.GetWeekDayNames(shedul.DayOfWeek),
-                                  };
+if (entity == null)
+{
+throw new ApiBaseException(StatusCodes.Status404NotFound);
+}
 
 
 
-                                  sheduledInfo.Add(schedule);
-
-                              }
-                          }
-
-                          flightInfoResponse.scheduleInfos = sheduledInfo;
+var flightInfoResponse = new FlightInfoResponse();
+var sheduledInfo = new List<ScheduleInfoResponse>();
 
 
+flightInfoResponse.Name = entity.Name;
+flightInfoResponse.Id = entity.Id;
+
+flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.Name;
+flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.Name;
+flightInfoResponse.DepartureAirport = _airportManager.GetAirportNameByIdAsync(entity.DepartureAirportId).Result.Name;
+
+
+flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.Name;
+flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.Name;
+flightInfoResponse.DestinationAirport = _airportManager.GetAirportNameByIdAsync(entity.DestinationAirportId).Result.Name;
+
+flightInfoResponse.FlightValue = entity.FlightValue;
+flightInfoResponse.Airline = _airlineManager.GetAirlineNameByIdAsync(entity.AirlineId).Result.Name;
+flightInfoResponse.Aircraft = _aircraftManager.GetAircraftNameByIdAsync(entity.AircraftId).Result.Name;
+
+if (entity.Schedules != null)
+{
+foreach (var shedul in entity.Schedules)
+{
+var schedule = new ScheduleInfoResponse()
+{
+FlightStartDate = shedul.FlightStartDate,
+FlightEndDate = shedul.FlightEndDate,
+DepartureTime = shedul.DepartureTime,
+ArrivalTime = shedul.ArrivalTime,
+DayOfWeek = HandleWeekDays.GetWeekDayNames(shedul.DayOfWeek),
+};
 
 
 
-                          return flightInfoResponse;
+sheduledInfo.Add(schedule);
+
+}
+}
+
+flightInfoResponse.scheduleInfos = sheduledInfo;
 
 
 
 
-                      }*/
+
+return flightInfoResponse;
+
+
+
+
+}*/
     }
 }

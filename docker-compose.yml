@@ -5,4 +5,4 @@ services:
     image: ${DOCKER_REGISTRY-}maratukadmin
     build:
       context: .
-      dockerfile: MaratukAdmin\Dockerfile
+      dockerfile: MaratukAdmin/Dockerfile

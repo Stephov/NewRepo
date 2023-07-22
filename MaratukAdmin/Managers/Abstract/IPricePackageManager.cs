@@ -2,6 +2,7 @@
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities.Global;
+using MaratukAdmin.Models;
 
 namespace MaratukAdmin.Managers.Abstract
 {
@@ -12,5 +13,6 @@ namespace MaratukAdmin.Managers.Abstract
         Task<PricePackage> AddPricePackageAsync(AddPricePackage pricePackage);
         Task<PricePackage> UpdatePricePackageAsync(UpdatePricePackage pricePackage);
         Task<bool> DeletePricePackageAsync(int id);
+        Task<PricePaskageCountry> GetPricePaskageCountryAsync(int pricePackageId);
     }
 }

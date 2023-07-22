@@ -42,6 +42,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("FlightByIds/")]
+        public async Task<ActionResult> GetFlightByIds(int departureCountryId, int departureCityId, int destinationCountryId, int destinationCityId)
+        {
+            var result = await _flightManager.GetFlightByIdsAsync(departureCountryId,departureCityId,destinationCountryId,destinationCityId);
+
+            return Ok(result);
+        }
+
 
         [HttpGet("info/{id:int}")]
         public async Task<ActionResult> GetFlightIifoById(int id)

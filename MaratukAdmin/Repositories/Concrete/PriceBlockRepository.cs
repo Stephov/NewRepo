@@ -1,4 +1,5 @@
 ﻿using MaratukAdmin.Entities;
+using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
@@ -62,36 +63,92 @@ namespace MaratukAdmin.Repositories.Concrete
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<PriceBlockServices>> GetPriceBlockServicesByPriceBlockIdAsync(int priceBlockId)
+        /*   public async Task<IEnumerable<PriceBlockServices>> GetPriceBlockServicesByPriceBlockIdAsync(int priceBlockId)
+           {
+               return await _dbContext.PriceBlockServices
+                   .Where(s => s.PriceBlockId == priceBlockId)
+                   .ToListAsync();
+           }*/
+
+        public async Task<PriceBlockServices> CreatePriceBlockServicesAsync(PriceBlockServices priceBlockServices)
         {
-            return await _dbContext.PriceBlockServices
-                .Where(s => s.PriceBlockId == priceBlockId)
+            try
+            {
+                await _dbContext.PriceBlockServices.AddAsync(priceBlockServices);
+                await _dbContext.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+
+                string a = ex.Message;
+            }
+
+            return priceBlockServices;
+        }
+
+
+        public async Task<bool> DeletePriceBlockServicesAsync(int id)
+        {
+            var priceBlockService = await _dbContext.PriceBlockServices.FindAsync(id);
+            if (priceBlockService != null)
+            {
+                _dbContext.PriceBlockServices.Remove(priceBlockService);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<List<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id)
+        {
+           return await _dbContext.PriceBlockServices
+                .Where(p => p.PriceBlockId == id)
                 .ToListAsync();
         }
 
-        public async Task CreatePriceBlockServicesAsync(PriceBlockServices priceBlockServices)
+        public async Task<ServicesPricingPolicy> CreateServicesPricingPolicyAsync(ServicesPricingPolicy servicesPricingPolicy)
         {
-            await _dbContext.PriceBlockServices.AddAsync(priceBlockServices);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task UpdatePriceBlockServicesAsync(PriceBlockServices priceBlockServices)
-        {
-            _dbContext.PriceBlockServices.Update(priceBlockServices);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task DeletePriceBlockServicesAsync(int id)
-        {
-            var priceBlockService = await _dbContext.PriceBlockServices.FindAsync(id);
-            if (priceBlockService == null)
+            try
             {
-                throw new ArgumentException($"PriceBlockService with id {id} does not exist.");
+                await _dbContext.ServicesPricingPolicy.AddAsync(servicesPricingPolicy);
+                await _dbContext.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+
+                string a = ex.Message;
             }
 
-            _dbContext.PriceBlockServices.Remove(priceBlockService);
-            await _dbContext.SaveChangesAsync();
+            return servicesPricingPolicy;
         }
 
+        public async Task<List<ServicesPricingPolicy>> GetServicesPricingPolicyByPriceBlockServicesIdAsync(int id)
+        {
+            return await _dbContext.ServicesPricingPolicy
+               .Where(p => p.PriceBlockServicesId == id)
+               .ToListAsync();
+        }
+
+        public async Task<bool> DeleteServicesPricingPolicyAsync(int id)
+        {
+            var priceBlockService = await _dbContext.ServicesPricingPolicy.FindAsync(id);
+            if (priceBlockService != null)
+            {
+                _dbContext.ServicesPricingPolicy.Remove(priceBlockService);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+
+        public Task UpdateServicesPricingPolicyAsync(ServicesPricingPolicy priceBlock)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
+

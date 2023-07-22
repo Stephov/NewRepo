@@ -10,6 +10,7 @@ using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Utils;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Collections.Generic;
 
 namespace MaratukAdmin.Managers.Concrete
 {
@@ -22,6 +23,8 @@ namespace MaratukAdmin.Managers.Concrete
         private readonly IAircraftManager _aircraftManager;
         private readonly IAirlineManager _airlineManager;
         private readonly IAirportManager _airportManager;
+        private readonly IFlightRepository _flightRepository;
+
 
         public FlightManager(IMainRepository<Flight> mainRepository,
                             IMapper mapper,
@@ -29,7 +32,8 @@ namespace MaratukAdmin.Managers.Concrete
                             ICityManager cityManager,
                             IAircraftManager aircraftManager,
                             IAirlineManager airlineManager,
-                            IAirportManager airportManager)
+                            IAirportManager airportManager,
+                            IFlightRepository flightRepository)
         {
             _mainRepository = mainRepository;
             _mapper = mapper;
@@ -38,6 +42,7 @@ namespace MaratukAdmin.Managers.Concrete
             _aircraftManager = aircraftManager;
             _airlineManager = airlineManager;
             _airportManager = airportManager;
+            _flightRepository = flightRepository;
         }
 
         public async Task<Flight> AddFlightAsync(AddFlightRequest flight)
@@ -291,6 +296,31 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
+        }
+
+        public async Task<List<FlightNameResponse>> GetFlightByIdsAsync(int departureCountryId, int departureCityId, int DestinationCountryId, int destinationCityId)
+        {
+            var entityes = await _flightRepository.GetFlightByIdsAsync(departureCountryId,departureCityId,DestinationCountryId,destinationCityId);
+            List <FlightNameResponse> result = new List<FlightNameResponse>();
+
+
+                foreach(var key in entityes)
+                {
+                    FlightNameResponse names = new FlightNameResponse()
+                    {
+                        Id = key.Id,
+                        Name = key.Name,
+                        FlightValue = key.FlightValue,
+                    };
+
+                    result.Add(names);
+                }
+
+ 
+
+                return result;
+ 
+            
         }
     }
 }

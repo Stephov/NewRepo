@@ -25,12 +25,20 @@ namespace MaratukAdmin.Controllers.admin
         }
 
 
-        [HttpGet]
+       [HttpGet]
         public async Task<ActionResult> GetPriceBlocks()
         {
-            var result = await _priceBlockManager.GetAllPriceBlockAsync();
+            try {
+                var result = await _priceBlockManager.GetAllPriceBlockAsync();
+                return Ok(result);
 
-            return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                var res = ex.Message; 
+            }
+
+            return Ok();
         }
 
 
@@ -42,14 +50,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
-
-  /*             [HttpGet("info/{id:int}")]
-        public async Task<ActionResult> GetFlightIifoById(int id)
+        [HttpGet("PriceBlockServices/{id:int}")]
+        public async Task<ActionResult> GetPriceBlockServiceByProceBlockId(int id)
         {
-            var result = await _flightManager.GetFlightInfoByIdAsync(id);
+            var result = await _priceBlockManager.GetServicesByPriceBlockIdAsync(id);
 
             return Ok(result);
-        }*/
+        }
+
 
 
 
@@ -62,6 +70,52 @@ namespace MaratukAdmin.Controllers.admin
             {
                 //call manager
                 var result = await _priceBlockManager.AddPriceBlockAsync(priceBlockRequest);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
+        [HttpPost("ServicesPricingPolicy")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> CreateServicesPricingPolicyAsync([FromBody] AddServicesPricingPolicy addServicesPricingPolicy)
+        {
+            try
+            {
+                //call manager
+                var result = await _priceBlockManager.CreateServicesPricingPolicyAsync(addServicesPricingPolicy);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
+
+
+        [HttpPost("PriceBlockService")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> CreatePriceBlockServiceAsync([FromBody] AddPriceBlockServicesRequest priceBlockServiceRequest)
+        {
+            try
+            {
+                //call manager
+                var result = await _priceBlockManager.AddPriceBlockServicesAsync(priceBlockServiceRequest);
 
                 return Ok(result);
             }
@@ -95,6 +149,32 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpDelete("PriceBlockService/{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeletePriceBlockServiceAsync(int id)
+        {
+            var result = await _priceBlockManager.DeletePriceBlockServiceAsync(id);
+            return Ok(result);
+        }
+
+
+        [HttpDelete("ServicesPricingPolicy/{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteServicesPricingPolicyeAsync(int id)
+        {
+            var result = await _priceBlockManager.DeleteServicesPricingPolicyAsync(id);
+            return Ok(result);
+        }
+
+        [HttpGet("ServicesPricingPolicy/{id:int}")]
+        public async Task<ActionResult> GetServicesPricingPolicy(int id)
+        {
+            var result = await _priceBlockManager.GetServicesPricingPolicyByPriceBlockServicesIdAsync(id);
+
+            return Ok(result);
+        }
 
     }
 }

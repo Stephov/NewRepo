@@ -9,6 +9,9 @@ namespace MaratukAdmin.Managers.Abstract
     {
         Task<List<FlightResponse>> GetAllFlightAsync();
         Task<FlightEditResponse> GetFlightByIdAsync(int id);
+
+        Task<List<FlightNameResponse>> GetFlightByIdsAsync(int departureCountryId, int departureCityId, int DestinationCountryId, int destinationCityId);
+
         Task<Flight> AddFlightAsync(AddFlightRequest flight);
         Task<Flight> UpdateFlightAsync(UpdateFlightRequest flight);
         Task<bool> DeleteFlightAsync(int id);

@@ -25,6 +25,7 @@ namespace MaratukAdmin.Infrastructure
 
 
         public DbSet<PriceBlockServices> PriceBlockServices { get; set; }
+        public DbSet<ServicesPricingPolicy> ServicesPricingPolicy { get; set; }
 
         public DbSet<Schedule> Schedule { get; set; }
 
@@ -73,6 +74,9 @@ namespace MaratukAdmin.Infrastructure
      .HasKey(r => r.Id);
 
             modelBuilder.Entity<PriceBlockServices>()
+     .HasKey(r => r.Id);
+
+            modelBuilder.Entity<ServicesPricingPolicy>()
      .HasKey(r => r.Id);
 
             modelBuilder.Entity<City>()

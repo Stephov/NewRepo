@@ -1,5 +1,7 @@
 ﻿using MaratukAdmin.Entities;
+using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Infrastructure;
+using MaratukAdmin.Models;
 using MaratukAdmin.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,12 +37,13 @@ namespace MaratukAdmin.Repositories.Concrete
                 await _dbContext.Flight.AddAsync(flight);
                 await _dbContext.SaveChangesAsync();
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
 
                 string a = ex.Message;
             }
-            
+
 
 
             return flight;
@@ -93,6 +96,28 @@ namespace MaratukAdmin.Repositories.Concrete
 
             _dbContext.Schedule.Remove(schedule);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<FlightCountry>> GetAllCountryFlightsAsync()
+        {
+
+
+
+            return await _dbContext.Flight
+            .GroupBy(f => f.DepartureCountryId)
+            .Select(group => new FlightCountry
+            {
+                DepartureCountryId = group.Key,
+                DepartureCityIds = group.Select(f => f.DepartureCityId).Distinct().ToList()
+            })
+            .ToListAsync();
+        }
+
+        public async Task<List<Flight>> GetFlightByIdsAsync(int departureCountryId, int departureCityId, int destinationCountryId, int destinationCityId)
+        {
+            return await _dbContext.Flight
+                 .Where(s => s.DepartureCountryId == departureCountryId && s.DepartureCityId == departureCityId && s.DestinationCountryId == destinationCountryId && s.DestinationCityId == destinationCityId)
+                 .ToListAsync();
         }
     }
 }

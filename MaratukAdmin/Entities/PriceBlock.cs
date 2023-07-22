@@ -11,6 +11,5 @@
         public int CurrencyId { get; set; }
         public string Comments { get; set; }
         public int TarifId { get; set; }
-        public ICollection<PriceBlockServices> Services { get; set; }
     }
 }

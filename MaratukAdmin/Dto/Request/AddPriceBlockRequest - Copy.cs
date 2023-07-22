@@ -14,6 +14,5 @@ namespace MaratukAdmin.Dto.Request
         public string Comments { get; set; }
         public int TarifId { get; set; }
 
-        public ICollection<PriceBlockServiceRequest> PriceBlockService { get; set; }
     }
 }

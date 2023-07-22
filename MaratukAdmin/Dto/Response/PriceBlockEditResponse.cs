@@ -14,8 +14,6 @@ namespace MaratukAdmin.Dto.Response
         public int CurrencyId { get; set; }
         public string Comments { get; set; }
         public int TarifId { get; set; }
-
-        public ICollection<PriceBlockServiceEditResponse> PriceBlockServiceEdit { get; set; }
     }
 
 

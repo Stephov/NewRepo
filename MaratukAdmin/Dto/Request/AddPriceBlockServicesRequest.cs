@@ -1,15 +1,15 @@
-﻿using MaratukAdmin.Dto.Request;
-using MaratukAdmin.Enums;
+﻿using MaratukAdmin.Entities;
 
-namespace MaratukAdmin.Entities
+namespace MaratukAdmin.Dto.Request
 {
-    public class PriceBlockServices : BaseDbEntity
+    public class AddPriceBlockServicesRequest
     {
         public int DepartureCountryId { get; set; }
         public int DepartureCityId { get; set; }
         public int DestinationCountryId { get; set; }
         public int DestinationCityId { get; set; }
-        public int FlightId { get; set; }
+        public int FligthId { get; set; }
         public int PriceBlockId { get; set; }
+
     }
 }

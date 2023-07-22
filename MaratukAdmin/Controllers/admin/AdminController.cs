@@ -4,6 +4,7 @@ using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
+using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,7 @@ namespace MaratukAdmin.Controllers.admin
         private readonly IServiceClassManager _serviceClassManager;
         private readonly ISeasonManager _seasonManager;
         private readonly IPriceBlockTypeManager _priceBlockTypeManager;
+        private readonly IPricePackageManager _pricePackageManager;
         private readonly IPartnerManager _partnerManager;
         private readonly ICurrencyManager _currencyManager;
         public AdminController(ICountryManager countryManager,
@@ -39,6 +41,7 @@ namespace MaratukAdmin.Controllers.admin
                                  IServiceClassManager serviceClassManager,
                                  ISeasonManager seasonManager,
                                  IPriceBlockTypeManager priceBlockTypeManager,
+                                 IPricePackageManager pricePackageManager,
                                  IPartnerManager partnerManager,
                                  ICurrencyManager currencyManager,
         JwtTokenService jwtTokenService) : base(jwtTokenService)
@@ -53,6 +56,7 @@ namespace MaratukAdmin.Controllers.admin
             _serviceClassManager = serviceClassManager;
             _seasonManager = seasonManager;
             _priceBlockTypeManager = priceBlockTypeManager;
+            _pricePackageManager = pricePackageManager;
             _partnerManager = partnerManager;
             _currencyManager = currencyManager;
         }
@@ -62,6 +66,22 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<ActionResult> GetCountry()
         {
             var result = await _countryManager.GetAllCountryesAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("countryFlight")]
+        public async Task<ActionResult> GetCountryFlight()
+        {
+            var result = await _countryManager.GetDistinctCountriesAndCities();
+
+            return Ok(result);
+        }
+
+        [HttpGet("PricePaskageCountry")]
+        public async Task<ActionResult> GetPricePaskageCountry(int pricePackageId)
+        {
+            var result = await _pricePackageManager.GetPricePaskageCountryAsync(pricePackageId);
 
             return Ok(result);
         }
