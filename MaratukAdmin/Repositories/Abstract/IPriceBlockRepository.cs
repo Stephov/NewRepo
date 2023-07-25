@@ -19,7 +19,9 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<ServicesPricingPolicy> CreateServicesPricingPolicyAsync(ServicesPricingPolicy priceBlockServices);
         Task<List<ServicesPricingPolicy>> GetServicesPricingPolicyByPriceBlockServicesIdAsync(int id);
         Task<bool> DeleteServicesPricingPolicyAsync(int id);
-        Task UpdateServicesPricingPolicyAsync(ServicesPricingPolicy priceBlock);
+        Task<ServicesPricingPolicy> UpdateServicesPricingPolicyAsync(ServicesPricingPolicy priceBlock);
+        Task<ServicesPricingPolicy> GetServicesPricingPolicyByIdAsync(int id);
+
 
 
 

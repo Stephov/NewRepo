@@ -9,7 +9,7 @@ namespace MaratukAdmin.Managers.Abstract
     {
         Task<List<PriceBlockResponse>> GetAllPriceBlockAsync();
         Task<PriceBlockEditResponse> GetPriceBlockByIdAsync(int id);
-        Task<List<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id);
+        Task<List<PriceBlockServicesResponse>> GetServicesByPriceBlockIdAsync(int id);
         Task<PriceBlock> AddPriceBlockAsync(AddPriceBlockRequest priceBlock);
         Task<PriceBlock> UpdatePriceBlockAsync(UpdatePriceBlockRequest priceBlock);
         Task<bool> DeletePriceBlockAsync(int id);
@@ -19,6 +19,7 @@ namespace MaratukAdmin.Managers.Abstract
         Task<ServicesPricingPolicy> CreateServicesPricingPolicyAsync(AddServicesPricingPolicy priceBlockServices);
         Task<bool> DeleteServicesPricingPolicyAsync(int id);
         Task<List<ServicesPricingPolicy>> GetServicesPricingPolicyByPriceBlockServicesIdAsync(int id);
+        Task<ServicesPricingPolicy> UpdateServicesPricingPolicyAsync(EditServicesPricingPolicy editServicesPricingPolicy);
 
 
         Task<PriceBlockServices> AddPriceBlockServicesAsync(AddPriceBlockServicesRequest priceBlock);

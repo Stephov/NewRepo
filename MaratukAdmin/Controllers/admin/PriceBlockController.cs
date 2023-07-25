@@ -25,17 +25,18 @@ namespace MaratukAdmin.Controllers.admin
         }
 
 
-       [HttpGet]
+        [HttpGet]
         public async Task<ActionResult> GetPriceBlocks()
         {
-            try {
+            try
+            {
                 var result = await _priceBlockManager.GetAllPriceBlockAsync();
                 return Ok(result);
 
             }
             catch (Exception ex)
             {
-                var res = ex.Message; 
+                var res = ex.Message;
             }
 
             return Ok();
@@ -105,6 +106,28 @@ namespace MaratukAdmin.Controllers.admin
             }
         }
 
+
+        [HttpPut("ServicesPricingPolicy")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> UpdateServicesPricingPolicyAsync([FromBody] EditServicesPricingPolicy updateServicesPricingPolicy)
+        {
+            try
+            {
+                //call manager
+                var result = await _priceBlockManager.UpdateServicesPricingPolicyAsync(updateServicesPricingPolicy);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
 
 
         [HttpPost("PriceBlockService")]

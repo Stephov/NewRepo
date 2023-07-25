@@ -36,12 +36,13 @@ namespace MaratukAdmin.Repositories.Concrete
                 await _dbContext.PriceBlocks.AddAsync(priceBlock);
                 await _dbContext.SaveChangesAsync();
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
 
                 string a = ex.Message;
             }
-            
+
             return priceBlock;
         }
 
@@ -103,9 +104,9 @@ namespace MaratukAdmin.Repositories.Concrete
 
         public async Task<List<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id)
         {
-           return await _dbContext.PriceBlockServices
-                .Where(p => p.PriceBlockId == id)
-                .ToListAsync();
+            return await _dbContext.PriceBlockServices
+                 .Where(p => p.PriceBlockId == id)
+                 .ToListAsync();
         }
 
         public async Task<ServicesPricingPolicy> CreateServicesPricingPolicyAsync(ServicesPricingPolicy servicesPricingPolicy)
@@ -123,6 +124,13 @@ namespace MaratukAdmin.Repositories.Concrete
             }
 
             return servicesPricingPolicy;
+        }
+
+        public async Task<ServicesPricingPolicy> GetServicesPricingPolicyByIdAsync(int id)
+        {
+            return await _dbContext.ServicesPricingPolicy
+               .Where(p => p.Id == id)
+               .FirstOrDefaultAsync();
         }
 
         public async Task<List<ServicesPricingPolicy>> GetServicesPricingPolicyByPriceBlockServicesIdAsync(int id)
@@ -145,9 +153,12 @@ namespace MaratukAdmin.Repositories.Concrete
             return false;
         }
 
-        public Task UpdateServicesPricingPolicyAsync(ServicesPricingPolicy priceBlock)
+        public async Task<ServicesPricingPolicy> UpdateServicesPricingPolicyAsync(ServicesPricingPolicy servicesPricingPolicy)
         {
-            throw new NotImplementedException();
+            _dbContext.ServicesPricingPolicy.Update(servicesPricingPolicy);
+            await _dbContext.SaveChangesAsync();
+
+            return servicesPricingPolicy;
         }
     }
 }

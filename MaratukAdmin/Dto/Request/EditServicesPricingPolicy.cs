@@ -2,7 +2,7 @@
 
 namespace MaratukAdmin.Dto.Request
 {
-    public class EditcesPricingPolicy
+    public class EditServicesPricingPolicy
     {
         public int Id { get; set; }
         public int PriceBlockServicesId { get; set; }
