@@ -1,7 +1,10 @@
-﻿using MaratukAdmin.Entities;
+﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Entities;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
+using MaratukAdmin.Utils;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.WebRequestMethods;
 
 namespace MaratukAdmin.Repositories.Concrete
 {
@@ -26,9 +29,29 @@ namespace MaratukAdmin.Repositories.Concrete
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task CreateAgencyUserAsync(AgencyUser agencyUser)
+        {
+            try
+            {
+                await _dbContext.AgencyUser.AddAsync(agencyUser);
+                await _dbContext.SaveChangesAsync();
+
+                MailService.SendEmail(agencyUser.Email, "Activation Mail", $"please activate email, https://localhost:7003/user/activate?Id={agencyUser.Id}&HashId={agencyUser.HashId} ");
+
+
+            }
+            catch(Exception ex) { string s = ex.Message;}
+           
+        }
+
         public async Task<User> GetUserAsync(string email)
         {
             return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<AgencyUser> GetAgencyUserAsync(string email)
+        {
+            return await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User> GetUserByIdAsync(int userId)
@@ -70,6 +93,35 @@ namespace MaratukAdmin.Repositories.Concrete
         public async Task<RefreshToken> ValidateRefreshToken(string token)
         {
             return await _dbContext.RefreshToken.FirstOrDefaultAsync(u => u.Token == token && !u.IsRevoked);
+        }
+
+        public async Task<bool> IsUserNameExistsAsync(string userName)
+        {
+            return await _dbContext.AgencyUser.AnyAsync(u => u.UserName == userName);
+        }
+
+        public async Task ActivateUserAgency(int Id, string HashId)
+        {
+            var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == Id && u.HashId == HashId);
+            if(user != null)
+            {
+                user.IsActived= true;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+        }
+
+        public async Task ApproveUserAgency(int Id)
+        {
+            var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == Id);
+            if (user != null)
+            {
+                user.IsAproved = true;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
         }
     }
 }

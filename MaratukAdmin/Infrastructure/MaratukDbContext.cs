@@ -9,6 +9,7 @@ namespace MaratukAdmin.Infrastructure
         public MaratukDbContext(DbContextOptions<MaratukDbContext> options) : base(options) { }
 
         public DbSet<User>? Users { get; set; }
+        public DbSet<AgencyUser>? AgencyUser { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<Country> Country { get; set; } = null!;
         public DbSet<AirService> AirService { get; set; } = null!;
@@ -40,6 +41,9 @@ namespace MaratukAdmin.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
+                .HasKey(e => e.Id);
+
+            modelBuilder.Entity<AgencyUser>()
                 .HasKey(e => e.Id);
 
             modelBuilder.Entity<RefreshToken>()

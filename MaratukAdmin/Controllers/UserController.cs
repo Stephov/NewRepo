@@ -34,14 +34,42 @@ namespace MaratukAdmin.Controllers
         /// 
 
 
+        [HttpGet("isUserExist")]
+        [AllowAnonymous]
+        public async Task<bool> isUserExist(string userName)
+        {
+            var res = await _userManager.IsUserNameExistAsync(userName);
+            return res;
+        }
+
+        [HttpGet("activate")]
+        [AllowAnonymous]
+        public async Task Activate(int Id,string HashId)
+        {
+
+             await _userManager.ActivateUserAgency(Id,HashId);
+           
+        }
+
+        [HttpGet("Approve")]
+        [AllowAnonymous]
+        public async Task Approve(int Id)
+        {
+
+            await _userManager.ApproveUserAgency(Id);
+
+        }
+
+
+
         [HttpGet("auth/profile")]
         [AllowAnonymous]
         public async Task<ActionResult> getUser()
         {
             var authHeader = HttpContext.Request.Headers["Authorization"];
-            
 
-            var result = _userManager.CheckUser(authHeader); 
+
+            var result = _userManager.CheckUser(authHeader);
             if (result is null)
             {
                 return BadRequest();
@@ -78,6 +106,34 @@ namespace MaratukAdmin.Controllers
             }
         }
 
+        [HttpPost("AgencyUserLogin")]
+        [AllowAnonymous]
+        public async Task<ActionResult> AgencyUserLogin([FromBody] UserCredentialsRequest user)
+        {
+            try
+            {
+                AuthenticationResponse response = await _userManager.AgencyUserLoginAsync(user.Email, user.Password);
+
+                if (response is null)
+                {
+                    return BadRequest();
+                }
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
         /// <summary>
         /// Register new admin user
         /// </summary>
@@ -89,7 +145,33 @@ namespace MaratukAdmin.Controllers
         {
             try
             {
-                await _userManager.RegisterAsync(user.Email, user.Password,user.UserName,user.FullName);
+                await _userManager.RegisterAsync(user.Email, user.Password, user.UserName, user.FullName);
+
+                return Ok(new { Email = user.Email, Password = user.Password });
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
+
+        /// <summary>
+        /// Register new admin user
+        /// </summary>
+        /// <param name="email">Register user email</param>
+        /// <param name="password">register user password</param>
+        /// <returns></returns>
+        [HttpPost("registerAgency")]
+        public async Task<ActionResult> RegisterAgency([FromBody] AgencyUserCredentialsRequest user)
+        {
+            try
+            {
+                await _userManager.RegisterAgencyUserAsync(user);
 
                 return Ok(new { Email = user.Email, Password = user.Password });
             }

@@ -5,8 +5,13 @@ namespace MaratukAdmin.Repositories.Abstract
     public interface IUserRepository
     {
         Task<User> GetUserAsync(string email);
+        Task<AgencyUser> GetAgencyUserAsync(string email);
         Task CreateUserAsync(User user);
+        Task CreateAgencyUserAsync(AgencyUser agencyUser);
+        Task ActivateUserAgency(int Id,string HashId);
+        Task ApproveUserAgency(int Id);
         Task<bool> IsUserExistsAsync(string email);
+        Task<bool> IsUserNameExistsAsync(string email);
         Task<User> GetUserByIdAsync(int userId);
         Task UpdateUser();
         Task<RefreshToken> ValidateRefreshToken(string token);
