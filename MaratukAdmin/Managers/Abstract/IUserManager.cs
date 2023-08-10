@@ -11,8 +11,8 @@ namespace MaratukAdmin.Managers.Abstract
         Task<AuthenticationResponse> LoginAsync(string email, string password);
 
         Task<bool> ForgotPassword(string email);
-        Task<AuthenticationResponse> AgencyUserLoginAsync(string email, string password);
-
+        Task<AgencyAuthenticationResponse> AgencyUserLoginAsync(string email, string password);
+        Task RegisterAgencyAgentAsync(AgencyAgentCredentialsRequest agencyAgentCredentialsRequest);
         IdentityUserInfo CheckUser(string token);
 
         Task ActivateUserAgency(int Id, string HashId);

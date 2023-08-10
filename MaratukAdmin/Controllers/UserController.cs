@@ -185,6 +185,31 @@ namespace MaratukAdmin.Controllers
             }
         }
 
+        /// <summary>
+        /// Register new admin user
+        /// </summary>
+        /// <param name="email">Register user email</param>
+        /// <param name="password">register user password</param>
+        /// <returns></returns>
+        [HttpPost("registerAgencyAgent")]
+        public async Task<ActionResult> RegisterAgency([FromBody] AgencyAgentCredentialsRequest agent)
+        {
+            try
+            {
+                await _userManager.RegisterAgencyAgentAsync(agent);
+
+                return Ok(new { Email = agent.Email, Password = agent.Password });
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
 
         /// <summary>
         /// Change admin user password

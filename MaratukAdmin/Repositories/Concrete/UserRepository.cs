@@ -35,10 +35,6 @@ namespace MaratukAdmin.Repositories.Concrete
             {
                 await _dbContext.AgencyUser.AddAsync(agencyUser);
                 await _dbContext.SaveChangesAsync();
-
-                MailService.SendEmail(agencyUser.Email, "Activation Mail", $"please activate email, https://localhost:7003/user/activate?Id={agencyUser.Id}&HashId={agencyUser.HashId} ");
-
-
             }
             catch(Exception ex) { string s = ex.Message;}
            

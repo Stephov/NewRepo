@@ -24,5 +24,6 @@ namespace MaratukAdmin.Entities
         public string PasswordSalt { get; set; }
         public bool IsActivated { get; set; }
         public bool IsAproved { get; set; }
+        public string Role { get; set; }
     }
 }

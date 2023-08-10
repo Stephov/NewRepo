@@ -201,7 +201,45 @@ namespace MaratukAdmin.Managers.Concrete
                 Password = passwordHash,
                 PasswordSalt = salt,
                 IsActivated = false,
-                IsAproved = false
+                IsAproved = false,
+                Role = "Admin"
+            };
+
+            try
+            {
+                await _userRepository.CreateAgencyUserAsync(agencyUser);
+
+                MailService.SendEmail(agencyUser.Email, "Activation Mail", $"please activate email, https://localhost:7003/user/activate?Id={agencyUser.Id}&HashId={agencyUser.HashId} ");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        public async Task RegisterAgencyAgentAsync(AgencyAgentCredentialsRequest agencyAgentCredentialsRequest)
+        {
+
+
+
+            string salt = PasswordHasher.GetSalt();
+            string passwordHash = PasswordHasher.HashPassword(agencyAgentCredentialsRequest.Password, salt);
+
+            var agencyUser = new AgencyUser()
+            {
+
+                Itn = agencyAgentCredentialsRequest.AgencyItn,
+                PhoneNumber1 = agencyAgentCredentialsRequest.PhoneNumber1,
+                PhoneNumber2 = agencyAgentCredentialsRequest.PhoneNumber2,
+                FullName = agencyAgentCredentialsRequest.FullName,
+                Email = agencyAgentCredentialsRequest.Email,
+                HashId = GenerateHashId(agencyAgentCredentialsRequest.FullName, 10),
+                Password = passwordHash,
+                PasswordSalt = salt,
+                IsActivated = true,
+                IsAproved = true,
+                Role = "Agent"
             };
 
             try
@@ -209,6 +247,7 @@ namespace MaratukAdmin.Managers.Concrete
                 await _userRepository.CreateAgencyUserAsync(agencyUser);
 
                
+
             }
             catch (Exception ex)
             {
@@ -309,7 +348,7 @@ namespace MaratukAdmin.Managers.Concrete
             await _userRepository.ApproveUserAgency(Id);
         }
 
-        public async Task<AuthenticationResponse> AgencyUserLoginAsync(string email, string password)
+        public async Task<AgencyAuthenticationResponse> AgencyUserLoginAsync(string email, string password)
         {
 
             var user = await _userRepository.GetAgencyUserAsync(email);
@@ -336,7 +375,7 @@ namespace MaratukAdmin.Managers.Concrete
                 string? refreshToken = await _jwtTokenService.GetRefreshToken(tokenData);
                 string? accessToken = _jwtTokenService.GetAccessToken(tokenData);
 
-                var response = new AuthenticationResponse()
+                var response = new AgencyAuthenticationResponse()
                 {
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
@@ -353,6 +392,8 @@ namespace MaratukAdmin.Managers.Concrete
 
                 await _userRepository.AddRefreshToken(refresh);
                 response.name = user.FullName;
+                response.Role= user.Role;
+                response.Itn = user.Itn;
                 return response;
             }
 
