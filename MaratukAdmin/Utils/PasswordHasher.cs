@@ -28,5 +28,20 @@ namespace MaratukAdmin.Utils
 
             return hashed;
         }
+
+        public static string GenerateHashForEmail(string email)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(email));
+
+                StringBuilder builder = new StringBuilder();
+                foreach (byte b in bytes)
+                {
+                    builder.Append(b.ToString("x2")); // Convert each byte to a two-digit hexadecimal representation
+                }
+                return builder.ToString();
+            }
+        }
     }
 }

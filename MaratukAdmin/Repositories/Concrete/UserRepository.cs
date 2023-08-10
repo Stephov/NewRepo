@@ -95,9 +95,9 @@ namespace MaratukAdmin.Repositories.Concrete
             return await _dbContext.RefreshToken.FirstOrDefaultAsync(u => u.Token == token && !u.IsRevoked);
         }
 
-        public async Task<bool> IsUserNameExistsAsync(string userName)
+        public async Task<bool> IsUserEmailExistsAsync(string email)
         {
-            return await _dbContext.AgencyUser.AnyAsync(u => u.UserName == userName);
+            return await _dbContext.AgencyUser.AnyAsync(u => u.Email == email);
         }
 
         public async Task ActivateUserAgency(int Id, string HashId)
@@ -105,7 +105,7 @@ namespace MaratukAdmin.Repositories.Concrete
             var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == Id && u.HashId == HashId);
             if(user != null)
             {
-                user.IsActived= true;
+                user.IsActivated= true;
             }
 
             await _dbContext.SaveChangesAsync();

@@ -24,6 +24,10 @@ namespace MaratukAdmin.Managers.Concrete
             _jwtTokenService = jwtTokenService;
         }
 
+
+ 
+
+
         public async Task<bool> ChangePassword(string oldPassword, string newPassword, TokenData tokenData)
         {
             PasswordValidator.ValidatePassword(newPassword);
@@ -53,6 +57,26 @@ namespace MaratukAdmin.Managers.Concrete
                 throw;
             }
         }
+
+
+
+        public async Task<bool> ForgotPassword(string email)
+        {
+
+            string hash = PasswordHasher.GenerateHashForEmail(email);
+            try
+            {
+                MailService.SendEmail(email, "Forgot Mail", $"please add new password, https://localhost:7003/user/updatePassword?email={email}&HashId={hash} ");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+
+        }
+
 
         public IdentityUserInfo CheckUser(string token)
         {
@@ -153,12 +177,8 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task RegisterAgencyUserAsync(AgencyUserCredentialsRequest agencyUserCredentialsRequest)
         {
-            /*           bool isUserExists = await _userRepository.IsUserExistsAsync(agencyUserCredentialsRequest.Email);
 
-                       if (isUserExists)
-                       {
-                           throw new ArgumentException("User with this Email already exists");
-                       }*/
+
 
             string salt = PasswordHasher.GetSalt();
             string passwordHash = PasswordHasher.HashPassword(agencyUserCredentialsRequest.Password, salt);
@@ -175,12 +195,12 @@ namespace MaratukAdmin.Managers.Concrete
                 BankAccountNumber = agencyUserCredentialsRequest.BankAccountNumber,
                 PhoneNumber1 = agencyUserCredentialsRequest.PhoneNumber1,
                 PhoneNumber2 = agencyUserCredentialsRequest.PhoneNumber2,
-                UserName = agencyUserCredentialsRequest.UserName,
+                FullName = agencyUserCredentialsRequest.FullName,
                 Email = agencyUserCredentialsRequest.Email,
-                HashId = GenerateHashId(agencyUserCredentialsRequest.UserName, 10),
+                HashId = GenerateHashId(agencyUserCredentialsRequest.FullName, 10),
                 Password = passwordHash,
                 PasswordSalt = salt,
-                IsActived = false,
+                IsActivated = false,
                 IsAproved = false
             };
 
@@ -272,9 +292,10 @@ namespace MaratukAdmin.Managers.Concrete
             }
         }
 
-        public async Task<bool> IsUserNameExistAsync(string userName)
+        public async Task<bool> IsUserEmailExistAsync(string email)
         {
-            var res = await _userRepository.IsUserNameExistsAsync(userName);
+            //to is email exist
+            var res = await _userRepository.IsUserEmailExistsAsync(email);
             return res;
         }
 
@@ -303,14 +324,14 @@ namespace MaratukAdmin.Managers.Concrete
             if (passwordHash == user.Password)
             {
 
-                if (!user.IsActived) throw new KeyNotFoundException("User not Activated");
+                if (!user.IsActivated) throw new KeyNotFoundException("User not Activated");
                 if (!user.IsAproved) throw new KeyNotFoundException("User not Approved by Admin");
 
                 var tokenData = new TokenData()
                 {
                     UserId = user.Id,
                     Email = user.Email,
-                    Name = user.UserName,
+                    Name = user.FullName,
                 };
                 string? refreshToken = await _jwtTokenService.GetRefreshToken(tokenData);
                 string? accessToken = _jwtTokenService.GetAccessToken(tokenData);
@@ -331,7 +352,7 @@ namespace MaratukAdmin.Managers.Concrete
                 };
 
                 await _userRepository.AddRefreshToken(refresh);
-                response.name = user.UserName;
+                response.name = user.FullName;
                 return response;
             }
 
@@ -339,6 +360,38 @@ namespace MaratukAdmin.Managers.Concrete
             
 
             throw new NotImplementedException();
+        }
+        
+        public async Task<bool> ChangePassword(string newPassword1, string newPassword2, string email,string hash)
+        {
+            string emailHash = PasswordHasher.GenerateHashForEmail(email);
+            if(hash != emailHash)
+            {
+                throw new ArgumentException("hash is not valid");
+            }
+            PasswordValidator.ValidatePassword(newPassword1);
+
+            var user = await _userRepository.GetAgencyUserAsync(email);
+
+            if (user == null) throw new KeyNotFoundException("Invalid user");
+
+            string salt = PasswordHasher.GetSalt();
+            string newPasswordHash = PasswordHasher.HashPassword(newPassword1, salt);
+            user.Password = newPasswordHash;
+            user.PasswordSalt = salt;
+
+
+            try
+            {
+                await _userRepository.UpdateUser();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
     }
 }

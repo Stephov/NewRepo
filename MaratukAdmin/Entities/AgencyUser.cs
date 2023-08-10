@@ -8,6 +8,7 @@ namespace MaratukAdmin.Entities
         public int Id { get; set; }
         public string AgencyName { get; set; }
         public string FullCompanyName { get; set; }
+        //todo add user lastname first namZ
         public int CountryId { get; set; }
         public int CityId { get; set; }
         public string CompanyLocation { get; set; }
@@ -16,12 +17,12 @@ namespace MaratukAdmin.Entities
         public string BankAccountNumber { get; set; }
         public string PhoneNumber1 { get; set; }
         public string PhoneNumber2 { get; set; }
-        public string UserName { get; set; }
+        public string FullName { get; set; }
         public string Email { get; set; }
         public string HashId { get; set; }
         public string Password { get; set; }
         public string PasswordSalt { get; set; }
-        public bool IsActived { get; set; }
+        public bool IsActivated { get; set; }
         public bool IsAproved { get; set; }
     }
 }

@@ -9,6 +9,8 @@ namespace MaratukAdmin.Managers.Abstract
     public interface IUserManager
     {
         Task<AuthenticationResponse> LoginAsync(string email, string password);
+
+        Task<bool> ForgotPassword(string email);
         Task<AuthenticationResponse> AgencyUserLoginAsync(string email, string password);
 
         IdentityUserInfo CheckUser(string token);
@@ -18,7 +20,8 @@ namespace MaratukAdmin.Managers.Abstract
         Task RegisterAsync(string email, string password, string userName,string fullName);
         Task RegisterAgencyUserAsync(AgencyUserCredentialsRequest agencyUserCredentialsRequest);
         Task<bool> ChangePassword(string oldPassword, string newPassword, TokenData tokenData);
-        Task<bool> IsUserNameExistAsync(string userName);
+        Task<bool> ChangePassword(string newPassword1, string newPassword2,string email,string hash);
+        Task<bool> IsUserEmailExistAsync(string email);
         Task<AuthenticationResponse> RefreshToken(string token);
     }
 }

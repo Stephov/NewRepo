@@ -78,8 +78,8 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
-        [HttpGet("PricePaskageCountry")]
-        public async Task<ActionResult> GetPricePaskageCountry(int pricePackageId)
+        [HttpGet("PricePackageCountry")]
+        public async Task<ActionResult> GetPPricePackageCountry(int pricePackageId)
         {
             var result = await _pricePackageManager.GetPricePaskageCountryAsync(pricePackageId);
 

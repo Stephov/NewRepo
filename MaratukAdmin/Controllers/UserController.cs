@@ -36,9 +36,9 @@ namespace MaratukAdmin.Controllers
 
         [HttpGet("isUserExist")]
         [AllowAnonymous]
-        public async Task<bool> isUserExist(string userName)
+        public async Task<bool> isUserExist(string email)
         {
-            var res = await _userManager.IsUserNameExistAsync(userName);
+            var res = await _userManager.IsUserEmailExistAsync(email);
             return res;
         }
 
@@ -51,7 +51,7 @@ namespace MaratukAdmin.Controllers
            
         }
 
-        [HttpGet("Approve")]
+        [HttpGet("approve")]
         [AllowAnonymous]
         public async Task Approve(int Id)
         {
@@ -184,6 +184,54 @@ namespace MaratukAdmin.Controllers
                 return BadRequest("Something went wrong");
             }
         }
+
+
+        /// <summary>
+        /// Change admin user password
+        /// </summary>
+        /// <param name="oldPassword">Old password</param>
+        /// <param name="newPassword">New password</param>
+        /// <returns></returns>
+        [HttpPut("updatePasswordByEmail")]
+        public async Task<ActionResult> ChangePassword(string newPassword1, string newPassword2,string email,string hash)
+        {
+            try
+            {
+                bool isChanged = await _userManager.ChangePassword(newPassword1, newPassword2, email, hash);
+
+                return Ok(isChanged);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Change admin user password
+        /// </summary>
+        /// <param name="oldPassword">Old password</param>
+        /// <param name="newPassword">New password</param>
+        /// <returns></returns>
+        [HttpPut("ForgotPassword")]
+        public async Task<ActionResult> ChangePassword(string email)
+        {
+
+                bool isChanged = await _userManager.ForgotPassword(email);
+
+                return Ok(isChanged);
+            
+        }
+
 
         /// <summary>
         /// Change admin user password
