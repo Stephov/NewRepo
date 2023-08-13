@@ -251,21 +251,36 @@ namespace MaratukAdmin.Managers.Concrete
 
             flightInfoResponse.Name = entity.Name;
             flightInfoResponse.Id = entity.Id;
+            /*
+                        flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.Name;
+                        flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.Name;
+                        flightInfoResponse.DepartureAirport = _airportManager.GetAirportNameByIdAsync(entity.DepartureAirportId).Result.Name;
 
-            flightInfoResponse.DepartureCountry = _countryManager.GetCountryNameByIdAsync(entity.DepartureCountryId).Result.Name;
-            flightInfoResponse.DepartureCity = _cityManager.GetCityNameByIdAsync(entity.DepartureCityId).Result.Name;
-            flightInfoResponse.DepartureAirport = _airportManager.GetAirportNameByIdAsync(entity.DepartureAirportId).Result.Name;
+
+                        flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.Name;
+                        flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.Name;
+                        flightInfoResponse.DestinationAirport = _airportManager.GetAirportNameByIdAsync(entity.DestinationAirportId).Result.Name;
+
+                        flightInfoResponse.FlightValue = entity.FlightValue;
+                        flightInfoResponse.Airline = _airlineManager.GetAirlineNameByIdAsync(entity.AirlineId).Result.Name;
+                        flightInfoResponse.Aircraft = _aircraftManager.GetAircraftNameByIdAsync(entity.AircraftId).Result.Name;
+            */
 
 
-            flightInfoResponse.DestinationCountry = _countryManager.GetCountryNameByIdAsync(entity.DestinationCountryId).Result.Name;
-            flightInfoResponse.DestinationCity = _cityManager.GetCityNameByIdAsync(entity.DestinationCityId).Result.Name;
-            flightInfoResponse.DestinationAirport = _airportManager.GetAirportNameByIdAsync(entity.DestinationAirportId).Result.Name;
+            flightInfoResponse.DepartureCountryId = entity.DepartureCountryId;
+            flightInfoResponse.DepartureCityId = entity.DepartureCityId;
+            flightInfoResponse.DepartureAirportId = entity.DepartureAirportId;
+
+
+            flightInfoResponse.DestinationCountryId = entity.DestinationCountryId;
+            flightInfoResponse.DestinationCityId = entity.DestinationCityId;
+            flightInfoResponse.DestinationAirportId = entity.DestinationAirportId;
 
             flightInfoResponse.FlightValue = entity.FlightValue;
-            flightInfoResponse.Airline = _airlineManager.GetAirlineNameByIdAsync(entity.AirlineId).Result.Name;
-            flightInfoResponse.Aircraft = _aircraftManager.GetAircraftNameByIdAsync(entity.AircraftId).Result.Name;
+            flightInfoResponse.AirlineId = entity.AirlineId;
+            flightInfoResponse.AircraftId = entity.AircraftId;
 
-           if (entity.Schedules != null)
+            if (entity.Schedules != null)
             {
                 foreach (var shedul in entity.Schedules)
                 {
