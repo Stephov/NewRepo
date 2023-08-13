@@ -108,11 +108,11 @@ namespace MaratukAdmin.Controllers
 
         [HttpPost("AgencyUserLogin")]
         [AllowAnonymous]
-        public async Task<ActionResult> AgencyUserLogin([FromBody] UserCredentialsRequest user)
+        public async Task<ActionResult> AgencyUserLogin([FromBody] AgencyUserLoginCredentialsRequest user)
         {
             try
             {
-                AuthenticationResponse response = await _userManager.AgencyUserLoginAsync(user.Email, user.Password);
+                var response = await _userManager.AgencyUserLoginAsync(user.Email, user.Password);
 
                 if (response is null)
                 {
