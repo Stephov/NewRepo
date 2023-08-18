@@ -218,7 +218,7 @@ namespace MaratukAdmin.Managers.Concrete
                         FlightEndDate = shedul.FlightEndDate,
                         DepartureTime = shedul.DepartureTime,
                         ArrivalTime = shedul.ArrivalTime,
-                        DayOfWeek = shedul.DayOfWeek.Split(',').Select(int.Parse).ToArray()
+                        DayOfWeek = shedul.DayOfWeek.Split(',')
                 };
 
 
@@ -290,7 +290,7 @@ namespace MaratukAdmin.Managers.Concrete
                         FlightEndDate = shedul.FlightEndDate,
                         DepartureTime = shedul.DepartureTime,
                         ArrivalTime = shedul.ArrivalTime,
-                        DayOfWeek = HandleWeekDays.GetWeekDayNames(shedul.DayOfWeek),
+                        DayOfWeek = shedul.DayOfWeek.Split(',')
                     };
 
                   
@@ -300,7 +300,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
             }
 
-            flightInfoResponse.scheduleInfos = sheduledInfo;
+            flightInfoResponse.schedules = sheduledInfo;
 
 
 
