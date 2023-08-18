@@ -120,7 +120,7 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
-                    ExpiresIn = (int)TimeSpan.FromSeconds(10).TotalSeconds
+                    ExpiresIn = (int)TimeSpan.FromMinutes(2).TotalSeconds
                 };
 
                 var refresh = new RefreshToken()
