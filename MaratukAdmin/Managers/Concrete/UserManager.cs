@@ -66,7 +66,7 @@ namespace MaratukAdmin.Managers.Concrete
             string hash = PasswordHasher.GenerateHashForEmail(email);
             try
             {
-                MailService.SendEmail(email, "Forgot Mail", $"please add new password, https://localhost:7003/user/updatePassword?email={email}&HashId={hash} ");
+                MailService.SendEmail(email, "Forgot Mail", $"please add new password, http://16.171.143.175:3000/user/updatePassword?email={email}&HashId={hash} ");
                 return true;
             }
             catch
@@ -209,7 +209,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 await _userRepository.CreateAgencyUserAsync(agencyUser);
 
-                MailService.SendEmail(agencyUser.Email, "Activation Mail", $"please activate email, https://localhost:7003/user/activate?Id={agencyUser.Id}&HashId={agencyUser.HashId} ");
+                MailService.SendEmail(agencyUser.Email, "Activation Mail", $"please activate email, http://16.171.143.175:3000/user/activate?Id={agencyUser.Id}&HashId={agencyUser.HashId} ");
             }
             catch (Exception ex)
             {
