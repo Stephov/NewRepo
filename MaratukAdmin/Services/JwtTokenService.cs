@@ -39,7 +39,7 @@ namespace MaratukAdmin.Services
                     {JwtRegisteredClaimNames.Sid, JsonConvert.SerializeObject(tokenData) },
                     { JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString() }
                 },
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = _credentials
             };
 
