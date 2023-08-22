@@ -28,12 +28,13 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<ServiceClass> GetServiceClassNameByIdAsync(int id)
         {
-           return await _mainRepository.GetAsync(id);
+            return await _mainRepository.GetAsync(id);
         }
 
         public async Task<List<ServiceClass>> GetServiceClassAsync()
         {
-            return await _mainRepository.GetAllAsync();
+            var result = await _mainRepository.GetAllAsync();
+            return result.OrderBy(service => service.Name).ToList();
         }
     }
 }

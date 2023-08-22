@@ -16,9 +16,10 @@ namespace MaratukAdmin.Managers.Concrete
             _airServiceRepository = airServiceRepository;
         }
 
-        public  async Task<List<AirService>> GetAirServicesAsync()
+        public async Task<List<AirService>> GetAirServicesAsync()
         {
-            return await _airServiceRepository.GetAllAsync();
+            var result = await _airServiceRepository.GetAllAsync();
+            return result.OrderBy(n => n.Name).ToList();
         }
     }
 }

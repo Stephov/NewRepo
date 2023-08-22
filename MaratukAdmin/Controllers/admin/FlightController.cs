@@ -5,6 +5,7 @@ using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -101,6 +102,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+
+        [HttpGet("isFlightNameExist")]
+        [AllowAnonymous]
+        public async Task<bool> isFlightNameExist(string name)
+        {
+            var res = await _flightManager.IsFlightNameExistAsync(name);
+            return res;
+        }
 
     }
 }

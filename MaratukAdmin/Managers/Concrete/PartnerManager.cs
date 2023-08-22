@@ -28,12 +28,13 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<Partner> GetPartnerNameByIdAsync(int id)
         {
-           return await _mainRepository.GetAsync(id);
+            return await _mainRepository.GetAsync(id);
         }
 
         public async Task<List<Partner>> GetPartnerAsync()
         {
-            return await _mainRepository.GetAllAsync();
+            var result = await _mainRepository.GetAllAsync();
+            return result.OrderBy(partner => partner.Name).ToList();
         }
     }
 }

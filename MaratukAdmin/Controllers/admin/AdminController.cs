@@ -15,7 +15,7 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-    // [Authorize(AuthenticationSchemes = "AdminScheme")]
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
     public class AdminController : BaseController
     {
         private readonly ICountryManager _countryManager;
@@ -79,7 +79,7 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("PricePackageCountry")]
-        public async Task<ActionResult> GetPPricePackageCountry(int pricePackageId)
+        public async Task<ActionResult> GetPricePackageCountry(int pricePackageId)
         {
             var result = await _pricePackageManager.GetPricePaskageCountryAsync(pricePackageId);
 

@@ -21,7 +21,8 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<List<Aircraft>> GetAircraftsAsync()
         {
-           return await _mainRepository.GetAllAsync();
+            var result = await _mainRepository.GetAllAsync();
+            return result.OrderBy(n => n.Name).ToList();
         }
 
 

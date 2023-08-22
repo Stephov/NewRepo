@@ -71,10 +71,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-            return await _mainRepository.AddAsync(priceBlockDb);
-
-
-
+           return await _priceBlockRepository.CreatePriceBlockAsync(priceBlockDb);
         }
 
         public async Task<PriceBlock> UpdatePriceBlockAsync(UpdatePriceBlockRequest price)

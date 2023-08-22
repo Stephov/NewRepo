@@ -1,5 +1,4 @@
 ﻿using MaratukAdmin.Dto.Request;
-using MaratukAdmin.Enums;
 
 namespace MaratukAdmin.Entities
 {

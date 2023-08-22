@@ -28,12 +28,13 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<Tarif> GetTarifNameByIdAsync(int id)
         {
-           return await _mainRepository.GetAsync(id);
+            return await _mainRepository.GetAsync(id);
         }
 
         public async Task<List<Tarif>> GetTarifAsync()
         {
-            return await _mainRepository.GetAllAsync();
+            var result = await _mainRepository.GetAllAsync();
+            return result.OrderBy(tarif => tarif.Name).ToList();
         }
     }
 }

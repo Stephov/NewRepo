@@ -16,5 +16,6 @@ namespace MaratukAdmin.Managers.Abstract
         Task<Flight> UpdateFlightAsync(UpdateFlightRequest flight);
         Task<bool> DeleteFlightAsync(int id);
         Task<FlightInfoResponse> GetFlightInfoByIdAsync(int id);
+        Task<bool> IsFlightNameExistAsync(string name);
     }
 }

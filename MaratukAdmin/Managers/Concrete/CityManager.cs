@@ -22,13 +22,8 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<List<City>> GetCityByCountryIdAsync(int countryId)
         {
             var result = await _cityRepository.GetCityByCountryIdAsync(countryId);
-            
-            if(result == null)
-            {
-                throw new ArgumentException("Email or password is wrong");
-            }
 
-            return result;
+            return result.OrderBy(city => city.NameEng).ToList();
         }
 
         public async Task<City> GetCityNameByIdAsync(int id)

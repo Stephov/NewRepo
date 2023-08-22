@@ -337,5 +337,11 @@ namespace MaratukAdmin.Managers.Concrete
  
             
         }
+
+        public async Task<bool> IsFlightNameExistAsync(string name)
+        {
+            var res = await _flightRepository.IsisFlightNameExistsAsync(name);
+            return res;
+        }
     }
 }

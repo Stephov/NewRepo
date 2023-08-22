@@ -19,6 +19,8 @@ namespace MaratukAdmin.Repositories.Abstract
         Task CreateScheduleAsync(Schedule schedule);
         Task UpdateScheduleAsync(Schedule schedule);
         Task DeleteScheduleAsync(int id);
+        Task<bool> IsisFlightNameExistsAsync(string flightName);
+
 
     }
 }

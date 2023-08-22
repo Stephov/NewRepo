@@ -28,12 +28,13 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<Currency> GetCurrencyNameByIdAsync(int id)
         {
-           return await _mainRepository.GetAsync(id);
+            return await _mainRepository.GetAsync(id);
         }
 
         public async Task<List<Currency>> GetCurrencyAsync()
         {
-            return await _mainRepository.GetAllAsync();
+            var result = await _mainRepository.GetAllAsync();
+            return result.OrderBy(n => n.Name).ToList();
         }
     }
 }

@@ -119,5 +119,10 @@ namespace MaratukAdmin.Repositories.Concrete
                  .Where(s => s.DepartureCountryId == departureCountryId && s.DepartureCityId == departureCityId && s.DestinationCountryId == destinationCountryId && s.DestinationCityId == destinationCityId)
                  .ToListAsync();
         }
+
+        public async Task<bool> IsisFlightNameExistsAsync(string flightName)
+        {
+            return await _dbContext.Flight.AnyAsync(u => u.Name == flightName);
+        }
     }
 }

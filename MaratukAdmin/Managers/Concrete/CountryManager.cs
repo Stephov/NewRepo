@@ -20,7 +20,9 @@ namespace MaratukAdmin.Managers.Concrete
         }
         public async Task<List<Country>> GetAllCountryesAsync()
         {
-            return await _mainRepository.GetAllAsync();
+            var result = await _mainRepository.GetAllAsync();
+            return result.OrderBy(country => country.NameENG).ToList();
+
         }
 
         public async Task<Country> GetCountryNameByIdAsync(int id)
@@ -42,9 +44,10 @@ namespace MaratukAdmin.Managers.Concrete
 
                 FlightCountryResponse flightCountryResponse = new FlightCountryResponse();
                 flightCountryResponse.DepartureCountryId = flight.DepartureCountryId;
-                flightCountryResponse.CountryName =  GetCountryNameByIdAsync(flight.DepartureCountryId).Result.Name;
+                flightCountryResponse.CountryName = GetCountryNameByIdAsync(flight.DepartureCountryId).Result.Name;
 
-                foreach(var key in flight.DepartureCityIds) {
+                foreach (var key in flight.DepartureCityIds)
+                {
                     FlightCity city = new FlightCity();
                     city.DepartureCityId = key;
                     city.DepartureCityName = _cityRepository.GetAsync(key).Result.Name;

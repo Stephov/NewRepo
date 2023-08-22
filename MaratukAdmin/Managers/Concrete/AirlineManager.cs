@@ -33,7 +33,8 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<List<Airline>> GetAirlinesAsync()
         {
-            return await _mainRepository.GetAllAsync();
+            var result = await _mainRepository.GetAllAsync();
+            return result.OrderBy(airline => airline.Name).ToList();        
         }
     }
 }
