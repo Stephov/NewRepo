@@ -66,12 +66,12 @@ builder.Services.AddDbContexts(builder.Configuration);
 
 builder.Services.AddServicesOptions(builder.Configuration);
 
-/*builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));*/
+}));
 
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost3000",
         builder =>
@@ -80,7 +80,7 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader()
                    .AllowAnyMethod();
         });
-});
+});*/
 
 var app = builder.Build();
 
@@ -94,7 +94,7 @@ app.UseCustomSwagger(builder.Configuration);
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowLocalhost3000");
+app.UseCors("corsapp");
 
 app.MapHealthChecks("/healthcheck");
 app.MapControllers();
