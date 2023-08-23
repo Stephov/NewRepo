@@ -37,6 +37,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<PriceBlockType> PriceBlockType { get; set; } = null!;
         public DbSet<Partner> Partner { get; set; } = null!;
         public DbSet<Currency> Currency { get; set; } = null!;
+        public DbSet<RoomCategory> RoomCategories { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -59,45 +60,52 @@ namespace MaratukAdmin.Infrastructure
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<Airport>()
-               .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<Airline>()
-             .HasKey(r => r.Id);
-
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<Aircraft>()
-          .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<Flight>()
-         .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<PriceBlock>()
-         .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<Schedule>()
-     .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<PriceBlockServices>()
-     .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<ServicesPricingPolicy>()
-     .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<City>()
-               .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
 
             modelBuilder.Entity<Tarif>()
-          .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
+
             modelBuilder.Entity<ServiceClass>()
-          .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
+
             modelBuilder.Entity<Season>()
-          .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
+
             modelBuilder.Entity<PriceBlockType>()
-          .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
+
             modelBuilder.Entity<Partner>()
-          .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
+
             modelBuilder.Entity<Currency>()
-        .HasKey(r => r.Id);
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<RoomCategory>()
+                .HasKey(r => r.Id);
         }
 
     }

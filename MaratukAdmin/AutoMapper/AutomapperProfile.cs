@@ -35,6 +35,8 @@ namespace MaratukAdmin.AutoMapper
             CreateMap<AddPriceBlockType, PriceBlockType>();
             CreateMap<AddPartner, Partner>();
             CreateMap<AddCurrency, Currency>();
+            CreateMap<AddRoomCategory, RoomCategory>();
+
 
 
         }
