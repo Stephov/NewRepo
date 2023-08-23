@@ -36,5 +36,10 @@ namespace MaratukAdmin.Managers.Concrete
             var result = await _mainRepository.GetAllAsync();
             return result.OrderBy(n => n.Name).ToList();
         }
+
+        public async Task<bool> DeleteCurrencyByIdAsync(int id)
+        {
+            return await _mainRepository.DeleteAsync(id);
+        }
     }
 }
