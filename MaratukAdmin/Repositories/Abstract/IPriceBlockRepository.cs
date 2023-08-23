@@ -7,7 +7,7 @@ namespace MaratukAdmin.Repositories.Abstract
     {
         Task<IEnumerable<PriceBlock>> GetAllPriceBlocksAsync();
         Task<PriceBlock> GetPriceBlockByIdAsync(int id);
-        Task<List<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id);
+        Task<IEnumerable<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id);
         Task<PriceBlock> CreatePriceBlockAsync(PriceBlock priceBlock);
         Task UpdatePriceBlockAsync(PriceBlock priceBlock);
         Task DeletePriceBlockAsync(int id);

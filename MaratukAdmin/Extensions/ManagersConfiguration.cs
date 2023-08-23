@@ -24,6 +24,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IPriceBlockTypeManager, PriceBlockTypeManager>()
             .AddScoped<IPartnerManager, PartnerManager>()
             .AddScoped<ICurrencyManager, CurrencyManager>()
+            .AddScoped<ICurrencyRatesManager, CurrencyRatesManager>()
             .AddScoped<IPriceBlockManager, PriceBlockManager>();
         }
     }

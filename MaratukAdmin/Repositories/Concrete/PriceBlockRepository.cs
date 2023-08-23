@@ -102,11 +102,11 @@ namespace MaratukAdmin.Repositories.Concrete
             return false;
         }
 
-        public async Task<List<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id)
+        public async Task<IEnumerable<PriceBlockServices>> GetServicesByPriceBlockIdAsync(int id)
         {
             return await _dbContext.PriceBlockServices
-                 .Where(p => p.PriceBlockId == id)
-                 .ToListAsync();
+                             .Where(p => p.PriceBlockId == id)
+                             .ToListAsync();
         }
 
         public async Task<ServicesPricingPolicy> CreateServicesPricingPolicyAsync(ServicesPricingPolicy servicesPricingPolicy)

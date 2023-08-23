@@ -37,6 +37,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<PriceBlockType> PriceBlockType { get; set; } = null!;
         public DbSet<Partner> Partner { get; set; } = null!;
         public DbSet<Currency> Currency { get; set; } = null!;
+        public DbSet<CurrencyRates> CurrencyRates { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -97,6 +98,8 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<Partner>()
           .HasKey(r => r.Id);
             modelBuilder.Entity<Currency>()
+        .HasKey(r => r.Id);
+            modelBuilder.Entity<CurrencyRates>()
         .HasKey(r => r.Id);
         }
 

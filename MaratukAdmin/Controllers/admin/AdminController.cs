@@ -15,7 +15,7 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-    //[Authorize(AuthenticationSchemes = "AdminScheme")]
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
     public class AdminController : BaseController
     {
         private readonly ICountryManager _countryManager;
@@ -31,6 +31,7 @@ namespace MaratukAdmin.Controllers.admin
         private readonly IPricePackageManager _pricePackageManager;
         private readonly IPartnerManager _partnerManager;
         private readonly ICurrencyManager _currencyManager;
+        private readonly ICurrencyRatesManager _currencyRatesManager;
         public AdminController(ICountryManager countryManager,
                                  ICityManager cityManager,
                                  IAirlineManager airlineManager,
@@ -44,6 +45,7 @@ namespace MaratukAdmin.Controllers.admin
                                  IPricePackageManager pricePackageManager,
                                  IPartnerManager partnerManager,
                                  ICurrencyManager currencyManager,
+                                 ICurrencyRatesManager currencyRatesManager,
         JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
             _countryManager = countryManager;
@@ -59,6 +61,7 @@ namespace MaratukAdmin.Controllers.admin
             _pricePackageManager = pricePackageManager;
             _partnerManager = partnerManager;
             _currencyManager = currencyManager;
+            _currencyRatesManager = currencyRatesManager;
         }
 
 
@@ -212,10 +215,27 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpDelete("CurrencyRates")]
+        public async Task<ActionResult> DeleteCurrencyRates(int id)
+        {
+            var result = await _currencyRatesManager.DeleteCurrencyRateByIdAsync(id);
+
+            return Ok(result);
+        }
+
+
         [HttpPost("Currency")]
         public async Task<ActionResult> GetCurrency(AddCurrency currency)
         {
             var result = await _currencyManager.AddCurrencyAsync(currency);
+
+            return Ok(result);
+        }
+
+        [HttpPost("CurrencyRates")]
+        public async Task<ActionResult> GetCurrencyRates(AddCurrencyRates currency)
+        {
+            var result = await _currencyRatesManager.AddCurrencyRatesAsync(currency);
 
             return Ok(result);
         }
