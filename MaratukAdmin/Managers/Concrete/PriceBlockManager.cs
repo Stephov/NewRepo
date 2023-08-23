@@ -121,7 +121,8 @@ namespace MaratukAdmin.Managers.Concrete
         {
             try
             {
-                var result = await _mainRepository.GetAllAsync();
+                //var result = await _mainRepository.GetAllAsync();
+                var result = await _priceBlockRepository.GetAllPriceBlocksAsync();
                 var priceBlockResponses = new List<PriceBlockResponse>();
 
 

@@ -69,12 +69,28 @@ builder.Services.AddServicesOptions(builder.Configuration);
 /*builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));*/
+}));
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder.WithOrigins("http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin2",
+        builder => builder.WithOrigins("https://16.171.143.175:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});*/
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://13.53.168.66")
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
@@ -91,7 +107,7 @@ app.UseCustomSwagger(builder.Configuration);
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseCors("corsapp");
+//app.UseCors();
 app.UseCors("AllowSpecificOrigin");
 
 app.MapHealthChecks("/healthcheck");

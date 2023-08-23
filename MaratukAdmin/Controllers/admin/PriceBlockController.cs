@@ -26,6 +26,7 @@ namespace MaratukAdmin.Controllers.admin
 
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult> GetPriceBlocks()
         {
             try
