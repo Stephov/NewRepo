@@ -44,13 +44,13 @@ namespace MaratukAdmin.Managers.Concrete
 
                 FlightCountryResponse flightCountryResponse = new FlightCountryResponse();
                 flightCountryResponse.DepartureCountryId = flight.DepartureCountryId;
-                flightCountryResponse.CountryName = GetCountryNameByIdAsync(flight.DepartureCountryId).Result.Name;
+                flightCountryResponse.CountryName = GetCountryNameByIdAsync(flight.DepartureCountryId).Result.NameENG;
 
                 foreach (var key in flight.DepartureCityIds)
                 {
                     FlightCity city = new FlightCity();
                     city.DepartureCityId = key;
-                    city.DepartureCityName = _cityRepository.GetAsync(key).Result.Name;
+                    city.DepartureCityName = _cityRepository.GetAsync(key).Result.NameEng;
 
                     cityes.Add(city);
                 }
