@@ -71,7 +71,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-           return await _priceBlockRepository.CreatePriceBlockAsync(priceBlockDb);
+            return await _priceBlockRepository.CreatePriceBlockAsync(priceBlockDb);
         }
 
         public async Task<PriceBlock> UpdatePriceBlockAsync(UpdatePriceBlockRequest price)
@@ -128,13 +128,16 @@ namespace MaratukAdmin.Managers.Concrete
 
                 foreach (var priceBlock in result)
                 {
+                    string PricePackage = (await _pricePackageManager.GetPricePackageByIdAsync(priceBlock.PricePackageId))?.NameEng;
+                    string PriceBlockType = (await _priceBlockTypeManager.GetPriceBlockTypeNameByIdAsync(priceBlock.PricelBlockTypeId))?.Name;
+                    string ServiceClass = (await _serviceClassManager.GetServiceClassNameByIdAsync(priceBlock.ServiceClassId))?.Name;
                     var priceBlockRespons = new PriceBlockResponse()
                     {
                         Name = priceBlock.Name,
                         Id = priceBlock.Id,
-                        PriceBlockType = _priceBlockTypeManager.GetPriceBlockTypeNameByIdAsync(priceBlock.PricelBlockTypeId).Result.Name,
-                        PricePackageId = _pricePackageManager.GetPricePackageByIdAsync(priceBlock.PricePackageId).Result.Name,
-                        ServiceClassId = _serviceClassManager.GetServiceClassNameByIdAsync(priceBlock.ServiceClassId).Result.Name,
+                        PriceBlockType = PriceBlockType != null ? PriceBlockType : String.Empty,
+                        PricePackageId = PricePackage != null ? PricePackage : String.Empty,
+                        ServiceClassId = ServiceClass != null ? ServiceClass : String.Empty,
 
                     };
                     priceBlockResponses.Add(priceBlockRespons);
