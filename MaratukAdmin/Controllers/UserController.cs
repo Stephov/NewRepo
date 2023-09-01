@@ -53,11 +53,10 @@ namespace MaratukAdmin.Controllers
 
         [HttpGet("approve")]
         [AllowAnonymous]
-        public async Task Approve(int Id)
+        public async Task<bool> Approve(int Id)
         {
-
-            await _userManager.ApproveUserAgency(Id);
-
+            var res = await _userManager.ApproveUserAgency(Id);
+            return res;
         }
 
 
