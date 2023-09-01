@@ -44,11 +44,11 @@ namespace MaratukAdmin.Controllers
 
         [HttpGet("activate")]
         [AllowAnonymous]
-        public async Task Activate(int Id,string HashId)
+        public async Task<bool> Activate(int Id,string HashId)
         {
 
-             await _userManager.ActivateUserAgency(Id,HashId);
-           
+             var res = await _userManager.ActivateUserAgency(Id,HashId);
+            return res;
         }
 
         [HttpGet("approve")]

@@ -25,7 +25,7 @@ namespace MaratukAdmin.Managers.Concrete
         }
 
 
- 
+
 
 
         public async Task<bool> ChangePassword(string oldPassword, string newPassword, TokenData tokenData)
@@ -246,7 +246,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 await _userRepository.CreateAgencyUserAsync(agencyUser);
 
-               
+
 
             }
             catch (Exception ex)
@@ -338,14 +338,16 @@ namespace MaratukAdmin.Managers.Concrete
             return res;
         }
 
-        public async Task ActivateUserAgency(int Id, string HashId)
+        public async Task<bool> ActivateUserAgency(int Id, string HashId)
         {
-           await _userRepository.ActivateUserAgency(Id, HashId);
+            var res = await _userRepository.ActivateUserAgency(Id, HashId);
+            return res;
         }
 
-        public async Task ApproveUserAgency(int Id)
+        public async Task<bool> ApproveUserAgency(int Id)
         {
-            await _userRepository.ApproveUserAgency(Id);
+            var ras = await _userRepository.ApproveUserAgency(Id);
+            return ras;
         }
 
         public async Task<AgencyAuthenticationResponse> AgencyUserLoginAsync(string email, string password)
@@ -355,7 +357,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
             if (user == null) throw new KeyNotFoundException("User not found");
-           
+
 
             await _userRepository.RevokeExpiredRefreshTokens(user.Id);
             string passwordHash = PasswordHasher.HashPassword(password, user.PasswordSalt);
@@ -392,21 +394,21 @@ namespace MaratukAdmin.Managers.Concrete
 
                 await _userRepository.AddRefreshToken(refresh);
                 response.name = user.FullName;
-                response.Role= user.Role;
+                response.Role = user.Role;
                 response.Itn = user.Itn;
                 return response;
             }
 
             throw new ArgumentException("Email or password is wrong");
-            
+
 
             throw new NotImplementedException();
         }
-        
-        public async Task<bool> ChangePassword(string newPassword1, string newPassword2, string email,string hash)
+
+        public async Task<bool> ChangePassword(string newPassword1, string newPassword2, string email, string hash)
         {
             string emailHash = PasswordHasher.GenerateHashForEmail(email);
-            if(hash != emailHash)
+            if (hash != emailHash)
             {
                 throw new ArgumentException("hash is not valid");
             }

@@ -8,8 +8,8 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<AgencyUser> GetAgencyUserAsync(string email);
         Task CreateUserAsync(User user);
         Task CreateAgencyUserAsync(AgencyUser agencyUser);
-        Task ActivateUserAgency(int Id,string HashId);
-        Task ApproveUserAgency(int Id);
+        Task<bool> ActivateUserAgency(int Id,string HashId);
+        Task<bool> ApproveUserAgency(int Id);
         Task<bool> IsUserExistsAsync(string email);
         Task<bool> IsUserEmailExistsAsync(string email);
         Task<User> GetUserByIdAsync(int userId);

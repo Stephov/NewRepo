@@ -15,8 +15,8 @@ namespace MaratukAdmin.Managers.Abstract
         Task RegisterAgencyAgentAsync(AgencyAgentCredentialsRequest agencyAgentCredentialsRequest);
         IdentityUserInfo CheckUser(string token);
 
-        Task ActivateUserAgency(int Id, string HashId);
-        Task ApproveUserAgency(int Id);
+        Task<bool> ActivateUserAgency(int Id, string HashId);
+        Task<bool> ApproveUserAgency(int Id);
         Task RegisterAsync(string email, string password, string userName,string fullName);
         Task RegisterAgencyUserAsync(AgencyUserCredentialsRequest agencyUserCredentialsRequest);
         Task<bool> ChangePassword(string oldPassword, string newPassword, TokenData tokenData);

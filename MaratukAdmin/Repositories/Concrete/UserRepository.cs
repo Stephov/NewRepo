@@ -36,8 +36,8 @@ namespace MaratukAdmin.Repositories.Concrete
                 await _dbContext.AgencyUser.AddAsync(agencyUser);
                 await _dbContext.SaveChangesAsync();
             }
-            catch(Exception ex) { string s = ex.Message;}
-           
+            catch (Exception ex) { string s = ex.Message; }
+
         }
 
         public async Task<User> GetUserAsync(string email)
@@ -96,28 +96,32 @@ namespace MaratukAdmin.Repositories.Concrete
             return await _dbContext.AgencyUser.AnyAsync(u => u.Email == email);
         }
 
-        public async Task ActivateUserAgency(int Id, string HashId)
+        public async Task<bool> ActivateUserAgency(int Id, string HashId)
         {
             var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == Id && u.HashId == HashId);
-            if(user != null)
+            if (user != null)
             {
-                user.IsActivated= true;
+                user.IsActivated = true;
+                await _dbContext.SaveChangesAsync();
+                return true;
             }
-
-            await _dbContext.SaveChangesAsync();
+            else { return false; }
 
         }
 
-        public async Task ApproveUserAgency(int Id)
+        public async Task<bool> ApproveUserAgency(int Id)
         {
             var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == Id);
             if (user != null)
             {
                 user.IsAproved = true;
+                await _dbContext.SaveChangesAsync();
+                return true;
             }
-
-            await _dbContext.SaveChangesAsync();
-
+            else
+            {
+                return false;
+            }
         }
     }
 }
