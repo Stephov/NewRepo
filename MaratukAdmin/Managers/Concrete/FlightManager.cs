@@ -10,6 +10,7 @@ using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Utils;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MaratukAdmin.Managers.Concrete
@@ -81,14 +82,14 @@ namespace MaratukAdmin.Managers.Concrete
             }
 
             // add the schedules to the flight
-              flightDb.Schedules = schedules;
+            flightDb.Schedules = schedules;
 
 
 
             return await _mainRepository.AddAsync(flightDb);
-              
-          
-            
+
+
+
         }
 
         public async Task<Flight> UpdateFlightAsync(UpdateFlightRequest flight)
@@ -219,7 +220,7 @@ namespace MaratukAdmin.Managers.Concrete
                         DepartureTime = shedul.DepartureTime,
                         ArrivalTime = shedul.ArrivalTime,
                         DayOfWeek = shedul.DayOfWeek.Split(',')
-                };
+                    };
 
 
 
@@ -293,7 +294,7 @@ namespace MaratukAdmin.Managers.Concrete
                         DayOfWeek = shedul.DayOfWeek.Split(',')
                     };
 
-                  
+
 
                     sheduledInfo.Add(schedule);
 
@@ -315,33 +316,117 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<List<FlightNameResponse>> GetFlightByIdsAsync(int departureCountryId, int departureCityId, int DestinationCountryId, int destinationCityId)
         {
-            var entityes = await _flightRepository.GetFlightByIdsAsync(departureCountryId,departureCityId,DestinationCountryId,destinationCityId);
-            List <FlightNameResponse> result = new List<FlightNameResponse>();
+            var entityes = await _flightRepository.GetFlightByIdsAsync(departureCountryId, departureCityId, DestinationCountryId, destinationCityId);
+            List<FlightNameResponse> result = new List<FlightNameResponse>();
 
 
-                foreach(var key in entityes)
+            foreach (var key in entityes)
+            {
+                FlightNameResponse names = new FlightNameResponse()
                 {
-                    FlightNameResponse names = new FlightNameResponse()
-                    {
-                        Id = key.Id,
-                        Name = key.Name,
-                        FlightValue = key.FlightValue,
-                    };
+                    Id = key.Id,
+                    Name = key.Name,
+                    FlightValue = key.FlightValue,
+                };
 
-                    result.Add(names);
-                }
+                result.Add(names);
+            }
 
- 
 
-                return result;
- 
-            
+
+            return result;
+
+
         }
 
         public async Task<bool> IsFlightNameExistAsync(string name)
         {
             var res = await _flightRepository.IsisFlightNameExistsAsync(name);
             return res;
+        }
+
+        public async Task<FlightCalendarResponse> GetFlightCalendarInfoAsync(int departureCountryId, int destinationCountryId, bool isRoundTrip)
+        {
+            FlightCalendarResponse response = new FlightCalendarResponse();
+
+            if (isRoundTrip == false)
+            {
+                response.ReturnedDaysInfo = null;
+                response.FligthDaysInfo = new List<CalendarSchedule>();
+                var fligths = await _flightRepository.GetFlightByIdsAsync(departureCountryId, destinationCountryId);
+
+                foreach (var fligth in fligths)
+                {
+                    var entity = await _mainRepository.GetAsync(fligth.Id, "Schedules");
+
+                    if (entity.Schedules != null)
+                    {
+                        foreach (var shedul in entity.Schedules)
+                        {
+                            var info = new CalendarSchedule();
+                            info.Days = shedul.DayOfWeek;
+                            info.StartDate = shedul.FlightStartDate;
+                            info.EndDate = shedul.FlightEndDate;
+                            response.FligthDaysInfo.Add(info);
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                response.ReturnedDaysInfo = new List<CalendarSchedule>();
+                response.FligthDaysInfo = new List<CalendarSchedule>();
+                var fligths = await _flightRepository.GetFlightByIdsAsync(departureCountryId, destinationCountryId);
+                var returnedFligths = await _flightRepository.GetFlightByIdsAsync(destinationCountryId, departureCountryId);
+
+
+
+                foreach (var fligth in fligths)
+                {
+                    var entity = await _mainRepository.GetAsync(fligth.Id, "Schedules");
+
+                    if (entity.Schedules != null)
+                    {
+                        foreach (var shedul in entity.Schedules)
+                        {
+                            var info = new CalendarSchedule();
+                            info.Days = shedul.DayOfWeek;
+                            info.StartDate = shedul.FlightStartDate;
+                            info.EndDate = shedul.FlightEndDate;
+                            response.FligthDaysInfo.Add(info);
+                        }
+                    }
+
+                }
+
+
+                foreach (var fligth in returnedFligths)
+                {
+                    var entity = await _mainRepository.GetAsync(fligth.Id, "Schedules");
+
+                    if (entity.Schedules != null)
+                    {
+                        foreach (var shedul in entity.Schedules)
+                        {
+                            var info = new CalendarSchedule();
+                            info.Days = shedul.DayOfWeek;
+                            info.StartDate = shedul.FlightStartDate;
+                            info.EndDate = shedul.FlightEndDate;
+                            response.ReturnedDaysInfo.Add(info);
+                        }
+                    }
+
+                }
+
+
+            
+            
+            }
+
+
+
+            return response;
         }
     }
 }

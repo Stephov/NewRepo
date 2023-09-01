@@ -11,6 +11,7 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<Flight> GetFlightByIdAsync(int id);
 
         Task<List<Flight>> GetFlightByIdsAsync(int departureCountryId,int departureCityId,int DestinationCountryId, int destinationCityId);
+        Task<List<Flight>> GetFlightByIdsAsync(int departureCountryId,int destinationCountryId);
         Task<Flight> CreateFlightAsync(Flight flight);
         Task UpdateFlightAsync(Flight flight);
         Task DeleteFlightAsync(int id);

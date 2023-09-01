@@ -124,5 +124,12 @@ namespace MaratukAdmin.Repositories.Concrete
         {
             return await _dbContext.Flight.AnyAsync(u => u.Name == flightName);
         }
+
+        public async Task<List<Flight>> GetFlightByIdsAsync(int departureCountryId, int destinationCountryId)
+        {
+            return await _dbContext.Flight
+                .Where(s => s.DepartureCountryId == departureCountryId && s.DestinationCountryId == destinationCountryId)
+                .ToListAsync();
+        }
     }
 }

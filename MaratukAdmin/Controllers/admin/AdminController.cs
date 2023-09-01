@@ -66,6 +66,7 @@ namespace MaratukAdmin.Controllers.admin
 
 
         [HttpGet("country")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetCountry()
         {
             var result = await _countryManager.GetAllCountryesAsync();
@@ -101,6 +102,7 @@ namespace MaratukAdmin.Controllers.admin
         [HttpGet("city")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [AllowAnonymous]
         public async Task<ActionResult> GetCity(int countryId)
         {
             var result = await _cityManager.GetCityByCountryIdAsync(countryId);

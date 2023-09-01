@@ -8,6 +8,7 @@ namespace MaratukAdmin.Managers.Abstract
     public interface IFlightManager
     {
         Task<List<FlightResponse>> GetAllFlightAsync();
+        Task<FlightCalendarResponse> GetFlightCalendarInfoAsync(int departureCountryId, int destinationCountryId, bool isRoundTrip);
         Task<FlightEditResponse> GetFlightByIdAsync(int id);
 
         Task<List<FlightNameResponse>> GetFlightByIdsAsync(int departureCountryId, int departureCityId, int DestinationCountryId, int destinationCityId);

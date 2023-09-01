@@ -34,6 +34,15 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("calendar")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetCalendarInfo(int departureCountryId, int destinationCountryId,bool isRoundTrip)
+        {
+            var result = await _flightManager.GetFlightCalendarInfoAsync(departureCountryId, destinationCountryId, isRoundTrip);
+
+            return Ok(result);
+        }
+
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult> GetFlightById(int id)
