@@ -15,7 +15,7 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-   // [Authorize(AuthenticationSchemes = "AdminScheme")]
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
     public class AdminController : BaseController
     {
         private readonly ICountryManager _countryManager;
@@ -242,11 +242,29 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+
+
         [HttpPost("CurrencyRates")]
         public async Task<ActionResult> GetCurrencyRates(AddCurrencyRates currency)
         {
             var result = await _currencyRatesManager.AddCurrencyRatesAsync(currency);
 
+            return Ok(result);
+        }
+
+        [HttpPut("CurrencyRates")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCurrencyRatesAsync([FromBody] UpdateCurrencyRates currencyRates)
+        {
+            var result = await _currencyRatesManager.UpdateCurrencyRatesAsync(currencyRates);
+            return Ok(result);
+        }
+
+        [HttpPut("Currency")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCurrencyAsync([FromBody] UpdateCurrency currency)
+        {
+            var result = await _currencyManager.UpdateCurrencyAsync(currency);
             return Ok(result);
         }
 

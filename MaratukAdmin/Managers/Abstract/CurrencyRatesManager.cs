@@ -37,5 +37,13 @@ namespace MaratukAdmin.Managers.Abstract
             var result = await _mainRepository.GetAllAsync();
             return result.OrderBy(n => n.StartDate).ToList();
         }
+
+        public async Task<CurrencyRates> UpdateCurrencyRatesAsync(UpdateCurrencyRates currencyRates)
+        {
+            var entity = _mapper.Map<CurrencyRates>(currencyRates);
+
+            await _mainRepository.UpdateAsync(entity);
+            return entity;
+        }
     }
 }

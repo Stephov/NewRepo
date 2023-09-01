@@ -9,5 +9,6 @@ namespace MaratukAdmin.Managers.Abstract
         Task<Currency> AddCurrencyAsync(AddCurrency currency);
         Task<Currency> GetCurrencyNameByIdAsync(int id);
         Task<bool> DeleteCurrencyByIdAsync(int id);
+        Task<Currency> UpdateCurrencyAsync(UpdateCurrency currency);
     }
 }

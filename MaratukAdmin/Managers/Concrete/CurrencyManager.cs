@@ -41,5 +41,13 @@ namespace MaratukAdmin.Managers.Concrete
         {
             return await _mainRepository.DeleteAsync(id);
         }
+
+        public async Task<Currency> UpdateCurrencyAsync(UpdateCurrency currency)
+        {
+            var entity = _mapper.Map<Currency>(currency);
+
+            await _mainRepository.UpdateAsync(entity);
+            return entity;
+        }
     }
 }
