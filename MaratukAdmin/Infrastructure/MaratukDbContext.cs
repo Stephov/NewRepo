@@ -18,6 +18,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<PricePackage> PricePackage { get; set; } = null!;
 
         public DbSet<Airline> Airline { get; set; } = null!;
+        public DbSet<TripType> TripType { get; set; } = null!;
         public DbSet<Aircraft> Aircraft { get; set; } = null!;
 
         public DbSet<Flight> Flight { get; set; }
@@ -64,6 +65,9 @@ namespace MaratukAdmin.Infrastructure
 
             modelBuilder.Entity<Airline>()
              .HasKey(r => r.Id);
+
+            modelBuilder.Entity<TripType>()
+          .HasKey(r => r.Id);
 
 
             modelBuilder.Entity<Aircraft>()

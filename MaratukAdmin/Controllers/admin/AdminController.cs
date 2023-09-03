@@ -20,6 +20,7 @@ namespace MaratukAdmin.Controllers.admin
     {
         private readonly ICountryManager _countryManager;
         private readonly ICityManager _cityManager;
+        private readonly IAdminManager _adminManager;
         private readonly IAirlineManager _airlineManager;
         private readonly IAircraftManager _aircraftManager;
         private readonly IAirportManager _airportManager;
@@ -46,6 +47,7 @@ namespace MaratukAdmin.Controllers.admin
                                  IPartnerManager partnerManager,
                                  ICurrencyManager currencyManager,
                                  ICurrencyRatesManager currencyRatesManager,
+                                 IAdminManager adminManager,
         JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
             _countryManager = countryManager;
@@ -62,6 +64,7 @@ namespace MaratukAdmin.Controllers.admin
             _partnerManager = partnerManager;
             _currencyManager = currencyManager;
             _currencyRatesManager = currencyRatesManager;
+            _adminManager = adminManager;
         }
 
 
@@ -288,6 +291,14 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<ActionResult> GetAircraft()
         {
             var result = await _aircraftManager.GetAircraftsAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("TripType")]
+        public async Task<ActionResult> GetTripType()
+        {
+            var result = await _adminManager.GetTripTypesAsync();
 
             return Ok(result);
         }
