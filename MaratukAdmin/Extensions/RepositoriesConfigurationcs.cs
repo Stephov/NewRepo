@@ -14,6 +14,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<ICountryRepository, CountryRepository>()
             .AddScoped<ICityRepository, CityRepository>()
             .AddScoped<ITripTypeRepository, TripTypeRepository>()
+            .AddScoped<IPriceBlockStateRepository, PriceBlockStateRepository>()
             .AddScoped<IAirlineRepository, AirlineRepository>()
             .AddScoped<ITarifRepository, TarifRepository>()
             .AddScoped<IServiceClassRepository, ServiceClassRepository>()

@@ -12,13 +12,14 @@ namespace MaratukAdmin.Managers.Concrete
     {
         private readonly IAdminRepository _adminRepository;
         private readonly ITripTypeRepository _tripTypeRepository;
-        //test
+        private readonly IPriceBlockStateRepository  _priceBlockStateRepository;
 
 
-        public AdminManager(IAdminRepository adminRepository, ITripTypeRepository tripTypeRepository)
+        public AdminManager(IAdminRepository adminRepository, ITripTypeRepository tripTypeRepository, IPriceBlockStateRepository priceBlockStateRepository)
         {
             _adminRepository = adminRepository;
             _tripTypeRepository = tripTypeRepository;
+            _priceBlockStateRepository = priceBlockStateRepository;
         }
 
         public async Task<City> GetCityByContryId(int countryId)
@@ -40,6 +41,11 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<List<TripType>> GetTripTypesAsync()
         {
             return await _tripTypeRepository.GetAllAsync();
+        }
+
+        public async Task<List<PriceBlockState>> PriceBlockStateAsync()
+        {
+            return await _priceBlockStateRepository.GetAllAsync();
         }
     }
 }

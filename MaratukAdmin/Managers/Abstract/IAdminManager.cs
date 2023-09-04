@@ -10,5 +10,6 @@ namespace MaratukAdmin.Managers.Abstract
         Task<List<Aircraft>> GetAllAircraftsAsync();
         Task<City> GetCityByContryId(int countryId);
         Task<List<TripType>> GetTripTypesAsync();
+        Task<List<PriceBlockState>> PriceBlockStateAsync();
     }
 }

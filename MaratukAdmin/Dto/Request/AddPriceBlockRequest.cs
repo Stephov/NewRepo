@@ -13,6 +13,7 @@ namespace MaratukAdmin.Dto.Request
         public int CurrencyId { get; set; }
         public string Comments { get; set; }
         public int TarifId { get; set; }
+        public int PriceBlockStateId { get; set; }
 
     }
 }

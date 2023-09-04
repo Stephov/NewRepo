@@ -303,6 +303,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("PriceBlockState")]
+        public async Task<ActionResult> GetPriceBlockState()
+        {
+            var result = await _adminManager.PriceBlockStateAsync();
+
+            return Ok(result);
+        }
+
         [HttpPost("Aircraft")]
         public async Task<ActionResult> AddAircraft(AddAircraft aircraft)
         {

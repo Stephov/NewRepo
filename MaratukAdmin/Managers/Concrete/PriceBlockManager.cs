@@ -68,6 +68,7 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockDb.CurrencyId = priceBlockRequest.CurrencyId;
             priceBlockDb.Comments = priceBlockRequest.Comments;
             priceBlockDb.TarifId = priceBlockRequest.TarifId;
+            priceBlockDb.PriceBlockStateId = priceBlockRequest.PriceBlockStateId;
 
 
 
@@ -92,6 +93,7 @@ namespace MaratukAdmin.Managers.Concrete
             entity.Name = price.Name;
             entity.Comments = price.Comments;
             entity.TarifId = price.TarifId;
+            entity.PriceBlockStateId = price.PriceBlockStateId;
 
             // map the ScheduleRequests to Schedules
 
@@ -181,6 +183,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             priceBlockEditResponse.Comments = entity.Comments;
             priceBlockEditResponse.TarifId = entity.TarifId;
+            priceBlockEditResponse.PriceBlockStateId = entity.PriceBlockStateId;
 
 
             return priceBlockEditResponse;
