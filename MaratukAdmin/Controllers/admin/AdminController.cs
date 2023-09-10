@@ -33,6 +33,7 @@ namespace MaratukAdmin.Controllers.admin
         private readonly IPartnerManager _partnerManager;
         private readonly ICurrencyManager _currencyManager;
         private readonly ICurrencyRatesManager _currencyRatesManager;
+        private readonly IPriceBlockManager _priceBlockManager;
         public AdminController(ICountryManager countryManager,
                                  ICityManager cityManager,
                                  IAirlineManager airlineManager,
@@ -48,6 +49,7 @@ namespace MaratukAdmin.Controllers.admin
                                  ICurrencyManager currencyManager,
                                  ICurrencyRatesManager currencyRatesManager,
                                  IAdminManager adminManager,
+                                 IPriceBlockManager priceBlockManager,
         JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
             _countryManager = countryManager;
@@ -65,6 +67,7 @@ namespace MaratukAdmin.Controllers.admin
             _currencyManager = currencyManager;
             _currencyRatesManager = currencyRatesManager;
             _adminManager = adminManager;
+            _priceBlockManager = priceBlockManager;
         }
 
 
@@ -335,5 +338,12 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("FligthCountryInfo")]
+        public async Task<ActionResult> FligthCountryInfo(int TripTypeId)
+        {
+            var result = await _priceBlockManager.GetSearchInfoAsync(TripTypeId);
+
+            return Ok(result);
+        }
     }
 }

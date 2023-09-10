@@ -21,6 +21,7 @@ namespace MaratukAdmin.Managers.Abstract
         Task<List<ServicesPricingPolicy>> GetServicesPricingPolicyByPriceBlockServicesIdAsync(int id);
         Task<ServicesPricingPolicy> UpdateServicesPricingPolicyAsync(EditServicesPricingPolicy editServicesPricingPolicy);
 
+        Task<List<GroupedFlight>> GetSearchInfoAsync(int TripTypeId);
 
         Task<PriceBlockServices> AddPriceBlockServicesAsync(AddPriceBlockServicesRequest priceBlock);
         //Task<FlightInfoResponse> GetPriceBlockInfoByIdAsync(int id);

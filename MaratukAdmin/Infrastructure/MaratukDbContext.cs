@@ -9,6 +9,9 @@ namespace MaratukAdmin.Infrastructure
         public MaratukDbContext(DbContextOptions<MaratukDbContext> options) : base(options) { }
 
         public DbSet<User>? Users { get; set; }
+
+        public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
+
         public DbSet<AgencyUser>? AgencyUser { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<Country> Country { get; set; } = null!;
@@ -108,6 +111,9 @@ namespace MaratukAdmin.Infrastructure
         .HasKey(r => r.Id);
             modelBuilder.Entity<CurrencyRates>()
         .HasKey(r => r.Id);
+
+            modelBuilder.Entity<FlightInfoFunction>().HasNoKey().ToView("GetFlightInfoByTripType");
+
         }
 
     }
