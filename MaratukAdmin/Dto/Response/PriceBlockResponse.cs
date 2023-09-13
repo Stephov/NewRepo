@@ -7,6 +7,7 @@
         public string PriceBlockType { get; set; }
         public string PricePackageId { get; set; }
         public string ServiceClassId { get; set; }
+        public string PriceBlockStateId { get; set; }
 
     }
 }

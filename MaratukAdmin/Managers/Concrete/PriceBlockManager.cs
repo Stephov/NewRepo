@@ -139,6 +139,7 @@ namespace MaratukAdmin.Managers.Concrete
                         PriceBlockType = PriceBlockType != null ? PriceBlockType : String.Empty,
                         PricePackageId = PricePackage != null ? PricePackage : String.Empty,
                         ServiceClassId = ServiceClass != null ? ServiceClass : String.Empty,
+                        PriceBlockStateId = priceBlock.PriceBlockStateId == 1 ? "Active" : "Not Active",
 
                     };
                     priceBlockResponses.Add(priceBlockRespons);
@@ -320,12 +321,14 @@ namespace MaratukAdmin.Managers.Concrete
                 DepartureCountryName = group.First().DepartureCountryName,
                 DepartureCityName = group.Key,
                 DepartureAirportName = group.First().DepartureAirportName,
+                DepartureAirportCode = group.First().DepartureAirportCode,
                 Destination = group.Select(f => new Destination
                 {
                     FlightId = f.FlightId,
                     DestinationCountryName = f.DestinationCountryName,
                     DestinationCityName = f.DestinationCityName,
                     DestinationAirportName = f.DestinationAirportName,
+                    DestinationAirportCode = f.DestinationAirportCode,
                     StartDate= f.StartDate,
                     EndDate = f.EndDate,
                     DayOfWeek= f.DayOfWeek,
