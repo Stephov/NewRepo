@@ -2,6 +2,7 @@
 {
     public class GroupedFlight
     {
+        public int Id { get; set; }
         public string DepartureCountryName { get; set; }
         public string DepartureCityName { get; set; }
         public string DepartureAirportName { get; set; }

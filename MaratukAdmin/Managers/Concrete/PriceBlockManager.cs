@@ -313,11 +313,12 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<List<GroupedFlight>> GetSearchInfoAsync(int TripTypeId)
         {
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
-
+            int identity = 0;
 
             var groupedFlights = result.GroupBy(f => f.DepartureCityName)
             .Select(group => new GroupedFlight
             {
+                Id = ++identity,
                 DepartureCountryName = group.First().DepartureCountryName,
                 DepartureCityName = group.Key,
                 DepartureAirportName = group.First().DepartureAirportName,
