@@ -68,6 +68,8 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockDb.Comments = priceBlockRequest.Comments;
             priceBlockDb.TarifId = priceBlockRequest.TarifId;
             priceBlockDb.PriceBlockStateId = priceBlockRequest.PriceBlockStateId;
+            priceBlockDb.TripTypeId = priceBlockRequest.TripTypeId;
+            priceBlockDb.TripDays = priceBlockRequest.TripDays;
 
 
 
@@ -93,6 +95,8 @@ namespace MaratukAdmin.Managers.Concrete
             entity.Comments = price.Comments;
             entity.TarifId = price.TarifId;
             entity.PriceBlockStateId = price.PriceBlockStateId;
+            entity.TripTypeId = price.TripTypeId;
+            entity.TripDays = price.TripDays;
 
             // map the ScheduleRequests to Schedules
 
@@ -140,6 +144,8 @@ namespace MaratukAdmin.Managers.Concrete
                         PricePackageId = PricePackage != null ? PricePackage : String.Empty,
                         ServiceClassId = ServiceClass != null ? ServiceClass : String.Empty,
                         PriceBlockStateId = priceBlock.PriceBlockStateId == 1 ? "Active" : "Not Active",
+                        TripTypeId = (priceBlock.TripTypeId == 1) ? "One Way" : (priceBlock.TripTypeId == 2) ? "Round Trip" : "Manual",
+                        TripDays = priceBlock.TripDays,
 
                     };
                     priceBlockResponses.Add(priceBlockRespons);
@@ -184,6 +190,8 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockEditResponse.Comments = entity.Comments;
             priceBlockEditResponse.TarifId = entity.TarifId;
             priceBlockEditResponse.PriceBlockStateId = entity.PriceBlockStateId;
+            priceBlockEditResponse.TripTypeId = entity.TripTypeId;
+            priceBlockEditResponse.TripDays = entity.TripDays;
 
 
             return priceBlockEditResponse;
@@ -330,10 +338,10 @@ namespace MaratukAdmin.Managers.Concrete
                     DestinationCityName = f.DestinationCityName,
                     DestinationAirportName = f.DestinationAirportName,
                     DestinationAirportCode = f.DestinationAirportCode,
-                    StartDate= f.StartDate,
+                    StartDate = f.StartDate,
                     EndDate = f.EndDate,
-                    DayOfWeek= f.DayOfWeek,
-                    Price= f.Price,
+                    DayOfWeek = f.DayOfWeek,
+                    Price = f.Price,
                 }).ToList()
             }).ToList();
 

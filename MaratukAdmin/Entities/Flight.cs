@@ -12,8 +12,6 @@
         public int AirlineId { get; set; }//create aviakompania
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }//create vozdushnoye sudno
-        public int TripTypeId { get; set; }
-        public int TripDays { get; set; }
 
 
         public ICollection<Schedule> Schedules { get; set; }

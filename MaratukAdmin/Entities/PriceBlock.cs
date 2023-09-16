@@ -12,5 +12,7 @@
         public string Comments { get; set; }
         public int TarifId { get; set; }
         public int PriceBlockStateId { get; set; }
+        public int TripTypeId { get; set; }
+        public int TripDays { get; set; }
     }
 }

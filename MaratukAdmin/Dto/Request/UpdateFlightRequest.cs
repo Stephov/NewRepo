@@ -15,8 +15,6 @@ namespace MaratukAdmin.Dto.Request
         public int AirlineId { get; set; }
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }
-        public int TripTypeId { get; set; }
-        public int TripDays { get; set; }
 
         public ICollection<ScheduleRequest> Schedules { get; set; }
     }

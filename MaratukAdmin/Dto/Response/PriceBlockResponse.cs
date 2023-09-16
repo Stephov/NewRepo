@@ -8,6 +8,8 @@
         public string PricePackageId { get; set; }
         public string ServiceClassId { get; set; }
         public string PriceBlockStateId { get; set; }
+        public string TripTypeId { get; set; }
+        public int TripDays { get; set; }
 
     }
 }
