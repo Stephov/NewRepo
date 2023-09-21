@@ -322,28 +322,46 @@ namespace MaratukAdmin.Managers.Concrete
         {
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
             int identity = 0;
-
-            var groupedFlights = result.GroupBy(f => f.DepartureCityName)
-            .Select(group => new GroupedFlight
-            {
-                Id = ++identity,
-                DepartureCountryName = group.First().DepartureCountryName,
-                DepartureCityName = group.Key,
-                DepartureAirportName = group.First().DepartureAirportName,
-                DepartureAirportCode = group.First().DepartureAirportCode,
-                Destination = group.Select(f => new Destination
+          
+            var groupedFlights = result
+                .GroupBy(f => new
                 {
-                    FlightId = f.FlightId,
-                    DestinationCountryName = f.DestinationCountryName,
-                    DestinationCityName = f.DestinationCityName,
-                    DestinationAirportName = f.DestinationAirportName,
-                    DestinationAirportCode = f.DestinationAirportCode,
-                    StartDate = f.StartDate,
-                    EndDate = f.EndDate,
-                    DayOfWeek = f.DayOfWeek,
-                    Price = f.Price,
-                }).ToList()
-            }).ToList();
+                    f.DepartureCountryName,
+                    f.DepartureCityName,
+                    f.DepartureAirportName,
+                    f.DepartureAirportCode,
+                    f.DestinationCountryName,
+                    f.DestinationCityName,
+                    f.DestinationAirportName,
+                    f.DestinationAirportCode,
+                })
+                .Select(group => new GroupedFlight
+                {
+                    Id = ++identity,
+                    DepartureCountryName = group.Key.DepartureCountryName,
+                    DepartureCityName = group.Key.DepartureCityName,
+                    DepartureAirportName = group.Key.DepartureAirportName,
+                    DepartureAirportCode = group.Key.DepartureAirportCode,
+                    Destination = new List<Destination>
+                    {
+                        new Destination
+                        {
+                            FlightId = group.First().FlightId,
+                            DestinationCountryName = group.Key.DestinationCountryName,
+                            DestinationCityName = group.Key.DestinationCityName,
+                            DestinationAirportName = group.Key.DestinationAirportName,
+                            DestinationAirportCode = group.Key.DestinationAirportCode,
+                            Date = group.Select(f => new DateInfo
+                            {
+                                StartDate = f.StartDate,
+                                EndDate = f.EndDate,
+                                DayOfWeek = f.DayOfWeek,
+                                Price = f.Price,
+                            }).ToList()
+                        }
+                    }
+                })
+                .ToList();
 
             return groupedFlights;
         }

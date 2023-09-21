@@ -17,6 +17,11 @@
         public string DestinationCityName { get; set; }
         public string DestinationAirportName { get; set; }
         public string DestinationAirportCode { get; set; }
+        public List<DateInfo> Date { get; set; }
+    }
+
+    public class DateInfo
+    {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string DayOfWeek { get; set; }
