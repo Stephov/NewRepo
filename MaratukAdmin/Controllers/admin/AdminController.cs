@@ -345,5 +345,6 @@ namespace MaratukAdmin.Controllers.admin
 
             return Ok(result);
         }
+        public async Task<ActionResult> FligthDateInfo(int FlightId,int PriceBlockId,int DepartureCountryId,int DepartureCityId,int DestinationCountryId,int DestinationCityId,DateTime FromDate)
     }
 }
