@@ -11,6 +11,8 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<User>? Users { get; set; }
 
         public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
+        public DbSet<FlightReturnDateForManual> FlightReturnDateForManual { get; set; }
+        public DbSet<FlightReturnDate> FlightReturnDate { get; set; }
 
         public DbSet<AgencyUser>? AgencyUser { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
@@ -113,6 +115,8 @@ namespace MaratukAdmin.Infrastructure
         .HasKey(r => r.Id);
 
             modelBuilder.Entity<FlightInfoFunction>().HasNoKey().ToView("GetFlightInfoByTripType");
+            modelBuilder.Entity<FlightReturnDateForManual>().HasNoKey().ToView("GetFlightReturnDateForManual");
+            modelBuilder.Entity<FlightReturnDate>().HasNoKey().ToView("GetFlightReturnDate");
 
         }
 

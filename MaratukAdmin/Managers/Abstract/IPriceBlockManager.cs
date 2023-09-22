@@ -23,6 +23,8 @@ namespace MaratukAdmin.Managers.Abstract
 
         Task<List<GroupedFlight>> GetSearchInfoAsync(int TripTypeId);
 
+        Task<DateResponse> GetFligthDateInfoAsync(int FlightId, int PriceBlockId, int DepartureCountryId, int DepartureCityId, int DestinationCountryId, int DestinationCityId, DateTime FromDate);
+
         Task<PriceBlockServices> AddPriceBlockServicesAsync(AddPriceBlockServicesRequest priceBlock);
         //Task<FlightInfoResponse> GetPriceBlockInfoByIdAsync(int id);
     }

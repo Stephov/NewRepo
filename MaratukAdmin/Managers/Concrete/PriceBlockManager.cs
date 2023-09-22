@@ -322,7 +322,7 @@ namespace MaratukAdmin.Managers.Concrete
         {
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
             int identity = 0;
-          
+
             var groupedFlights = result
                 .GroupBy(f => new
                 {
@@ -375,5 +375,53 @@ namespace MaratukAdmin.Managers.Concrete
             return groupedFlights;
         }
 
+        public async Task<DateResponse> GetFligthDateInfoAsync(int FlightId, int PriceBlockId, int DepartureCountryId, int DepartureCityId, int DestinationCountryId, int DestinationCityId, DateTime FromDate)
+        {
+
+
+            var returned = await _functionRepository.GetFlightReturnDateAsync(PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId);
+            var manual = await _functionRepository.GetFlightReturnDateForManualAsync(FromDate, FlightId);
+            DateResponse result = new DateResponse();
+            List<RoundTripResponse> roundTrips = new List<RoundTripResponse>();
+            List<ManualTripResponse> manualTrips = new List<ManualTripResponse>();
+
+
+            if (returned != null)
+            {
+                foreach (var response in returned)
+                {
+                    var roundTrip = new RoundTripResponse()
+                    {
+                        StartDate = response.StartDate,
+                        EndDate = response.EndDate,
+                        DayOfWeek = response.DayOfWeek,
+                        Price = response.Price,
+                    };
+                    roundTrips.Add(roundTrip);
+                }
+
+            }
+
+            if (manual != null)
+            {
+                foreach (var response in manual)
+                {
+                    var manualTrip = new ManualTripResponse()
+                    {
+                        StartDate = response.StartDate,
+                        EndDate = response.EndDate,
+                        Price = response.Price,
+                    };
+                    manualTrips.Add(manualTrip);
+                }
+
+            }
+
+            result.Date = roundTrips;
+            result.Manual= manualTrips;
+
+            return result;
+
+        }
     }
 }

@@ -345,6 +345,13 @@ namespace MaratukAdmin.Controllers.admin
 
             return Ok(result);
         }
+
+        [HttpGet("FligthDateInfo")]
         public async Task<ActionResult> FligthDateInfo(int FlightId,int PriceBlockId,int DepartureCountryId,int DepartureCityId,int DestinationCountryId,int DestinationCityId,DateTime FromDate)
+        {
+            var result = await _priceBlockManager.GetFligthDateInfoAsync(FlightId, PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId, FromDate);
+
+            return Ok(result);
+        }
     }
 }
