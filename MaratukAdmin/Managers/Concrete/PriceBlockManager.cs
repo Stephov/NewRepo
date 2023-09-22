@@ -327,10 +327,14 @@ namespace MaratukAdmin.Managers.Concrete
                 .GroupBy(f => new
                 {
                     f.DepartureCountryName,
+                    f.DepartureCountryId,
                     f.DepartureCityName,
+                    f.DepartureCityId,
                     f.DepartureAirportName,
                     f.DepartureAirportCode,
                     f.DestinationCountryName,
+                    f.DestinationCountryId,
+                    f.DestinationCityId,
                     f.DestinationCityName,
                     f.DestinationAirportName,
                     f.DestinationAirportCode,
@@ -339,7 +343,9 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     Id = ++identity,
                     DepartureCountryName = group.Key.DepartureCountryName,
+                    DepartureCountryId = group.Key.DepartureCountryId,
                     DepartureCityName = group.Key.DepartureCityName,
+                    DepartureCityId = group.Key.DepartureCityId,
                     DepartureAirportName = group.Key.DepartureAirportName,
                     DepartureAirportCode = group.Key.DepartureAirportCode,
                     Destination = new List<Destination>
@@ -347,8 +353,11 @@ namespace MaratukAdmin.Managers.Concrete
                         new Destination
                         {
                             FlightId = group.First().FlightId,
+                            PriceBlockId = group.First().PriceBlockId,
                             DestinationCountryName = group.Key.DestinationCountryName,
+                            DestinationCountryId = group.Key.DestinationCountryId,
                             DestinationCityName = group.Key.DestinationCityName,
+                            DestinationCityId = group.Key.DestinationCityId,
                             DestinationAirportName = group.Key.DestinationAirportName,
                             DestinationAirportCode = group.Key.DestinationAirportCode,
                             Date = group.Select(f => new DateInfo

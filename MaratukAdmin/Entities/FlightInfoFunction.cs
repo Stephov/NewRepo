@@ -3,12 +3,18 @@
     public class FlightInfoFunction
     {
         public int FlightId { get; set; }
+        public int PriceBlockId { get; set; }
         public string DepartureCountryName { get; set; }
+        public int DepartureCountryId { get; set; }
         public string DepartureCityName { get; set; }
+        public int DepartureCityId { get; set; }
         public string DepartureAirportName { get; set; }
         public string DepartureAirportCode { get; set; }
         public string DestinationCountryName { get; set; }
+        public int DestinationCountryId { get; set; }
         public string DestinationCityName { get; set; }
+        public int DestinationCityId { get; set; }
+
         public string DestinationAirportName { get; set; }
         public string DestinationAirportCode { get; set; }
         public DateTime StartDate { get; set; }
