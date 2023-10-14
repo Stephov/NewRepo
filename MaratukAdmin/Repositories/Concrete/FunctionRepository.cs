@@ -67,5 +67,33 @@ namespace MaratukAdmin.Repositories.Concrete
 
             return null;
         }
+
+        public async Task<List<SearchResultFunction>> GetFligthOneWayInfoFunctionAsync(int FlightId, DateTime FlightDate)
+        {
+            try
+            {
+                var results = await _context.SearchResultFunctionOneWay
+           .FromSqlRaw("EXEC GetFlightResultOneWay @p0, @p1", FlightId, FlightDate)
+           .ToListAsync();
+                return results;
+
+            }
+            catch (Exception ex)
+            {
+                string message = ex.Message;
+            }
+            return null;
+        }
+
+        public async Task<List<SearchResultFunctionTwoWay>> GetFligthTwoWayInfoFunctionAsync(int FlightOneWayId, int? FlightReturnedId, DateTime FlightStartDate, DateTime? FlightEndDate)
+        {
+
+                var results = await _context.SearchResultFunctionTwoWay
+           .FromSqlRaw("EXEC GetFlightResultTwoWay @p0, @p1, @p2, @p3", FlightOneWayId, FlightReturnedId, FlightStartDate, FlightEndDate)
+           .ToListAsync();
+                return results;
+
+          
+        }
     }
 }

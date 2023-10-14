@@ -15,7 +15,7 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    // [Authorize(AuthenticationSchemes = "AdminScheme")]
     public class AdminController : BaseController
     {
         private readonly ICountryManager _countryManager;
@@ -350,6 +350,14 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<ActionResult> FligthDateInfo(int FlightId,int PriceBlockId,int DepartureCountryId,int DepartureCityId,int DestinationCountryId,int DestinationCityId,DateTime FromDate)
         {
             var result = await _priceBlockManager.GetFligthDateInfoAsync(FlightId, PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId, FromDate);
+
+            return Ok(result);
+        }
+
+        [HttpPost("FligthSearch")]
+        public async Task<ActionResult> FligthSearch(SearchFlightResult searchFlightResult)
+        {
+            var result = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightResult);
 
             return Ok(result);
         }
