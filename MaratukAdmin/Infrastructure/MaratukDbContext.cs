@@ -11,6 +11,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<User>? Users { get; set; }
 
         public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
+        public DbSet<BookedFlight> BookedFlights { get; set; }
         public DbSet<SearchResultFunction> SearchResultFunctionOneWay { get; set; }
         public DbSet<SearchResultFunctionTwoWay> SearchResultFunctionTwoWay { get; set; }
         public DbSet<FlightReturnDateForManual> FlightReturnDateForManual { get; set; }
@@ -55,6 +56,9 @@ namespace MaratukAdmin.Infrastructure
 
             modelBuilder.Entity<AgencyUser>()
                 .HasKey(e => e.Id);
+
+            modelBuilder.Entity<BookedFlight>()
+               .HasKey(e => e.Id);
 
             modelBuilder.Entity<RefreshToken>()
                 .HasKey(r => r.Id);

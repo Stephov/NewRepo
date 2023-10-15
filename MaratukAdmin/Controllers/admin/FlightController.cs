@@ -14,15 +14,17 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    //[Authorize(AuthenticationSchemes = "AdminScheme")]
     public class FlightController : BaseController
     {
 
         private readonly IFlightManager _flightManager;
-        public FlightController(IFlightManager flightManager,
+        private readonly IBookedFlightManager _bookedFlightManager;
+        public FlightController(IFlightManager flightManager, IBookedFlightManager bookedFlightManager,
                                 JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
             _flightManager = flightManager;
+            _bookedFlightManager = bookedFlightManager;
         }
 
 
@@ -108,6 +110,44 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<bool> isFlightNameExist(string name)
         {
             var res = await _flightManager.IsFlightNameExistAsync(name);
+            return res;
+        }
+
+        [HttpPost("BookFlight")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> BookFlight([FromBody] List<AddBookedFlight> addBookedFlight)
+        {
+            try
+            {
+                //call manager
+                var result = await _bookedFlightManager.AddBookedFlightAsync(addBookedFlight);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
+        [HttpGet("BookFlight/{agentId:int}")]
+        [AllowAnonymous]
+        public async Task<IEnumerable<BookedFlight>> GetBookFlightAsync(int agentId)
+        {
+            var res = await _bookedFlightManager.GetBookedFlightByAgentIdAsync(agentId);
+            return res;
+        }
+
+        [HttpGet("AllBookFlight")]
+        [AllowAnonymous]
+        public async Task<IEnumerable<BookedFlight>> GetAllBookFlightAsync()
+        {
+            var res = await _bookedFlightManager.GetBookedFlightAsync();
             return res;
         }
 

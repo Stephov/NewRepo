@@ -6,7 +6,7 @@ namespace MaratukAdmin.Managers.Abstract
     public interface IPartnerManager
     {
         Task<List<Partner>> GetPartnerAsync();
-        Task<Partner> AddPartnerAsync(AddPartner tarif);
+        Task<Partner> AddPartnerAsync(AddPartner partner);
         Task<Partner> GetPartnerNameByIdAsync(int id);
     }
 }

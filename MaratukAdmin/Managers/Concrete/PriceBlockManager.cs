@@ -453,7 +453,7 @@ namespace MaratukAdmin.Managers.Concrete
                         flightSearchResponse.CostPerTickets = resOneWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
                         flightSearchResponse.AdultPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
                         flightSearchResponse.ChildPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
-                        flightSearchResponse.InfantPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
+                        flightSearchResponse.InfantPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
 
                         responses.Add(flightSearchResponse);
 
