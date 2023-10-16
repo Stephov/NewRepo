@@ -15,7 +15,7 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-    // [Authorize(AuthenticationSchemes = "AdminScheme")]
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
     public class AdminController : BaseController
     {
         private readonly ICountryManager _countryManager;
@@ -25,6 +25,7 @@ namespace MaratukAdmin.Controllers.admin
         private readonly IAircraftManager _aircraftManager;
         private readonly IAirportManager _airportManager;
         private readonly IAirServiceManager _airServiceManager;
+        private readonly IOrderStatusManager _orderStatusManager;
         private readonly ITarifManager _tarifManager;
         private readonly IServiceClassManager _serviceClassManager;
         private readonly ISeasonManager _seasonManager;
@@ -39,6 +40,7 @@ namespace MaratukAdmin.Controllers.admin
                                  IAirlineManager airlineManager,
                                  IAircraftManager aircraftManager,
                                  IAirServiceManager airServiceManager,
+                                 IOrderStatusManager orderStatusManager,
                                  IAirportManager airportManager,
                                  ITarifManager tarifManager,
                                  IServiceClassManager serviceClassManager,
@@ -68,6 +70,7 @@ namespace MaratukAdmin.Controllers.admin
             _currencyRatesManager = currencyRatesManager;
             _adminManager = adminManager;
             _priceBlockManager = priceBlockManager;
+            _orderStatusManager = orderStatusManager;
         }
 
 
@@ -334,6 +337,14 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<ActionResult> GetAirService()
         {
             var result = await _airServiceManager.GetAirServicesAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("OrderStatus")]
+        public async Task<ActionResult> GetOrderStatus()
+        {
+            var result = await _orderStatusManager.GetOrderStatusAsync();
 
             return Ok(result);
         }

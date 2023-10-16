@@ -41,6 +41,14 @@ namespace MaratukAdmin.Controllers
             var res = await _userManager.IsUserEmailExistAsync(email);
             return res;
         }
+        [HttpGet("managers")]
+        [AllowAnonymous]
+        public async Task<List<ManagerResponse>> GetManagersAsync()
+        {
+            var res = await _userManager.GetManagersAsync();
+            return res;
+        }
+
 
         [HttpGet("activate")]
         [AllowAnonymous]

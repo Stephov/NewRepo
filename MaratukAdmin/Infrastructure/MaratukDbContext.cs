@@ -21,6 +21,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<Country> Country { get; set; } = null!;
         public DbSet<AirService> AirService { get; set; } = null!;
+        public DbSet<OrderStatus> OrderStatus { get; set; } = null!;
         public DbSet<City> City { get; set; } = null!;
         public DbSet<Airport> Airport { get; set; } = null!;
         public DbSet<PricePackage> PricePackage { get; set; } = null!;
@@ -70,6 +71,9 @@ namespace MaratukAdmin.Infrastructure
                .HasKey(r => r.Id);
 
             modelBuilder.Entity<AirService>()
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<OrderStatus>()
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<Airport>()

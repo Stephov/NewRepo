@@ -27,6 +27,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<ICurrencyRatesRepository, CurrencyRatesRepository>()
             .AddScoped<IAircraftRepository, AircraftRepository>()
             .AddScoped<IAirServiceRepository, AirServiceRepository>()
+            .AddScoped<IOrderStatusRepository, OrderStatusRepository>()
             .AddScoped<IPricePackageRepository, PricePackageRepository>()
             .AddScoped<IFunctionRepository, FunctionRepository>()
             .AddScoped(typeof(IMainRepository<>), typeof(MainRepository<>));

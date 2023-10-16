@@ -436,5 +436,19 @@ namespace MaratukAdmin.Managers.Concrete
                 throw;
             }
         }
+
+        public async Task<List<ManagerResponse>> GetManagersAsync()
+        { var resp = new List<ManagerResponse>();
+           var result =  await _userRepository.GetManagersAsync("manager");
+            foreach(var manager in result)
+            {
+                ManagerResponse response = new ManagerResponse();
+                response.Id = manager.Id;
+                response.Name = manager.Name;
+                resp.Add(response);
+            }
+            
+            return resp;
+        }
     }
 }

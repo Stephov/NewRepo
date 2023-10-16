@@ -123,5 +123,10 @@ namespace MaratukAdmin.Repositories.Concrete
                 return false;
             }
         }
+
+        public async Task<List<User>> GetManagersAsync(string role)
+        {
+            return await _dbContext.Users.Where(u => u.Role == role).ToListAsync();
+        }
     }
 }
