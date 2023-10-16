@@ -349,7 +349,7 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
-        [HttpGet("FligthCountryInfo")]
+        [HttpGet("SearchFligthByTripType")]
         public async Task<ActionResult> FligthCountryInfo(int TripTypeId)
         {
             var result = await _priceBlockManager.GetSearchInfoAsync(TripTypeId);
@@ -357,7 +357,7 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
-        [HttpGet("FligthDateInfo")]
+        [HttpGet("FligthReturnedDateInfo")]
         public async Task<ActionResult> FligthDateInfo(int FlightId,int PriceBlockId,int DepartureCountryId,int DepartureCityId,int DestinationCountryId,int DestinationCityId,DateTime FromDate)
         {
             var result = await _priceBlockManager.GetFligthDateInfoAsync(FlightId, PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId, FromDate);
