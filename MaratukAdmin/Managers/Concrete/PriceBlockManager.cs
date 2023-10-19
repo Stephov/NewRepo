@@ -386,7 +386,6 @@ namespace MaratukAdmin.Managers.Concrete
             List<RoundTripResponse> roundTrips = new List<RoundTripResponse>();
             List<ManualTripResponse> manualTrips = new List<ManualTripResponse>();
 
-
             if (returned != null)
             {
                 foreach (var response in returned)
@@ -397,6 +396,7 @@ namespace MaratukAdmin.Managers.Concrete
                         EndDate = response.EndDate,
                         DayOfWeek = response.DayOfWeek,
                         Price = response.Price,
+                        FlightId= response.FlightId,
                     };
                     roundTrips.Add(roundTrip);
                 }
@@ -412,6 +412,7 @@ namespace MaratukAdmin.Managers.Concrete
                         StartDate = response.StartDate,
                         EndDate = response.EndDate,
                         Price = response.Price,
+                        FlightId = response.FlightId,
                     };
                     manualTrips.Add(manualTrip);
                 }

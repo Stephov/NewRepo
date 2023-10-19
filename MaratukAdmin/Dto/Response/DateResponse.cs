@@ -12,6 +12,7 @@
         public DateTime EndDate { get; set; }
         public string DayOfWeek { get; set; }
         public double? Price { get; set; }
+        public int FlightId { get; set; }
     }
 
     public class ManualTripResponse
@@ -19,5 +20,6 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public double? Price { get; set; }
+        public int FlightId { get; set; }
     }
 }
