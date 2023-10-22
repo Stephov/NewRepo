@@ -430,8 +430,8 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<List<FinalFlightSearchResponse>> GetFligthSearchResultAsync(SearchFlightResult searchFlightResult)
         {
             FinalFlightSearchResponse finalResponse = new FinalFlightSearchResponse();
-            FlightSearchResponse OneWay = new FlightSearchResponse();
-            FlightSearchResponse TwoWay = new FlightSearchResponse();
+/*            FlightSearchResponse OneWay = new FlightSearchResponse();
+*/            FlightSearchResponse TwoWay = new FlightSearchResponse();
 
             List<FinalFlightSearchResponse> listResponse = new List<FinalFlightSearchResponse>();
 
@@ -442,8 +442,6 @@ namespace MaratukAdmin.Managers.Concrete
                 var resOneWay = await _functionRepository.GetFligthOneWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.StartDate);
                 foreach (var res in resOneWay)
                 {
-                    Random random = new Random();
-                    int randomNumber = random.Next(0, 1000001);
 
                     if (OnefligthId != res.FlightId)
                     {
@@ -451,7 +449,6 @@ namespace MaratukAdmin.Managers.Concrete
 
                         var flightSearchResponse = new FlightSearchResponse()
                         {
-                            GroupId = randomNumber,
                             FlightId = res.FlightId,
                             NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                             DirectTimeToMinute = res.FlightTimeMinute,
@@ -465,7 +462,17 @@ namespace MaratukAdmin.Managers.Concrete
                         flightSearchResponse.ChildPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
                         flightSearchResponse.InfantPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
 
-                        finalResponse.OneWay = flightSearchResponse;
+                       
+                        finalResponse.FlightId = flightSearchResponse.FlightId;
+                        finalResponse.CostPerTickets = flightSearchResponse.CostPerTickets;
+                        finalResponse.TotalPrice = flightSearchResponse.TotalPrice;
+                        finalResponse.NumberOfTravelers = flightSearchResponse.NumberOfTravelers;
+                        finalResponse.DirectTimeToMinute = flightSearchResponse.DirectTimeToMinute;
+                        finalResponse.DepartureAirportCode = flightSearchResponse.DepartureAirportCode;
+                        finalResponse.DestinationAirportCode = flightSearchResponse.DestinationAirportCode;
+                        finalResponse.AdultPrice = flightSearchResponse.AdultPrice;
+                        finalResponse.ChildPrice = flightSearchResponse.ChildPrice;
+                        finalResponse.InfantPrice = flightSearchResponse.InfantPrice;
 
                     }
                 }
@@ -477,11 +484,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 var resTwoWay = await _functionRepository.GetFligthTwoWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.FlightTwoId, searchFlightResult.StartDate, searchFlightResult.ReturnedDate);
 
-               
-
-
-                Random random = new Random();
-                int randomNumber = random.Next(0, 1000001);
+              
                 foreach (var res in resTwoWay)
                 {
                     
@@ -491,7 +494,6 @@ namespace MaratukAdmin.Managers.Concrete
                         lastFligthId = res.FlightId;
                         var flightSearchResponse = new FlightSearchResponse()
                         {
-                            GroupId = randomNumber,
                             FlightId = res.FlightId,
                             NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                             DirectTimeToMinute = res.FlightTimeMinute,
@@ -507,7 +509,17 @@ namespace MaratukAdmin.Managers.Concrete
                         flightSearchResponse.InfantPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
 
 
-                        finalResponse.OneWay = flightSearchResponse;
+
+                        finalResponse.FlightId = flightSearchResponse.FlightId;
+                        finalResponse.CostPerTickets = flightSearchResponse.CostPerTickets;
+                        finalResponse.TotalPrice = flightSearchResponse.TotalPrice;
+                        finalResponse.NumberOfTravelers = flightSearchResponse.NumberOfTravelers;
+                        finalResponse.DirectTimeToMinute = flightSearchResponse.DirectTimeToMinute;
+                        finalResponse.DepartureAirportCode = flightSearchResponse.DepartureAirportCode;
+                        finalResponse.DestinationAirportCode = flightSearchResponse.DestinationAirportCode;
+                        finalResponse.AdultPrice = flightSearchResponse.AdultPrice;
+                        finalResponse.ChildPrice = flightSearchResponse.ChildPrice;
+                        finalResponse.InfantPrice = flightSearchResponse.InfantPrice;
 
                     }
                     else
@@ -516,7 +528,6 @@ namespace MaratukAdmin.Managers.Concrete
                         lastFligthId = res.FlightId;
                         var flightSearchResponse = new FlightSearchResponse()
                         {
-                            GroupId = randomNumber,
                             FlightId = res.FlightId,
                             NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                             DirectTimeToMinute = res.FlightTimeMinute,
@@ -532,7 +543,7 @@ namespace MaratukAdmin.Managers.Concrete
                         flightSearchResponse.InfantPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
 
 
-                        finalResponse.TwoWay = flightSearchResponse;
+                        finalResponse.ReturnedFlight = flightSearchResponse;
                     }
                    
                 }
