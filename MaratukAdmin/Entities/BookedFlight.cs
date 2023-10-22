@@ -27,8 +27,8 @@
         public int CountryId { get; set; }
         public double? Dept { get; set; }
 
-        public int FlightId { get; set; }
-        public DateTime FlightDate { get; set; }
+        public int StartFlightId { get; set; }
+        public int EndFlightId { get; set; }
 
 
     }
