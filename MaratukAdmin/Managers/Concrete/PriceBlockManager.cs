@@ -7,6 +7,7 @@ using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Exceptions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
+using System;
 using System.Collections.Generic;
 
 namespace MaratukAdmin.Managers.Concrete
@@ -435,7 +436,8 @@ namespace MaratukAdmin.Managers.Concrete
                 var resOneWay = await _functionRepository.GetFligthOneWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.StartDate);
                 foreach (var res in resOneWay)
                 {
-
+                    Random random = new Random();
+                    int randomNumber = random.Next(0, 1000001);
 
                     if (fligthId != res.FlightId)
                     {
@@ -443,6 +445,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                         var flightSearchResponse = new FlightSearchResponse()
                         {
+                            GroupId = randomNumber,
                             FlightId = res.FlightId,
                             NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                             DirectTimeToMinute = res.FlightTimeMinute,
@@ -466,10 +469,11 @@ namespace MaratukAdmin.Managers.Concrete
             else
             {
                 var resTwoWay = await _functionRepository.GetFligthTwoWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.FlightTwoId, searchFlightResult.StartDate, searchFlightResult.ReturnedDate);
-
+                Random random = new Random();
+                int randomNumber = random.Next(0, 1000001);
                 foreach (var res in resTwoWay)
                 {
-
+                   
 
                     if (fligthId != res.FlightId)
                     {
@@ -477,6 +481,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                         var flightSearchResponse = new FlightSearchResponse()
                         {
+                            GroupId = randomNumber,
                             FlightId = res.FlightId,
                             NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                             DirectTimeToMinute = res.FlightTimeMinute,
@@ -498,7 +503,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                 }
             }
-
+       
 
             return responses;
 

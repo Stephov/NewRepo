@@ -2,6 +2,7 @@
 {
     public class FlightSearchResponse
     {
+        public int GroupId { get; set; }
         public int FlightId { get; set; }
         public double CostPerTickets { get; set; }
         public double TotalPrice { get; set; }     
