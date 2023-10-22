@@ -15,4 +15,10 @@
         public double ChildPrice { get; set; }
         public double InfantPrice { get; set; }
     }
+
+    public class FinalFlightSearchResponse
+    {
+        public FlightSearchResponse OneWay { get; set; }
+        public FlightSearchResponse TwoWay { get; set; }
+    }
 }

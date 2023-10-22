@@ -427,10 +427,16 @@ namespace MaratukAdmin.Managers.Concrete
 
         }
 
-        public async Task<List<FlightSearchResponse>> GetFligthSearchResultAsync(SearchFlightResult searchFlightResult)
+        public async Task<List<FinalFlightSearchResponse>> GetFligthSearchResultAsync(SearchFlightResult searchFlightResult)
         {
-            List<FlightSearchResponse> responses = new List<FlightSearchResponse>();
-            int fligthId = 0;
+            FinalFlightSearchResponse finalResponse = new FinalFlightSearchResponse();
+            FlightSearchResponse OneWay = new FlightSearchResponse();
+            FlightSearchResponse TwoWay = new FlightSearchResponse();
+
+            List<FinalFlightSearchResponse> listResponse = new List<FinalFlightSearchResponse>();
+
+            int OnefligthId = 0;
+            int lastFligthId = 0;
             if (searchFlightResult.FlightTwoId == null)
             {
                 var resOneWay = await _functionRepository.GetFligthOneWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.StartDate);
@@ -439,9 +445,9 @@ namespace MaratukAdmin.Managers.Concrete
                     Random random = new Random();
                     int randomNumber = random.Next(0, 1000001);
 
-                    if (fligthId != res.FlightId)
+                    if (OnefligthId != res.FlightId)
                     {
-                        fligthId = res.FlightId;
+                        OnefligthId = res.FlightId;
 
                         var flightSearchResponse = new FlightSearchResponse()
                         {
@@ -459,26 +465,30 @@ namespace MaratukAdmin.Managers.Concrete
                         flightSearchResponse.ChildPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
                         flightSearchResponse.InfantPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
 
-                        responses.Add(flightSearchResponse);
+                        finalResponse.OneWay = flightSearchResponse;
 
                     }
-
                 }
+                listResponse.Add(finalResponse);
+
 
             }
             else
             {
                 var resTwoWay = await _functionRepository.GetFligthTwoWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.FlightTwoId, searchFlightResult.StartDate, searchFlightResult.ReturnedDate);
+
+               
+
+
                 Random random = new Random();
                 int randomNumber = random.Next(0, 1000001);
                 foreach (var res in resTwoWay)
                 {
-                   
+                    
 
-                    if (fligthId != res.FlightId)
+                   if (res.FlightId == searchFlightResult.FlightOneId)
                     {
-                        fligthId = res.FlightId;
-
+                        lastFligthId = res.FlightId;
                         var flightSearchResponse = new FlightSearchResponse()
                         {
                             GroupId = randomNumber,
@@ -496,16 +506,40 @@ namespace MaratukAdmin.Managers.Concrete
                         flightSearchResponse.ChildPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
                         flightSearchResponse.InfantPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
 
-                        responses.Add(flightSearchResponse);
 
+                        finalResponse.OneWay = flightSearchResponse;
 
                     }
+                    else
+                    {
+                        OnefligthId = res.FlightId;
+                        lastFligthId = res.FlightId;
+                        var flightSearchResponse = new FlightSearchResponse()
+                        {
+                            GroupId = randomNumber,
+                            FlightId = res.FlightId,
+                            NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
+                            DirectTimeToMinute = res.FlightTimeMinute,
+                            DepartureAirportCode = res.DepartureAirportCode,
+                            DestinationAirportCode = res.DestinationAirportCode,
+                            TotalPrice = CalacTotalPriceTwo(resTwoWay, searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant)
+                        };
 
+
+                        flightSearchResponse.CostPerTickets = resTwoWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
+                        flightSearchResponse.AdultPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
+                        flightSearchResponse.ChildPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
+                        flightSearchResponse.InfantPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
+
+
+                        finalResponse.TwoWay = flightSearchResponse;
+                    }
+                   
                 }
+                listResponse.Add(finalResponse);
             }
-       
 
-            return responses;
+            return listResponse;
 
         }
 
