@@ -16,8 +16,8 @@ namespace MaratukAdmin.Dto.Request
         public double Rate { get; set; }
         public double TotalPriceAmd { get; set; }
         public int PassengersCount { get; set; }
-        public DateTime DepartureDate { get; set; }
-        public DateTime ArrivalDate { get; set; }
+        public DateTime TourStartDate { get; set; }
+        public DateTime TourEndDate { get; set; }
 
         public int MaratukAgentId { get; set; }
         public int CountryId { get; set; }

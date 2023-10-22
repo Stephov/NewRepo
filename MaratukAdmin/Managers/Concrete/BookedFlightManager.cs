@@ -46,8 +46,8 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.Rate = bookedFlight.Rate;
                     booked.TotalPriceAmd = bookedFlight.TotalPriceAmd;
                     booked.PassengersCount = bookedFlight.PassengersCount;
-                    booked.DepartureDate = bookedFlight.DepartureDate;
-                    booked.ArrivalDate = bookedFlight.ArrivalDate;
+                    booked.DepartureDate = bookedFlight.TourStartDate;
+                    booked.ArrivalDate = bookedFlight.TourEndDate;
                     booked.MaratukAgentId = bookedFlight.MaratukAgentId;
                     booked.CountryId = bookedFlight.CountryId;
                     booked.FlightId = bookedFlight.FlightId;
