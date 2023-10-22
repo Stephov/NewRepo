@@ -24,5 +24,7 @@ namespace MaratukAdmin.Managers.Abstract
         Task<bool> ChangePassword(string newPassword1, string newPassword2,string email,string hash);
         Task<bool> IsUserEmailExistAsync(string email);
         Task<AuthenticationResponse> RefreshToken(string token);
+
+        Task<List<AgencyAgentResponse>> GetAgencyAgentByItnAsync(int itn);
     }
 }

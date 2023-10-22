@@ -217,6 +217,24 @@ namespace MaratukAdmin.Controllers
             }
         }
 
+        [HttpGet("GetAgencyAgent/{itn:int}")]
+        public async Task<ActionResult> RegisterAgency(int itn)
+        {
+            try
+            {
+                var res =  await _userManager.GetAgencyAgentByItnAsync(itn);
+
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
 
         /// <summary>
         /// Change admin user password

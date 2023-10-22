@@ -19,5 +19,7 @@ namespace MaratukAdmin.Repositories.Abstract
         Task UpdateRefreshToken(RefreshToken refreshTokens);
         Task AddRefreshToken(RefreshToken refresh);
         Task RevokeExpiredRefreshTokens(int userId);
+
+        Task<List<AgencyUser>> GetAgencyUsersAsync(int itn);
     }
 }

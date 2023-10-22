@@ -7,6 +7,7 @@ using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Services;
 using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -75,6 +76,27 @@ namespace MaratukAdmin.Managers.Concrete
             }
 
 
+        }
+
+        public async Task<List<AgencyAgentResponse>> GetAgencyAgentByItnAsync(int itn)
+        {
+            var respones = new List<AgencyAgentResponse>();
+
+            var response =  await _userRepository.GetAgencyUsersAsync(itn);
+
+            foreach(var agencyUser in response)
+            {
+                AgencyAgentResponse agent = new AgencyAgentResponse()
+                {
+                    Id = agencyUser.Id,
+                    FullName = agencyUser.FullName,
+                    Email = agencyUser.Email,
+                    PhoneNumber = agencyUser.PhoneNumber1
+                };
+            respones.Add(agent);
+            }
+
+            return respones;
         }
 
 
