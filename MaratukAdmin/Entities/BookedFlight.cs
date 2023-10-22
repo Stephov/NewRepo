@@ -19,8 +19,8 @@
         public double Rate { get; set; }
         public double TotalPriceAmd { get; set; }
         public int PassengersCount { get; set; }
-        public DateTime DepartureDate { get; set; }
-        public DateTime ArrivalDate { get; set; }
+        public DateTime TourStartDate { get; set; }
+        public DateTime TourEndDate { get; set; }
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukAgentId { get; set; }
