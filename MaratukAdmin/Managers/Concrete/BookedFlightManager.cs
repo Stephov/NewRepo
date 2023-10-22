@@ -51,6 +51,7 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.MaratukAgentId = bookedFlight.MaratukAgentId;
                     booked.CountryId = bookedFlight.CountryId;
                     booked.FlightId = bookedFlight.FlightId;
+                    booked.FlightDate = bookedFlight.FlightDate;
 
 
 

@@ -28,6 +28,7 @@
         public double? Dept { get; set; }
 
         public int FlightId { get; set; }
+        public DateTime FlightDate { get; set; }
 
 
     }

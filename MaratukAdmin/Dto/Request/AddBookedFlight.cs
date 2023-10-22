@@ -22,6 +22,7 @@ namespace MaratukAdmin.Dto.Request
         public int MaratukAgentId { get; set; }
         public int CountryId { get; set; }
         public int FlightId { get; set; }
+        public DateTime FlightDate { get; set; }
 
     }
 }
