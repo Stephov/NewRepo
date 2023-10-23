@@ -368,6 +368,8 @@ namespace MaratukAdmin.Managers.Concrete
                                 EndDate = f.EndDate,
                                 DayOfWeek = f.DayOfWeek,
                                 Price = f.Price,
+                                DepartureTime = f.DepartureTime,
+                                ArrivalTime = f.ArrivalTime,
                             }).ToList()
                         }
                     }
@@ -398,6 +400,8 @@ namespace MaratukAdmin.Managers.Concrete
                         DayOfWeek = response.DayOfWeek,
                         Price = response.Price,
                         FlightId= response.FlightId,
+                        DepartureTime= response.DepartureTime,
+                        ArrivalTime= response.ArrivalTime,
                     };
                     roundTrips.Add(roundTrip);
                 }
@@ -414,6 +418,10 @@ namespace MaratukAdmin.Managers.Concrete
                         EndDate = response.EndDate,
                         Price = response.Price,
                         FlightId = response.FlightId,
+                        DepartureTime = response.DepartureTime,
+                        ArrivalTime = response.ArrivalTime,
+                        DayOfWeek = response.DayOfWeek,
+
                     };
                     manualTrips.Add(manualTrip);
                 }
