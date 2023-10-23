@@ -462,6 +462,8 @@ namespace MaratukAdmin.Managers.Concrete
                             DirectTimeToMinute = res.FlightTimeMinute,
                             DepartureAirportCode = res.DepartureAirportCode,
                             DestinationAirportCode = res.DestinationAirportCode,
+                            DepartureTime = res.DepartureTime,
+                            ArrivalTime = res.ArrivalTime,
                             TotalPrice = CalacTotalPrice(resOneWay, searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant)
                         };
 
@@ -478,6 +480,8 @@ namespace MaratukAdmin.Managers.Concrete
                         finalResponse.DirectTimeToMinute = flightSearchResponse.DirectTimeToMinute;
                         finalResponse.DepartureAirportCode = flightSearchResponse.DepartureAirportCode;
                         finalResponse.DestinationAirportCode = flightSearchResponse.DestinationAirportCode;
+                        finalResponse.DepartureTime = flightSearchResponse.DepartureTime;
+                        finalResponse.ArrivalTime = flightSearchResponse.ArrivalTime;
                         finalResponse.AdultPrice = flightSearchResponse.AdultPrice;
                         finalResponse.ChildPrice = flightSearchResponse.ChildPrice;
                         finalResponse.InfantPrice = flightSearchResponse.InfantPrice;
@@ -507,6 +511,8 @@ namespace MaratukAdmin.Managers.Concrete
                             DirectTimeToMinute = res.FlightTimeMinute,
                             DepartureAirportCode = res.DepartureAirportCode,
                             DestinationAirportCode = res.DestinationAirportCode,
+                            DepartureTime = res.DepartureTime,
+                            ArrivalTime = res.ArrivalTime,
                             TotalPrice = CalacTotalPriceTwo(resTwoWay, searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant)
                         };
 
@@ -525,6 +531,8 @@ namespace MaratukAdmin.Managers.Concrete
                         finalResponse.DirectTimeToMinute = flightSearchResponse.DirectTimeToMinute;
                         finalResponse.DepartureAirportCode = flightSearchResponse.DepartureAirportCode;
                         finalResponse.DestinationAirportCode = flightSearchResponse.DestinationAirportCode;
+                        finalResponse.DepartureTime = flightSearchResponse.DepartureTime;
+                        finalResponse.ArrivalTime = flightSearchResponse.ArrivalTime;
                         finalResponse.AdultPrice = flightSearchResponse.AdultPrice;
                         finalResponse.ChildPrice = flightSearchResponse.ChildPrice;
                         finalResponse.InfantPrice = flightSearchResponse.InfantPrice;
@@ -541,6 +549,8 @@ namespace MaratukAdmin.Managers.Concrete
                             DirectTimeToMinute = res.FlightTimeMinute,
                             DepartureAirportCode = res.DepartureAirportCode,
                             DestinationAirportCode = res.DestinationAirportCode,
+                            DepartureTime = res.DepartureTime,
+                            ArrivalTime = res.ArrivalTime,
                             TotalPrice = CalacTotalPriceTwo(resTwoWay, searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant)
                         };
 

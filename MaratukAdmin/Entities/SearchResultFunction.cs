@@ -9,7 +9,8 @@
         public int FlightTimeMinute { get; set; }
         public string DepartureAirportCode { get; set; }
         public string DestinationAirportCode { get; set; }
-       
+        public DateTime DepartureTime { get; set; }
+        public DateTime ArrivalTime { get; set; }
     }
 
     public class SearchResultFunctionTwoWay 
@@ -21,5 +22,7 @@
         public int FlightTimeMinute { get; set; }
         public string DepartureAirportCode { get; set; }
         public string DestinationAirportCode { get; set; }
+        public DateTime DepartureTime { get; set; }
+        public DateTime ArrivalTime { get; set; }
     }
 }
