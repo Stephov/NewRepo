@@ -22,6 +22,7 @@ namespace MaratukAdmin.Controllers.admin
         private readonly ICityManager _cityManager;
         private readonly IAdminManager _adminManager;
         private readonly IAirlineManager _airlineManager;
+        private readonly IGenderManager _genderManager;
         private readonly IAircraftManager _aircraftManager;
         private readonly IAirportManager _airportManager;
         private readonly IAirServiceManager _airServiceManager;
@@ -38,6 +39,7 @@ namespace MaratukAdmin.Controllers.admin
         public AdminController(ICountryManager countryManager,
                                  ICityManager cityManager,
                                  IAirlineManager airlineManager,
+                                 IGenderManager genderManager,
                                  IAircraftManager aircraftManager,
                                  IAirServiceManager airServiceManager,
                                  IOrderStatusManager orderStatusManager,
@@ -56,6 +58,7 @@ namespace MaratukAdmin.Controllers.admin
         {
             _countryManager = countryManager;
             _airlineManager = airlineManager;
+            _genderManager = genderManager;
             _cityManager = cityManager;
             _aircraftManager = aircraftManager;
             _airportManager = airportManager;
@@ -123,6 +126,22 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<ActionResult> GetAirline()
         {
             var result = await _airlineManager.GetAirlinesAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("Gender")]
+        public async Task<ActionResult> GetGender()
+        {
+            var result = await _genderManager.GetGenderAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("Gender{id:int}")]
+        public async Task<ActionResult> GetGenderById(int id)
+        {
+            var result = await _genderManager.GetGenderNameByIdAsync(id);
 
             return Ok(result);
         }
