@@ -52,6 +52,8 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.CountryId = bookedFlight.CountryId;
                     booked.StartFlightId = bookedFlight.StartFlightId;
                     booked.EndFlightId = bookedFlight.EndFlightId;
+                    booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
+                    booked.GenderId = bookedFlight.GenderId;
 
 
 

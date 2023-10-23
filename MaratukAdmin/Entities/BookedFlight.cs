@@ -22,8 +22,10 @@
         public DateTime TourStartDate { get; set; }
         public DateTime TourEndDate { get; set; }
         public DateTime? DeadLine { get; set; }
+        public DateTime PasportExpiryDate { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukAgentId { get; set; }
+        public int GenderId { get; set; }
         public int CountryId { get; set; }
         public double? Dept { get; set; }
 

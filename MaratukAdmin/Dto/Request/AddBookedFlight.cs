@@ -10,6 +10,8 @@ namespace MaratukAdmin.Dto.Request
         public DateTime BirthDay { get; set; }
         public string Email { get; set; }
         public string Passport { get; set; }
+        public DateTime PasportExpiryDate { get; set; }
+
         public int AgentId { get; set; }
 
         public double TotalPrice { get; set; }
@@ -23,6 +25,7 @@ namespace MaratukAdmin.Dto.Request
         public int CountryId { get; set; }
         public int StartFlightId { get; set; }
         public int EndFlightId { get; set; }
+        public int GenderId { get; set; }
 
     }
 }
