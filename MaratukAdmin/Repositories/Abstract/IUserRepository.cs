@@ -5,6 +5,8 @@ namespace MaratukAdmin.Repositories.Abstract
     public interface IUserRepository
     {
         Task<User> GetUserAsync(string email);
+
+        Task<bool> DeleteAgentAsync(int agentId);
         Task<List<User>> GetManagersAsync(string role);
         Task<AgencyUser> GetAgencyUserAsync(string email);
         Task CreateUserAsync(User user);

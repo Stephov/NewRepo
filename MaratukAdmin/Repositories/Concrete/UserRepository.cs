@@ -137,5 +137,25 @@ namespace MaratukAdmin.Repositories.Concrete
         {
             return await _dbContext.Users.Where(u => u.Role == role).ToListAsync();
         }
+
+        public async Task<bool> DeleteAgentAsync(int agentId)
+        {
+            try
+            {
+                var entityToDelete = await _dbContext.AgencyUser.FindAsync(agentId);
+
+                if (entityToDelete != null)
+                {
+                    _dbContext.AgencyUser.Remove(entityToDelete);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }catch(Exception ex)
+            {
+                string s = ex.Message;
+            }
+            return false;
+        }
     }
 }

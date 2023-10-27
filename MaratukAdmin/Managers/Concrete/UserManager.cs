@@ -418,6 +418,7 @@ namespace MaratukAdmin.Managers.Concrete
                 response.name = user.FullName;
                 response.Role = user.Role;
                 response.Itn = user.Itn;
+                response.AgentId = user.Id;
                 return response;
             }
 
@@ -471,6 +472,11 @@ namespace MaratukAdmin.Managers.Concrete
             }
             
             return resp;
+        }
+
+        public async Task<bool> DeleteAgentAsync(int agentId)
+        {
+            return await _userRepository.DeleteAgentAsync(agentId);
         }
     }
 }

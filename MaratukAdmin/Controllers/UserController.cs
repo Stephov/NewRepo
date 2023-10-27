@@ -218,11 +218,30 @@ namespace MaratukAdmin.Controllers
         }
 
         [HttpGet("GetAgencyAgent/{itn:int}")]
-        public async Task<ActionResult> RegisterAgency(int itn)
+        public async Task<ActionResult> GetAgencyAgentAsync(int itn)
         {
             try
             {
                 var res =  await _userManager.GetAgencyAgentByItnAsync(itn);
+
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
+        [HttpDelete("DeleteAgencyAgent/{agentId:int}")]
+        public async Task<ActionResult> DeleteAgencyAgentAsync(int agentId)
+        {
+            try
+            {
+                var res = await _userManager.DeleteAgentAsync(agentId);
 
                 return Ok(res);
             }
