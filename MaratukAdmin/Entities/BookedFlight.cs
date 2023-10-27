@@ -20,7 +20,7 @@
         public double TotalPriceAmd { get; set; }
         public int PassengersCount { get; set; }
         public DateTime TourStartDate { get; set; }
-        public DateTime TourEndDate { get; set; }
+        public DateTime? TourEndDate { get; set; }
         public DateTime? DeadLine { get; set; }
         public DateTime PasportExpiryDate { get; set; }
         public double Paid { get; set; } = 0;
@@ -30,7 +30,7 @@
         public double? Dept { get; set; }
 
         public int StartFlightId { get; set; }
-        public int EndFlightId { get; set; }
+        public int? EndFlightId { get; set; }
 
 
     }
