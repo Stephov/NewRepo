@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Entities;
+﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Entities;
 
 namespace MaratukAdmin.Repositories.Abstract
 {
@@ -23,5 +24,7 @@ namespace MaratukAdmin.Repositories.Abstract
         Task RevokeExpiredRefreshTokens(int userId);
 
         Task<List<AgencyUser>> GetAgencyUsersAsync(int itn);
+
+         Task<AgencyUser> UpdateAgencyUser(AgencyAgentUpdateCredentialsRequest agencyAgentUpdateCredentialsRequest,string passwordSalt,string passwordHash);
     }
 }

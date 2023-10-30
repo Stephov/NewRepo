@@ -278,6 +278,23 @@ namespace MaratukAdmin.Managers.Concrete
             }
         }
 
+        public async Task<AgencyUser> UpdateAgencyAgentAsync(AgencyAgentUpdateCredentialsRequest agencyAgentUpdateCredentialsRequest)
+        {
+            if(agencyAgentUpdateCredentialsRequest.Password != null)
+            {
+
+
+                string salt = PasswordHasher.GetSalt();
+                string passwordHash = PasswordHasher.HashPassword(agencyAgentUpdateCredentialsRequest.Password, salt);
+                var res = await _userRepository.UpdateAgencyUser(agencyAgentUpdateCredentialsRequest, salt, passwordHash);
+                return res;
+            }
+            var result = await _userRepository.UpdateAgencyUser(agencyAgentUpdateCredentialsRequest, null, null);
+
+            return result;
+        }
+
+
         public async Task RegisterAsync(string email, string password, string userName, string fullName)
         {
             bool isUserExists = await _userRepository.IsUserExistsAsync(email);
