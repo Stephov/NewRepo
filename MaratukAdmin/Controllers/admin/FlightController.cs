@@ -1,5 +1,6 @@
 ﻿using MaratukAdmin.Business.Models.Common;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
@@ -137,7 +138,7 @@ namespace MaratukAdmin.Controllers.admin
 
         [HttpGet("BookFlight/{agentId:int}")]
         [AllowAnonymous]
-        public async Task<IEnumerable<BookedFlight>> GetBookFlightAsync(int agentId)
+        public async Task<List<BookedFlightResponse>> GetBookFlightAsync(int agentId)
         {
             var res = await _bookedFlightManager.GetBookedFlightByAgentIdAsync(agentId);
             return res;
@@ -145,7 +146,7 @@ namespace MaratukAdmin.Controllers.admin
 
         [HttpGet("AllBookFlight")]
         [AllowAnonymous]
-        public async Task<IEnumerable<BookedFlight>> GetAllBookFlightAsync()
+        public async Task<List<BookedFlightResponse>> GetAllBookFlightAsync()
         {
             var res = await _bookedFlightManager.GetBookedFlightAsync();
             return res;
