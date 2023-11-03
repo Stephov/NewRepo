@@ -664,7 +664,7 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     totalPrice = totalPrice + (adult * resultFunction.Bruto);
                 }
-                if (resultFunction.AgeFrom == 1)
+                if (resultFunction.AgeFrom == 2)
                 {
                     totalPrice = totalPrice + (child * resultFunction.Bruto);
                 }
