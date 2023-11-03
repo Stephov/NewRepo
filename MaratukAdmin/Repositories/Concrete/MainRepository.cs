@@ -105,5 +105,14 @@ namespace MaratukAdmin.Repositories.Concrete
 
             return query;
         }
+
+        //public async Task ResetTableIdentityAsync(T entity)
+        //{
+        //    //var tableName = _dbContext.Model.FindEntityType(typeof(entity)).GetTableName();
+        //    var tableName = entity.GetType().Name;
+
+        //    await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('" + tableName + "', RESEED, 0)");
+
+        //}
     }
 }

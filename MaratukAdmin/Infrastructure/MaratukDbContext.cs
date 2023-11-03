@@ -1,5 +1,6 @@
 ﻿using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
+using MaratukAdmin.Entities.Sansejour;
 using Microsoft.EntityFrameworkCore;
 
 namespace MaratukAdmin.Infrastructure
@@ -21,7 +22,21 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<Aircraft> Aircraft { get; set; } = null!;
 
         public DbSet<Flight> Flight { get; set; }
+        public DbSet<Hotel> Hotel { get; set; }
 
+        public DbSet<SyncSejourContractExportView> SyncSejourContractExportView { get; set; }
+        public DbSet<SyncSejourHotel> SyncSejourHotel { get; set; }
+        public DbSet<SyncSejourSpoAppOrder> SyncSejourSpoAppOrder { get; set; }
+        public DbSet<SyncSejourSpecialOffer> SyncSejourSpecialOffer { get; set; }
+        public DbSet<SyncSejourRate> SyncSejourRate { get; set; }
+        public DbSet<SyncSejourAccomodationType> SyncSejourAccomodationType { get; set; }
+        public DbSet<SyncSejourAccomodationDescription> SyncSejourAccomodationDescription { get; set; }
+
+
+
+
+        public DbSet<SpecialOffer> SpecialOffer { get; set; }
+        public DbSet<SpecialOfferRate> SpecialOfferRate { get; set; }
         public DbSet<PriceBlock> PriceBlocks { get; set; }
 
 
@@ -38,6 +53,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<Partner> Partner { get; set; } = null!;
         public DbSet<Currency> Currency { get; set; } = null!;
         public DbSet<RoomCategory> RoomCategories { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,6 +85,36 @@ namespace MaratukAdmin.Infrastructure
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<Flight>()
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<Hotel>()
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<SyncSejourContractExportView>()
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<SyncSejourHotel>()
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<SyncSejourSpoAppOrder>()
+                    .HasKey(r => r.Id);
+
+            modelBuilder.Entity<SyncSejourSpecialOffer>()
+                    .HasKey(r => r.Id);
+
+            modelBuilder.Entity<SyncSejourRate>()
+                    .HasKey(r => r.Id);
+
+            modelBuilder.Entity<SyncSejourAccomodationType>()
+                    .HasKey(r => r.Id);
+            
+            modelBuilder.Entity<SyncSejourAccomodationDescription>()
+                    .HasKey(r => r.Id);
+            
+            modelBuilder.Entity<SpecialOffer>()
+                    .HasKey(r => r.Id);
+
+            modelBuilder.Entity<SpecialOfferRate>()
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<PriceBlock>()

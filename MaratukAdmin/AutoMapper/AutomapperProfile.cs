@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
+using MaratukAdmin.Entities.Sansejour;
 
 namespace MaratukAdmin.AutoMapper
 {
@@ -35,7 +37,9 @@ namespace MaratukAdmin.AutoMapper
             CreateMap<AddPriceBlockType, PriceBlockType>();
             CreateMap<AddPartner, Partner>();
             CreateMap<AddCurrency, Currency>();
-            CreateMap<AddRoomCategory, RoomCategory>();
+            CreateMap<AddRoomCategoryRequest, RoomCategory>();
+            CreateMap<AddHotelRequest, Hotel>();
+
 
 
 

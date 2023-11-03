@@ -1,5 +1,8 @@
 ﻿using MaratukAdmin.Repositories.Abstract;
+using MaratukAdmin.Repositories.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Concrete;
+using MaratukAdmin.Repositories.Concrete.Sansejour;
+using Newtonsoft.Json.Serialization;
 
 namespace MaratukAdmin.Extensions
 {
@@ -11,6 +14,9 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IAdminRepository, AdminRepository>()
             .AddScoped<IFlightRepository, FlightRepository>()
+            .AddScoped<IHotelRepository, HotelRepository>()
+            .AddScoped<IContractExportRepository, ContractExportRepository>()
+            .AddScoped<ITransactionRepository, TransactionRepository>()
             .AddScoped<ICountryRepository, CountryRepository>()
             .AddScoped<ICityRepository, CityRepository>()
             .AddScoped<IAirlineRepository, AirlineRepository>()
