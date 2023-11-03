@@ -66,6 +66,9 @@ builder.Services.AddDbContexts(builder.Configuration);
 
 builder.Services.AddServicesOptions(builder.Configuration);
 
+builder.Services.AddDistributedMemoryCache();       // To use IDistributedCache
+builder.Services.AddHttpContextAccessor();          // This serice allows to get access to current HttpContext
+
 /*builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();

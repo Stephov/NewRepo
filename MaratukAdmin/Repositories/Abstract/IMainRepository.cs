@@ -13,5 +13,6 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<T> AddAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(int id);
+        //Task ResetTableIdentityAsync(T entity);
     }
 }

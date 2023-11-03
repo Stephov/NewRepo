@@ -1,5 +1,7 @@
 ﻿using MaratukAdmin.Managers.Abstract;
+using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete;
+using MaratukAdmin.Managers.Concrete.Sansejour;
 
 namespace MaratukAdmin.Extensions
 {
@@ -11,6 +13,11 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IUserManager, UserManager>()
             .AddScoped<IAdminManager, AdminManager>()
             .AddScoped<IFlightManager, FlightManager>()
+
+            .AddScoped<IHotelManager, HotelManager>()
+            .AddScoped<IContractExportManager, ContractExportManager>()
+            .AddScoped<IHttpRequestManager, HttpRequestManager>()
+
             .AddScoped<ICountryManager, CountryManager>()
             .AddScoped<ICityManager, CityManager>()
             .AddScoped<IAirlineManager, AirlineManager>()
