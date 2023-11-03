@@ -7,6 +7,8 @@ using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Exceptions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
+using Org.BouncyCastle.Tls;
+using Org.BouncyCastle.Tls.Crypto;
 using System;
 using System.Collections.Generic;
 
@@ -325,7 +327,7 @@ namespace MaratukAdmin.Managers.Concrete
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
             int identity = 0;
 
-            var groupedFlights = result
+            /*var groupedFlights = result
                 .GroupBy(f => new
                 {
                     f.DepartureCountryName,
@@ -374,7 +376,87 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                     }
                 })
-                .ToList();
+                .ToList();*/
+
+            var groupedFlights = result
+     .GroupBy(f => new
+     {
+         f.DepartureCountryName,
+         f.DepartureCountryId,
+         f.DepartureCityName,
+         f.DepartureCityId,
+         f.DepartureAirportName,
+         f.DepartureAirportCode,
+     })
+     .Select(group => new GroupedFlight
+     {
+         Id = ++identity,
+         DepartureCountryName = group.Key.DepartureCountryName,
+         DepartureCountryId = group.Key.DepartureCountryId,
+         DepartureCityName = group.Key.DepartureCityName,
+         DepartureCityId = group.Key.DepartureCityId,
+         DepartureAirportName = group.Key.DepartureAirportName,
+         DepartureAirportCode = group.Key.DepartureAirportCode,
+         Destination = group
+             .Select(des => new Destination
+             {
+                 FlightId = des.FlightId,
+                 PriceBlockId = des.PriceBlockId,
+                 DestinationCountryName = des.DestinationCountryName,
+                 DestinationCountryId = des.DestinationCountryId,
+                 DestinationCityName = des.DestinationCityName,
+                 DestinationCityId = des.DestinationCityId,
+                 DestinationAirportName = des.DestinationAirportName,
+                 DestinationAirportCode = des.DestinationAirportCode,
+                 /* Date = group.Select(f => new DateInfo
+                  {
+                      StartDate = f.StartDate,
+                      EndDate = f.EndDate,
+                      DayOfWeek = f.DayOfWeek,
+                      Price = f.Price,
+                      DepartureTime = f.DepartureTime,
+                      ArrivalTime = f.ArrivalTime,
+                  })
+                  .ToList()*/
+                 Date = new List<DateInfo>()
+             })
+             .GroupBy(d => new
+             {
+                 d.DestinationCountryName,
+                 d.DestinationCountryId,
+                 d.DestinationCityName,
+                 d.DestinationCityId,
+                 d.DestinationAirportName,
+                 d.DestinationAirportCode
+             })
+             .Select(d => d.First()) // Take the first entry of each destination group, removing duplicates
+             .ToList()
+     }) 
+     .ToList();
+            foreach(var key in groupedFlights)
+            {
+                foreach(var dest in key.Destination)
+                {
+                    foreach(var res in result)
+                    {
+                        if(res.PriceBlockId == dest.PriceBlockId)
+                        {
+                            dest.Date.Add(new DateInfo()
+                            {
+                                StartDate = res.StartDate,
+                                EndDate = res.EndDate,
+                                DayOfWeek = res.DayOfWeek,
+                                Price = res.Price,
+                                DepartureTime = res.DepartureTime,
+                                ArrivalTime = res.ArrivalTime,
+                            });
+                        }
+                    }
+                }
+            }
+
+
+
 
             return groupedFlights;
         }
@@ -582,7 +664,7 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     totalPrice = totalPrice + (adult * resultFunction.Bruto);
                 }
-                if (resultFunction.AgeFrom == 2)
+                if (resultFunction.AgeFrom == 1)
                 {
                     totalPrice = totalPrice + (child * resultFunction.Bruto);
                 }
