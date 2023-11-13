@@ -327,7 +327,7 @@ namespace MaratukAdmin.Managers.Concrete
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
             int identity = 0;
 
-            /*var groupedFlights = result
+            var groupedFlights = result
                 .GroupBy(f => new
                 {
                     f.DepartureCountryName,
@@ -376,8 +376,8 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                     }
                 })
-                .ToList();*/
-
+                .ToList();
+/*
             var groupedFlights = result
      .GroupBy(f => new
      {
@@ -408,7 +408,7 @@ namespace MaratukAdmin.Managers.Concrete
                  DestinationCityId = des.DestinationCityId,
                  DestinationAirportName = des.DestinationAirportName,
                  DestinationAirportCode = des.DestinationAirportCode,
-                 /* Date = group.Select(f => new DateInfo
+                 *//* Date = group.Select(f => new DateInfo
                   {
                       StartDate = f.StartDate,
                       EndDate = f.EndDate,
@@ -417,7 +417,7 @@ namespace MaratukAdmin.Managers.Concrete
                       DepartureTime = f.DepartureTime,
                       ArrivalTime = f.ArrivalTime,
                   })
-                  .ToList()*/
+                  .ToList()*//*
                  Date = new List<DateInfo>()
              })
              .GroupBy(d => new
@@ -454,7 +454,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                 }
             }
-
+*/
 
 
 
