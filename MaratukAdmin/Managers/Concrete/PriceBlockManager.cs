@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MailKit.Search;
 using MaratukAdmin.Business.Models.Common;
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
@@ -7,6 +8,7 @@ using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Exceptions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
+using Microsoft.AspNetCore.Http;
 using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Tls.Crypto;
 using System;
@@ -327,7 +329,7 @@ namespace MaratukAdmin.Managers.Concrete
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
             int identity = 0;
 
-            var groupedFlights = result
+            /*var groupedFlights = result
                 .GroupBy(f => new
                 {
                     f.DepartureCountryName,
@@ -376,8 +378,8 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                     }
                 })
-                .ToList();
-/*
+                .ToList();*/
+
             var groupedFlights = result
      .GroupBy(f => new
      {
@@ -408,16 +410,6 @@ namespace MaratukAdmin.Managers.Concrete
                  DestinationCityId = des.DestinationCityId,
                  DestinationAirportName = des.DestinationAirportName,
                  DestinationAirportCode = des.DestinationAirportCode,
-                 *//* Date = group.Select(f => new DateInfo
-                  {
-                      StartDate = f.StartDate,
-                      EndDate = f.EndDate,
-                      DayOfWeek = f.DayOfWeek,
-                      Price = f.Price,
-                      DepartureTime = f.DepartureTime,
-                      ArrivalTime = f.ArrivalTime,
-                  })
-                  .ToList()*//*
                  Date = new List<DateInfo>()
              })
              .GroupBy(d => new
@@ -428,18 +420,23 @@ namespace MaratukAdmin.Managers.Concrete
                  d.DestinationCityId,
                  d.DestinationAirportName,
                  d.DestinationAirportCode
+                 /* d.FlightId,
+                  d.PriceBlockId*/
              })
              .Select(d => d.First()) // Take the first entry of each destination group, removing duplicates
              .ToList()
-     }) 
+     })
      .ToList();
-            foreach(var key in groupedFlights)
+
+
+
+            foreach (var key in groupedFlights)
             {
-                foreach(var dest in key.Destination)
+                foreach (var dest in key.Destination)
                 {
-                    foreach(var res in result)
+                    foreach (var res in result)
                     {
-                        if(res.PriceBlockId == dest.PriceBlockId)
+                        if (res.DestinationAirportCode == dest.DestinationAirportCode)
                         {
                             dest.Date.Add(new DateInfo()
                             {
@@ -454,7 +451,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                 }
             }
-*/
+
 
 
 
@@ -481,9 +478,9 @@ namespace MaratukAdmin.Managers.Concrete
                         EndDate = response.EndDate,
                         DayOfWeek = response.DayOfWeek,
                         Price = response.Price,
-                        FlightId= response.FlightId,
-                        DepartureTime= response.DepartureTime,
-                        ArrivalTime= response.ArrivalTime,
+                        FlightId = response.FlightId,
+                        DepartureTime = response.DepartureTime,
+                        ArrivalTime = response.ArrivalTime,
                     };
                     roundTrips.Add(roundTrip);
                 }
@@ -520,138 +517,77 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<List<FinalFlightSearchResponse>> GetFligthSearchResultAsync(SearchFlightResult searchFlightResult)
         {
             FinalFlightSearchResponse finalResponse = new FinalFlightSearchResponse();
-/*            FlightSearchResponse OneWay = new FlightSearchResponse();
-*/            FlightSearchResponse TwoWay = new FlightSearchResponse();
+            FlightSearchResponse TwoWay = new FlightSearchResponse();
 
-            List<FinalFlightSearchResponse> listResponse = new List<FinalFlightSearchResponse>();
-
-            int OnefligthId = 0;
-            int lastFligthId = 0;
             if (searchFlightResult.FlightTwoId == null)
             {
                 var resOneWay = await _functionRepository.GetFligthOneWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.StartDate);
-                foreach (var res in resOneWay)
-                {
+                var groupedFlights = resOneWay.GroupBy(result => result.FlightId)
+            .Select(group => new FinalFlightSearchResponse
+            {
+                FlightId = group.Key,
+                CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                TotalPrice = CalacTotalPrice(resOneWay.Where(result => result.FlightId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
+                DirectTimeToMinute = group.First().FlightTimeMinute,
+                DepartureAirportCode = group.First().DepartureAirportCode,
+                DestinationAirportCode = group.First().DestinationAirportCode,
+                DepartureTime = group.First().DepartureTime,
+                ArrivalTime = group.First().ArrivalTime,
+                AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
+                InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
+            }).ToList();
 
-                    if (OnefligthId != res.FlightId)
-                    {
-                        OnefligthId = res.FlightId;
-
-                        var flightSearchResponse = new FlightSearchResponse()
-                        {
-                            FlightId = res.FlightId,
-                            NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                            DirectTimeToMinute = res.FlightTimeMinute,
-                            DepartureAirportCode = res.DepartureAirportCode,
-                            DestinationAirportCode = res.DestinationAirportCode,
-                            DepartureTime = res.DepartureTime,
-                            ArrivalTime = res.ArrivalTime,
-                            TotalPrice = CalacTotalPrice(resOneWay, searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant)
-                        };
-
-                        flightSearchResponse.CostPerTickets = resOneWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
-                        flightSearchResponse.AdultPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
-                        flightSearchResponse.ChildPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
-                        flightSearchResponse.InfantPrice = resOneWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
-
-                       
-                        finalResponse.FlightId = flightSearchResponse.FlightId;
-                        finalResponse.CostPerTickets = flightSearchResponse.CostPerTickets;
-                        finalResponse.TotalPrice = flightSearchResponse.TotalPrice;
-                        finalResponse.NumberOfTravelers = flightSearchResponse.NumberOfTravelers;
-                        finalResponse.DirectTimeToMinute = flightSearchResponse.DirectTimeToMinute;
-                        finalResponse.DepartureAirportCode = flightSearchResponse.DepartureAirportCode;
-                        finalResponse.DestinationAirportCode = flightSearchResponse.DestinationAirportCode;
-                        finalResponse.DepartureTime = flightSearchResponse.DepartureTime;
-                        finalResponse.ArrivalTime = flightSearchResponse.ArrivalTime;
-                        finalResponse.AdultPrice = flightSearchResponse.AdultPrice;
-                        finalResponse.ChildPrice = flightSearchResponse.ChildPrice;
-                        finalResponse.InfantPrice = flightSearchResponse.InfantPrice;
-
-                    }
-                }
-                listResponse.Add(finalResponse);
-
+                return groupedFlights;
 
             }
             else
             {
                 var resTwoWay = await _functionRepository.GetFligthTwoWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.FlightTwoId, searchFlightResult.StartDate, searchFlightResult.ReturnedDate);
 
-              
-                foreach (var res in resTwoWay)
+
+                var groupedFlights = resTwoWay.GroupBy(result => result.PriceBlockId)
+            .Select(group => new FinalFlightSearchResponse
+            {
+                FlightId = group.First().FlightId,
+                CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result => result.FlightId == group.First().FlightId && result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
+                DirectTimeToMinute = group.First().FlightTimeMinute,
+                DepartureAirportCode = group.First().DepartureAirportCode,
+                DestinationAirportCode = group.First().DestinationAirportCode,
+                DepartureTime = group.First().DepartureTime,
+                ArrivalTime = group.First().ArrivalTime,
+                AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
+                InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
+                ReturnedFlight = new FlightSearchResponse()
                 {
-                    
-
-                   if (res.FlightId == searchFlightResult.FlightOneId)
-                    {
-                        lastFligthId = res.FlightId;
-                        var flightSearchResponse = new FlightSearchResponse()
-                        {
-                            FlightId = res.FlightId,
-                            NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                            DirectTimeToMinute = res.FlightTimeMinute,
-                            DepartureAirportCode = res.DepartureAirportCode,
-                            DestinationAirportCode = res.DestinationAirportCode,
-                            DepartureTime = res.DepartureTime,
-                            ArrivalTime = res.ArrivalTime,
-                            TotalPrice = CalacTotalPriceTwo(resTwoWay, searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant)
-                        };
-
-
-                        flightSearchResponse.CostPerTickets = resTwoWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
-                        flightSearchResponse.AdultPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
-                        flightSearchResponse.ChildPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
-                        flightSearchResponse.InfantPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
-
-
-
-                        finalResponse.FlightId = flightSearchResponse.FlightId;
-                        finalResponse.CostPerTickets = flightSearchResponse.CostPerTickets;
-                        finalResponse.TotalPrice = flightSearchResponse.TotalPrice;
-                        finalResponse.NumberOfTravelers = flightSearchResponse.NumberOfTravelers;
-                        finalResponse.DirectTimeToMinute = flightSearchResponse.DirectTimeToMinute;
-                        finalResponse.DepartureAirportCode = flightSearchResponse.DepartureAirportCode;
-                        finalResponse.DestinationAirportCode = flightSearchResponse.DestinationAirportCode;
-                        finalResponse.DepartureTime = flightSearchResponse.DepartureTime;
-                        finalResponse.ArrivalTime = flightSearchResponse.ArrivalTime;
-                        finalResponse.AdultPrice = flightSearchResponse.AdultPrice;
-                        finalResponse.ChildPrice = flightSearchResponse.ChildPrice;
-                        finalResponse.InfantPrice = flightSearchResponse.InfantPrice;
-
-                    }
-                    else
-                    {
-                        OnefligthId = res.FlightId;
-                        lastFligthId = res.FlightId;
-                        var flightSearchResponse = new FlightSearchResponse()
-                        {
-                            FlightId = res.FlightId,
-                            NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                            DirectTimeToMinute = res.FlightTimeMinute,
-                            DepartureAirportCode = res.DepartureAirportCode,
-                            DestinationAirportCode = res.DestinationAirportCode,
-                            DepartureTime = res.DepartureTime,
-                            ArrivalTime = res.ArrivalTime,
-                            TotalPrice = CalacTotalPriceTwo(resTwoWay, searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant)
-                        };
-
-
-                        flightSearchResponse.CostPerTickets = resTwoWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
-                        flightSearchResponse.AdultPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 12).Bruto;
-                        flightSearchResponse.ChildPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 2).Bruto;
-                        flightSearchResponse.InfantPrice = resTwoWay.FirstOrDefault(res => res.AgeFrom == 0).Bruto;
-
-
-                        finalResponse.ReturnedFlight = flightSearchResponse;
-                    }
-                   
+                    FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
+                    CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                    TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result => result.FlightId == group.First().FlightId && result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                    NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
+                    DirectTimeToMinute = group.First().FlightTimeMinute,
+                    DepartureAirportCode = group.First().DepartureAirportCode,
+                    DestinationAirportCode = group.First().DestinationAirportCode,
+                    DepartureTime = group.First().DepartureTime,
+                    ArrivalTime = group.First().ArrivalTime,
+                    AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                    ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
+                    InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
                 }
-                listResponse.Add(finalResponse);
+            }).ToList();
+
+
+                return groupedFlights;
+
+                // Loop through groups
+
+
+
+
             }
-
-            return listResponse;
-
         }
 
 

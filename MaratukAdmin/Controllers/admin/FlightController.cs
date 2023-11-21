@@ -138,17 +138,17 @@ namespace MaratukAdmin.Controllers.admin
 
         [HttpGet("BookFlight/{agentId:int}")]
         [AllowAnonymous]
-        public async Task<List<BookedFlightResponse>> GetBookFlightAsync(int agentId)
+        public async Task<BookedFlightResponseFinal> GetBookFlightAsync(int agentId)
         {
             var res = await _bookedFlightManager.GetBookedFlightByAgentIdAsync(agentId);
             return res;
         }
 
-        [HttpGet("AllBookFlight")]
+        [HttpGet("AllBookFlight/{Itn:int}")]
         [AllowAnonymous]
-        public async Task<List<BookedFlightResponse>> GetAllBookFlightAsync()
+        public async Task<BookedFlightResponseFinal> GetAllBookFlightAsync(int Itn)
         {
-            var res = await _bookedFlightManager.GetBookedFlightAsync();
+            var res = await _bookedFlightManager.GetBookedFlightAsync(Itn);
             return res;
         }
 

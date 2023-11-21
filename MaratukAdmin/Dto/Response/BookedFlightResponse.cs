@@ -1,7 +1,7 @@
 ﻿namespace MaratukAdmin.Dto.Response
 {
     public class BookedFlightResponse
-    {
+    { 
         public List<BookedUserInfo> bookedUsers { get; set; }
         public int Id { get; set; }
         public string OrderNumber { get; set; }    
@@ -27,6 +27,13 @@
         public double? Dept { get; set; }
         public int StartFlightId { get; set; }
         public int? EndFlightId { get; set; }
+    }
+    public class BookedFlightResponseFinal
+    {
+        public int DeptUSD { get; set; }
+        public int DeptEUR { get; set; }
+
+        public List<BookedFlightResponse> bookedFlightResponses { get; set; }
     }
 
     public class BookedUserInfo

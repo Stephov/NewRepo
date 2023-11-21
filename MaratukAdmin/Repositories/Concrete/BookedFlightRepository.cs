@@ -5,6 +5,7 @@ using MaratukAdmin.Models;
 using MaratukAdmin.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace MaratukAdmin.Repositories.Concrete
 {
@@ -25,9 +26,12 @@ namespace MaratukAdmin.Repositories.Concrete
             return bookedFlight;
         }
 
-        public async Task<List<BookedFlight>> GetAllBookedFlightAsync()
+        public async Task<List<BookedFlight>> GetAllBookedFlightAsync(List<AgencyUser> agencyUsers)
         {
+            var agentIds = agencyUsers.Select(au => au.Id).ToList();
+
             var result = await _dbContext.BookedFlights
+                                           .Where(bf => agentIds.Contains(bf.AgentId))
                                    .ToListAsync();
 
             return result;

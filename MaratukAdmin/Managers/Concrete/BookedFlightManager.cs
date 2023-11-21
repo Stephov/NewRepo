@@ -19,25 +19,31 @@ namespace MaratukAdmin.Managers.Concrete
         //private readonly IMainRepository<BookedFlight> _mainRepository;
         private readonly IBookedFlightRepository _bookedFlightRepository;
         private readonly ICountryManager _countryManager;
+        private readonly ICurrencyRatesRepository _currencyRatesRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
 
         public BookedFlightManager(IMapper mapper, IBookedFlightRepository bookedFlightRepository, 
             ICountryManager countryManager,
-            IUserRepository userRepository)
+            IUserRepository userRepository, ICurrencyRatesRepository currencyRatesRepository)
         {
 
             _bookedFlightRepository = bookedFlightRepository;
             _countryManager = countryManager;
             _userRepository = userRepository;
             _mapper = mapper;
+            _currencyRatesRepository = currencyRatesRepository;
         }
 
         public async Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlight)
         {
             try
             {
+                var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
+                var EURRate = _currencyRatesRepository.GetAsync(2).Result.OfficialRate;
+
+
                 string orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
                 foreach (var bookedFlight in addBookedFlight)
                 {
@@ -54,7 +60,7 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.ToureTypeId = "Flight";
                     booked.TotalPrice = bookedFlight.TotalPrice;
                     booked.Rate = bookedFlight.Rate;
-                    booked.TotalPriceAmd = bookedFlight.TotalPriceAmd;
+                    booked.TotalPriceAmd = USDRate * bookedFlight.TotalPriceAmd;
                     booked.PassengersCount = bookedFlight.PassengersCount;
                     booked.TourStartDate = bookedFlight.TourStartDate;
                     booked.TourEndDate = bookedFlight.TourEndDate;
@@ -64,6 +70,7 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.EndFlightId = bookedFlight.EndFlightId;
                     booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
                     booked.GenderId = bookedFlight.GenderId;
+                    booked.Dept = bookedFlight.TotalPrice;
 
 
 
@@ -79,15 +86,21 @@ namespace MaratukAdmin.Managers.Concrete
             }
         }
 
-        public async Task<List<BookedFlightResponse>> GetBookedFlightByAgentIdAsync(int id)
+        public async Task<BookedFlightResponseFinal> GetBookedFlightByAgentIdAsync(int id)
         {
+            BookedFlightResponseFinal  responseFinal = new BookedFlightResponseFinal();
+
+            var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
+            var EURRate = _currencyRatesRepository.GetAsync(2).Result.OfficialRate;
+            ///todo  add last actual currency
             var listBookedFlights = await _bookedFlightRepository.GetBookedFlightByAgentIdAsync(id);
 
             var groupedBookedFlights = listBookedFlights.GroupBy(flight => flight.OrderNumber).ToList();
 
             var bookedFlightResponses = new List<BookedFlightResponse>();
-           
-                foreach (var group in groupedBookedFlights)
+            double totalDeptUsd = listBookedFlights.Sum(bf => bf.Dept ?? 0);
+
+            foreach (var group in groupedBookedFlights)
                 {
                     var bookedUsers = group.Select(flight => new BookedUserInfo
                     {
@@ -133,15 +146,27 @@ namespace MaratukAdmin.Managers.Concrete
                     bookedFlightResponses.Add(bookedFlightResponse);
                 }
 
-            
 
+            responseFinal.bookedFlightResponses = bookedFlightResponses;
+            responseFinal.DeptUSD = (int)totalDeptUsd * -1;
+            responseFinal.DeptEUR = (int)((totalDeptUsd * USDRate) / EURRate) * -1;
 
-            return bookedFlightResponses;
+            return responseFinal;
         }
 
-        public async Task<List<BookedFlightResponse>> GetBookedFlightAsync()
+        public async Task<BookedFlightResponseFinal> GetBookedFlightAsync(int Itn)
         {
-            var listBookedFlights = await _bookedFlightRepository.GetAllBookedFlightAsync();
+            BookedFlightResponseFinal responseFinal = new BookedFlightResponseFinal(); 
+
+            var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
+            var EURRate = _currencyRatesRepository.GetAsync(2).Result.OfficialRate;
+
+
+            var response = await _userRepository.GetAgencyUsersAsync(Itn);
+
+            var listBookedFlights = await _bookedFlightRepository.GetAllBookedFlightAsync(response);
+
+            double totalDeptUsd = listBookedFlights.Sum(bf => bf.Dept ?? 0);
 
             var groupedBookedFlights = listBookedFlights.GroupBy(flight => flight.OrderNumber).ToList();
 
@@ -193,8 +218,12 @@ namespace MaratukAdmin.Managers.Concrete
 
                 bookedFlightResponses.Add(bookedFlightResponse);
             }
-            return bookedFlightResponses;
 
+            responseFinal.bookedFlightResponses = bookedFlightResponses;
+            responseFinal.DeptUSD = (int)totalDeptUsd * -1;
+            responseFinal.DeptEUR = (int)((totalDeptUsd * USDRate) / EURRate) * -1;
+
+            return responseFinal;
 
         }
 

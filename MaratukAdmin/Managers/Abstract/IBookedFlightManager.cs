@@ -7,8 +7,8 @@ namespace MaratukAdmin.Managers.Abstract
 {
     public interface IBookedFlightManager
     {
-        Task<List<BookedFlightResponse>> GetBookedFlightAsync();
+        Task<BookedFlightResponseFinal> GetBookedFlightAsync(int Itn);
         Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlights);
-        Task<List<BookedFlightResponse>> GetBookedFlightByAgentIdAsync(int id);
+        Task<BookedFlightResponseFinal> GetBookedFlightByAgentIdAsync(int id);
     }
 }
