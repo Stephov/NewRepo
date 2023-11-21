@@ -34,6 +34,8 @@
         public double AdultPrice { get; set; }
         public double ChildPrice { get; set; }
         public double InfantPrice { get; set; }
+        public string Airline { get; set; }
+        public string FlightNumber { get; set; }
         public FlightSearchResponse ReturnedFlight { get; set; }
     }
 }

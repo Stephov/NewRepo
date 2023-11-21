@@ -537,6 +537,8 @@ namespace MaratukAdmin.Managers.Concrete
                 AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
                 ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
                 InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
+                Airline = group.First().Airline,
+                FlightNumber = group.First().FlightNumber,
             }).ToList();
 
                 return groupedFlights;
@@ -562,6 +564,8 @@ namespace MaratukAdmin.Managers.Concrete
                 AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
                 ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
                 InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
+                Airline = group.First().Airline,
+                FlightNumber = group.First().FlightValue,
                 ReturnedFlight = new FlightSearchResponse()
                 {
                     FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
