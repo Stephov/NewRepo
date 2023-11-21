@@ -16,7 +16,7 @@
         public string? TicketNumber { get; set;}
         public int OrderStatusId { get; set; } = 1;
         public double TotalPrice { get; set; }
-        public double Rate { get; set; }
+        public string Rate { get; set; }
         public double TotalPriceAmd { get; set; }
         public int PassengersCount { get; set; }
         public DateTime TourStartDate { get; set; }
