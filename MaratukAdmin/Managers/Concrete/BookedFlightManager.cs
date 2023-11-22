@@ -60,7 +60,7 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.ToureTypeId = "Flight";
                     booked.TotalPrice = bookedFlight.TotalPrice;
                     booked.Rate = bookedFlight.Rate;
-                    booked.TotalPriceAmd = USDRate * bookedFlight.TotalPriceAmd;
+                    booked.TotalPriceAmd = USDRate * bookedFlight.TotalPrice;
                     booked.PassengersCount = bookedFlight.PassengersCount;
                     booked.TourStartDate = bookedFlight.TourStartDate;
                     booked.TourEndDate = bookedFlight.TourEndDate;
