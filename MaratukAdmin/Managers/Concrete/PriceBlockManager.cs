@@ -580,6 +580,8 @@ namespace MaratukAdmin.Managers.Concrete
                     AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
                     ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
                     InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
+                    Airline = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).Airline,
+                    FlightNumber = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightValue
                 }
             }).ToList();
 
