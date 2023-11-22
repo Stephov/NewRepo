@@ -529,7 +529,6 @@ namespace MaratukAdmin.Managers.Concrete
                 CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
                 TotalPrice = CalacTotalPrice(resOneWay.Where(result => result.FlightId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
                 NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                DirectTimeToMinute = group.First().FlightTimeMinute,
                 DepartureAirportCode = group.First().DepartureAirportCode,
                 DestinationAirportCode = group.First().DestinationAirportCode,
                 DepartureTime = group.First().DepartureTime,
@@ -539,6 +538,8 @@ namespace MaratukAdmin.Managers.Concrete
                 InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
                 Airline = group.First().Airline,
                 FlightNumber = group.First().FlightNumber,
+                DurationHours = group.First().DurationHours,
+                DurationMinutes = group.First().DurationMinutes,
             }).ToList();
 
                 return groupedFlights;
@@ -556,7 +557,6 @@ namespace MaratukAdmin.Managers.Concrete
                 CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
                 TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result =>  result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
                 NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                DirectTimeToMinute = group.First().FlightTimeMinute,
                 DepartureAirportCode = group.First().DepartureAirportCode,
                 DestinationAirportCode = group.First().DestinationAirportCode,
                 DepartureTime = group.First().DepartureTime,
@@ -566,13 +566,14 @@ namespace MaratukAdmin.Managers.Concrete
                 InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
                 Airline = group.First().Airline,
                 FlightNumber = group.First().FlightValue,
+                DurationHours = group.First().DurationHours,
+                DurationMinutes = group.First().DurationMinutes,
                 ReturnedFlight = new FlightSearchResponse()
                 {
                     FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
                     CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
                     TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result => result.FlightId == group.First().FlightId && result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
                     NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                    DirectTimeToMinute = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightTimeMinute,
                     DepartureAirportCode = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DepartureAirportCode,
                     DestinationAirportCode = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DestinationAirportCode,
                     DepartureTime = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DepartureTime,
@@ -581,7 +582,9 @@ namespace MaratukAdmin.Managers.Concrete
                     ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2 && res.FlightId != group.First().FlightId).Bruto,
                     InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0 && res.FlightId != group.First().FlightId).Bruto,
                     Airline = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).Airline,
-                    FlightNumber = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightValue
+                    FlightNumber = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightValue,
+                    DurationHours = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationHours,
+                    DurationMinutes = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationMinutes
                 }
             }).ToList();
 
