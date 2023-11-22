@@ -554,7 +554,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 FlightId = group.First().FlightId,
                 CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
-                TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result => result.FlightId == group.First().FlightId && result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result =>  result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
                 NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                 DirectTimeToMinute = group.First().FlightTimeMinute,
                 DepartureAirportCode = group.First().DepartureAirportCode,
@@ -577,9 +577,9 @@ namespace MaratukAdmin.Managers.Concrete
                     DestinationAirportCode = group.First().DestinationAirportCode,
                     DepartureTime = group.First().DepartureTime,
                     ArrivalTime = group.First().ArrivalTime,
-                    AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
-                    ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
-                    InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
+                    AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12 && res.FlightId != group.First().FlightId).Bruto,
+                    ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2 && res.FlightId != group.First().FlightId).Bruto,
+                    InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0 && res.FlightId != group.First().FlightId).Bruto,
                     Airline = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).Airline,
                     FlightNumber = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightValue
                 }
