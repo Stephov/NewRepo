@@ -15,7 +15,7 @@ namespace MaratukAdmin.Dto.Request
         public int AirlineId { get; set; }
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }
-        public int DurationHourse { get; set; }
+        public int durationHours { get; set; }
         public int DurationMinutes { get; set; }
 
         public ICollection<ScheduleRequest> Schedules { get; set; }

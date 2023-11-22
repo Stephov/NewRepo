@@ -13,7 +13,7 @@
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }//create vozdushnoye sudno
 
-        public int DurationHourse { get; set; }
+        public int durationHours { get; set; }
         public int DurationMinutes { get; set; }
 
 
