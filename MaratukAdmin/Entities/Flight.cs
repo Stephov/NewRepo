@@ -13,6 +13,9 @@
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }//create vozdushnoye sudno
 
+        public int DurationHourse { get; set; }
+        public int DurationMinutes { get; set; }
+
 
         public ICollection<Schedule> Schedules { get; set; }
     }

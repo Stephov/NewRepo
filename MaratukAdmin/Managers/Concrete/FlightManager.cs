@@ -61,6 +61,8 @@ namespace MaratukAdmin.Managers.Concrete
             flightDb.AirlineId = flight.AirlineId;
             flightDb.FlightValue = flight.FlightValue;
             flightDb.AircraftId = flight.AircraftId;
+            flightDb.DurationHourse = flight.DurationHourse;
+            flightDb.DurationMinutes = flight.DurationMinutes;
 
             // create a new list to hold the schedules
             var schedules = new List<Schedule>();
@@ -110,6 +112,8 @@ namespace MaratukAdmin.Managers.Concrete
             entity.AirlineId = flight.AirlineId;
             entity.FlightValue = flight.FlightValue;
             entity.AircraftId = flight.AircraftId;
+            entity.DurationHourse = flight.DurationHourse;
+            entity.DurationMinutes = flight.DurationMinutes;
 
             // create a new list to hold the schedules
             var schedules = new List<Schedule>();
@@ -207,6 +211,8 @@ namespace MaratukAdmin.Managers.Concrete
             flightEditResponse.FlightValue = entity.FlightValue;
             flightEditResponse.AirlineId = entity.AirlineId;
             flightEditResponse.AircraftId = entity.AircraftId;
+            flightEditResponse.DurationHourse = entity.DurationHourse;
+            flightEditResponse.DurationMinutes = entity.DurationMinutes;
 
 
             if (entity.Schedules != null)
@@ -280,6 +286,8 @@ namespace MaratukAdmin.Managers.Concrete
             flightInfoResponse.FlightValue = entity.FlightValue;
             flightInfoResponse.AirlineId = entity.AirlineId;
             flightInfoResponse.AircraftId = entity.AircraftId;
+            flightInfoResponse.DurationHourse = entity.DurationHourse;
+            flightInfoResponse.DurationMinutes = entity.DurationMinutes;
 
             if (entity.Schedules != null)
             {
