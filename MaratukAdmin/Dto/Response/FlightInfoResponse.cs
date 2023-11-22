@@ -13,7 +13,7 @@
         public int AirlineId { get; set; }
         public string FlightValue { get; set; }
         public int AircraftId { get; set; }
-        public int durationHours { get; set; }
+        public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
 
         public List<ScheduleInfoResponse> schedules { get; set; }
