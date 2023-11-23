@@ -108,7 +108,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 
-app.Use(async (context, next) =>
+/*app.Use(async (context, next) =>
 {
     await next();
 
@@ -120,11 +120,11 @@ app.Use(async (context, next) =>
             StatusCode = 401
         };
 
-        var json = JsonConvert.SerializeObject(customResponse); // Using Newtonsoft.Json
+        var json = JsonConvert.SerializeObject(customResponse);
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsync(json);
     }
-});
+});*/
 
 
 
