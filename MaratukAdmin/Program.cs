@@ -6,8 +6,11 @@ using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Services;
 using MaratukAdmin.Services.Configure;
+using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using System.Text;
 
@@ -103,6 +106,29 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
+
+
+app.Use(async (context, next) =>
+{
+    await next();
+
+    if (context.Response.StatusCode == 401)
+    {
+        var customResponse = new Response
+        {
+            Message = "Unauthorized access",
+            StatusCode = 401
+        };
+
+        var json = JsonConvert.SerializeObject(customResponse); // Using Newtonsoft.Json
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(json);
+    }
+});
+
+
+
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCertificateForwarding();
