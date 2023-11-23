@@ -1,4 +1,4 @@
-﻿/*namespace MaratukAdmin.Utils
+﻿namespace MaratukAdmin.Utils
 {
     public class Response
     {
@@ -6,4 +6,3 @@
         public int StatusCode { get; set; }
     }
 }
-*/

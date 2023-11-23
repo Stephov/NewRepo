@@ -108,7 +108,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 
-/*app.Use(async (context, next) =>
+app.Use(async (context, next) =>
 {
     await next();
 
@@ -124,7 +124,7 @@ var app = builder.Build();
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsync(json);
     }
-});*/
+});
 
 
 
