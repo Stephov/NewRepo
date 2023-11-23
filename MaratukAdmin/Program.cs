@@ -108,7 +108,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseCors("AllowSpecificOrigin");
-app.Use(async (context, next) =>
+/*app.Use(async (context, next) =>
 {
     await next();
 
@@ -125,7 +125,7 @@ app.Use(async (context, next) =>
         await context.Response.WriteAsync(json);
     }
 });
-
+*/
 
 
 
