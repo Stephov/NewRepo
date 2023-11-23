@@ -107,7 +107,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-
+app.UseCors("AllowSpecificOrigin");
 app.Use(async (context, next) =>
 {
     await next();
@@ -137,7 +137,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 //app.UseCors();
-app.UseCors("AllowSpecificOrigin");
+
 
 app.MapHealthChecks("/healthcheck");
 app.MapControllers();
