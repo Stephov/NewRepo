@@ -41,7 +41,6 @@ namespace MaratukAdmin.Managers.Concrete
             try
             {
                 var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
-                var EURRate = _currencyRatesRepository.GetAsync(2).Result.OfficialRate;
 
 
                 string orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
@@ -91,7 +90,6 @@ namespace MaratukAdmin.Managers.Concrete
             BookedFlightResponseFinal  responseFinal = new BookedFlightResponseFinal();
 
             var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
-            var EURRate = _currencyRatesRepository.GetAsync(2).Result.OfficialRate;
             ///todo  add last actual currency
             var listBookedFlights = await _bookedFlightRepository.GetBookedFlightByAgentIdAsync(id);
 
@@ -149,7 +147,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             responseFinal.bookedFlightResponses = bookedFlightResponses;
             responseFinal.DeptUSD = (int)totalDeptUsd * -1;
-            responseFinal.DeptEUR = (int)((totalDeptUsd * USDRate) / EURRate) * -1;
+            responseFinal.DeptEUR = 0;
 
             return responseFinal;
         }
@@ -159,7 +157,6 @@ namespace MaratukAdmin.Managers.Concrete
             BookedFlightResponseFinal responseFinal = new BookedFlightResponseFinal(); 
 
             var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
-            var EURRate = _currencyRatesRepository.GetAsync(2).Result.OfficialRate;
 
 
             var response = await _userRepository.GetAgencyUsersAsync(Itn);
@@ -221,7 +218,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             responseFinal.bookedFlightResponses = bookedFlightResponses;
             responseFinal.DeptUSD = (int)totalDeptUsd * -1;
-            responseFinal.DeptEUR = (int)((totalDeptUsd * USDRate) / EURRate) * -1;
+            responseFinal.DeptEUR = 0;
 
             return responseFinal;
 

@@ -571,8 +571,8 @@ namespace MaratukAdmin.Managers.Concrete
                 ReturnedFlight = new FlightSearchResponse()
                 {
                     FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
-                    CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
-                    TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result => result.FlightId == group.First().FlightId && result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                    CostPerTickets = group.FirstOrDefault(res => res.FlightId != group.First().FlightId && res.AgeFrom == 12).Bruto,
+                    TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(res => res.FlightId != group.First().FlightId && res.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
                     NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                     DepartureAirportCode = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DepartureAirportCode,
                     DestinationAirportCode = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DestinationAirportCode,
