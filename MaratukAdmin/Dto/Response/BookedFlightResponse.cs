@@ -13,6 +13,7 @@
         public double TotalPrice { get; set; }
         public string Rate { get; set; }
         public int AgentId { get; set; }
+        public string AgentName { get; set; }
 
         public double TotalPriceAmd { get; set; }
         public int PassengersCount { get; set; }

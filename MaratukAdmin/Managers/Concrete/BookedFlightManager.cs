@@ -24,7 +24,7 @@ namespace MaratukAdmin.Managers.Concrete
         private readonly IMapper _mapper;
 
 
-        public BookedFlightManager(IMapper mapper, IBookedFlightRepository bookedFlightRepository, 
+        public BookedFlightManager(IMapper mapper, IBookedFlightRepository bookedFlightRepository,
             ICountryManager countryManager,
             IUserRepository userRepository, ICurrencyRatesRepository currencyRatesRepository)
         {
@@ -99,50 +99,51 @@ namespace MaratukAdmin.Managers.Concrete
             double totalDeptUsd = listBookedFlights.Sum(bf => bf.Dept ?? 0);
 
             foreach (var group in groupedBookedFlights)
+            {
+                var bookedUsers = group.Select(flight => new BookedUserInfo
                 {
-                    var bookedUsers = group.Select(flight => new BookedUserInfo
-                    {
-                        Name = flight.Name,
-                        Surname = flight.Surname,
-                        PhoneNumber = flight.PhoneNumber,
-                        BirthDay = flight.BirthDay,
-                        Email = flight.Email,
-                        Passport = flight.Passport,
-                        PasportExpiryDate = flight.PasportExpiryDate,
-                        GenderName = (flight.GenderId == 1) ? "Male" : "Female"
-                    }).ToList();
+                    Name = flight.Name,
+                    Surname = flight.Surname,
+                    PhoneNumber = flight.PhoneNumber,
+                    BirthDay = flight.BirthDay,
+                    Email = flight.Email,
+                    Passport = flight.Passport,
+                    PasportExpiryDate = flight.PasportExpiryDate,
+                    GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                }).ToList();
 
-                    var firstFlightInGroup = group.First(); // You can take any flight from the group to extract common properties
-                    var bookedFlightResponse = new BookedFlightResponse
-                    {
-                        bookedUsers = bookedUsers,
-                        Id = firstFlightInGroup.Id,
-                        OrderNumber = firstFlightInGroup.OrderNumber,
-                        DateOfOrder = firstFlightInGroup.DateOfOrder,
-                        ToureTypeId = firstFlightInGroup.ToureTypeId,
-                        HotelId = firstFlightInGroup.HotelId,
-                        TicketNumber = firstFlightInGroup.TicketNumber,
-                        OrderStatusId = firstFlightInGroup.OrderStatusId,
-                        TotalPrice = firstFlightInGroup.TotalPrice,
-                        Rate = firstFlightInGroup.Rate,
-                        AgentId = firstFlightInGroup.AgentId,//add agentName
-                        TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
-                        PassengersCount = firstFlightInGroup.PassengersCount,
-                        TourStartDate = firstFlightInGroup.TourStartDate,
-                        TourEndDate = firstFlightInGroup.TourEndDate,
-                        DeadLine = firstFlightInGroup.DeadLine,
-                        Paid = firstFlightInGroup.Paid,
-                        MaratukAgentId = firstFlightInGroup.MaratukAgentId,
-                        MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
-                        CountryId = firstFlightInGroup.CountryId,
-                        CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
-                        Dept = firstFlightInGroup.Dept,
-                        StartFlightId = firstFlightInGroup.StartFlightId,
-                        EndFlightId = firstFlightInGroup.EndFlightId,
-                    };
+                var firstFlightInGroup = group.First(); // You can take any flight from the group to extract common properties
+                var bookedFlightResponse = new BookedFlightResponse
+                {
+                    bookedUsers = bookedUsers,
+                    Id = firstFlightInGroup.Id,
+                    OrderNumber = firstFlightInGroup.OrderNumber,
+                    DateOfOrder = firstFlightInGroup.DateOfOrder,
+                    ToureTypeId = firstFlightInGroup.ToureTypeId,
+                    HotelId = firstFlightInGroup.HotelId,
+                    TicketNumber = firstFlightInGroup.TicketNumber,
+                    OrderStatusId = firstFlightInGroup.OrderStatusId,
+                    TotalPrice = firstFlightInGroup.TotalPrice,
+                    Rate = firstFlightInGroup.Rate,
+                    AgentId = firstFlightInGroup.AgentId,//add agentName
+                    AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                    TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
+                    PassengersCount = firstFlightInGroup.PassengersCount,
+                    TourStartDate = firstFlightInGroup.TourStartDate,
+                    TourEndDate = firstFlightInGroup.TourEndDate,
+                    DeadLine = firstFlightInGroup.DeadLine,
+                    Paid = firstFlightInGroup.Paid,
+                    MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                    CountryId = firstFlightInGroup.CountryId,
+                    CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                    Dept = firstFlightInGroup.Dept,
+                    StartFlightId = firstFlightInGroup.StartFlightId,
+                    EndFlightId = firstFlightInGroup.EndFlightId,
+                };
 
-                    bookedFlightResponses.Add(bookedFlightResponse);
-                }
+                bookedFlightResponses.Add(bookedFlightResponse);
+            }
 
 
             responseFinal.bookedFlightResponses = bookedFlightResponses;
@@ -154,7 +155,7 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<BookedFlightResponseFinal> GetBookedFlightAsync(int Itn)
         {
-            BookedFlightResponseFinal responseFinal = new BookedFlightResponseFinal(); 
+            BookedFlightResponseFinal responseFinal = new BookedFlightResponseFinal();
 
             var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
 
@@ -198,6 +199,7 @@ namespace MaratukAdmin.Managers.Concrete
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
+                    AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
                     TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
