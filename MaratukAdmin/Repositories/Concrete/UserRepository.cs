@@ -58,6 +58,12 @@ namespace MaratukAdmin.Repositories.Concrete
             return await _dbContext.AgencyUser.Where(u => u.Itn == itn).ToListAsync();
         }
 
+        public async Task<AgencyUser> GetAgencyUsersByIdAsync(int agencyId)
+        {
+            return await _dbContext.AgencyUser.Where(u => u.Id == agencyId).FirstOrDefaultAsync();
+        }
+
+
 
         public async Task<User> GetUserByIdAsync(int userId)
         {

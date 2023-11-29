@@ -17,6 +17,7 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<bool> IsUserExistsAsync(string email);
         Task<bool> IsUserEmailExistsAsync(string email);
         Task<User> GetUserByIdAsync(int userId);
+        Task<AgencyUser> GetAgencyUsersByIdAsync(int agencyId);
         Task UpdateUser();
         Task<RefreshToken> ValidateRefreshToken(string token);
         Task UpdateRefreshToken(RefreshToken refreshTokens);

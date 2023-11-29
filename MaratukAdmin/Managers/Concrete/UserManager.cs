@@ -100,6 +100,27 @@ namespace MaratukAdmin.Managers.Concrete
         }
 
 
+        public async Task<AgencyAgentResponse> GetAgencyAgentByIdAsync(int agentId)
+        {
+            
+
+            var response = await _userRepository.GetAgencyUsersByIdAsync(agentId);
+
+            if(response != null)
+            {
+                return new AgencyAgentResponse()
+                {
+                    Id = response.Id,
+                    FullName = response.FullName,
+                    Email = response.Email,
+                    PhoneNumber = response.PhoneNumber1
+                };
+            }
+
+            return null;
+        }
+
+
         public IdentityUserInfo CheckUser(string token)
         {
             var isValidUser = _jwtTokenService.UserIdentity(token);

@@ -256,6 +256,25 @@ namespace MaratukAdmin.Controllers
             }
         }
 
+        [HttpGet("GetAgencyAgentById/{agentId:int}")]
+        public async Task<ActionResult> GetAgencyAgentByIdAsync(int agentId)
+        {
+            try
+            {
+                var res = await _userManager.GetAgencyAgentByIdAsync(agentId);
+
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
         [HttpDelete("DeleteAgencyAgent/{agentId:int}")]
         public async Task<ActionResult> DeleteAgencyAgentAsync(int agentId)
         {

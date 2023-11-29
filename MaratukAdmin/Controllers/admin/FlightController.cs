@@ -1,12 +1,8 @@
-﻿using MaratukAdmin.Business.Models.Common;
-using MaratukAdmin.Dto.Request;
+﻿using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
-using MaratukAdmin.Entities;
 using MaratukAdmin.Managers.Abstract;
-using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -49,7 +45,7 @@ namespace MaratukAdmin.Controllers.admin
         [HttpGet("FlightByIds/")]
         public async Task<ActionResult> GetFlightByIds(int departureCountryId, int departureCityId, int destinationCountryId, int destinationCityId)
         {
-            var result = await _flightManager.GetFlightByIdsAsync(departureCountryId,departureCityId,destinationCountryId,destinationCityId);
+            var result = await _flightManager.GetFlightByIdsAsync(departureCountryId,departureCityId, destinationCountryId, destinationCityId);
 
             return Ok(result);
         }
