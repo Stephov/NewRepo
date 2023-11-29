@@ -540,6 +540,8 @@ namespace MaratukAdmin.Managers.Concrete
                 FlightNumber = group.First().FlightNumber,
                 DurationHours = group.First().DurationHours,
                 DurationMinutes = group.First().DurationMinutes,
+                CurrencyId = group.First().CurrencyId,
+                
             }).ToList();
 
                 return groupedFlights;
@@ -568,6 +570,7 @@ namespace MaratukAdmin.Managers.Concrete
                 FlightNumber = group.First().FlightValue,
                 DurationHours = group.First().DurationHours,
                 DurationMinutes = group.First().DurationMinutes,
+                CurrencyId = group.First().CurrencyId,
                 ReturnedFlight = new FlightSearchResponse()
                 {
                     FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
@@ -584,7 +587,8 @@ namespace MaratukAdmin.Managers.Concrete
                     Airline = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).Airline,
                     FlightNumber = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightValue,
                     DurationHours = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationHours,
-                    DurationMinutes = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationMinutes
+                    DurationMinutes = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationMinutes,
+                    CurrencyId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).CurrencyId
                 }
             }).ToList();
 

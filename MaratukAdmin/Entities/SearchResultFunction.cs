@@ -14,6 +14,7 @@
         public string FlightNumber { get; }
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
+        public int CurrencyId { get; set; }
 
 
 
@@ -34,5 +35,6 @@
         public string FlightValue { get; set; }
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
+        public int CurrencyId { get; set; }
     }
 }
