@@ -1,6 +1,8 @@
-﻿using MaratukAdmin.Dto.Request.Sansejour;
+﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities.Sansejour;
+using MaratukAdmin.Managers.Concrete;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MaratukAdmin.Managers.Abstract.Sansejour
@@ -14,6 +16,8 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
         Task<List<SyncSejourRate>> SearchRoomOldAsync(SearchRoomRequest searchRequest);
         Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest);
         Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
+        Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest);
+        Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest);
 
     }
 }

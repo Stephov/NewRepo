@@ -17,6 +17,9 @@ using MaratukAdmin.Models.Requests;
 using System.Globalization;
 using System.Collections.Generic;
 using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Managers.Abstract;
+using MaratukAdmin.Dto.Response;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
 {
@@ -28,6 +31,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         private readonly IHttpRequestManager _httpRequestManager;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IDistributedCache _cache;
+        private readonly IPriceBlockManager _priceBlockManager;
 
 
         public ContractExportManager(IMainRepository<SyncSejourContractExportView> mainRepository,
@@ -35,7 +39,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             IContractExportRepository contractExportRepository,
                             IHttpRequestManager httpRequestManager,
                             ITransactionRepository transactionRepository,
-                            IDistributedCache cache
+                            IDistributedCache cache,
+                            IPriceBlockManager priceBlockManager
 
             )
         {
@@ -45,6 +50,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             _httpRequestManager = httpRequestManager;
             _transactionRepository = transactionRepository;
             _cache = cache;
+            _priceBlockManager = priceBlockManager;
         }
         public async Task<bool> GetSejourContractExportView(List<HotelSansejourResponse>? hotelsList = null)
         {
@@ -446,6 +452,193 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 System.Diagnostics.Debug.WriteLine($"ERROR: {ex.Message}");
                 throw;
             }
+        }
+
+        public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        {
+            int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
+            int flightChildCount = 0;
+            int flightInfantCount = 0;
+            List<SearchFligtAndRoomResponse> retValue = new();
+
+            // Define child counts and ages for Flight seach
+            if (searchFlightAndRoomRequest.RoomChildAges != null)
+            {
+                foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
+                {
+                    if (man <= 2)
+                    { flightInfantCount++; }
+                    else if (man > 2 && man <= 12)
+                    { flightChildCount++; }
+                    else if (man > 12)
+                    { flightAdultCount++; }
+                }
+            }
+
+            SearchFlightResult searchFlightRequest = new()
+            {
+                FlightOneId = searchFlightAndRoomRequest.FlightOneId,
+                FlightTwoId = searchFlightAndRoomRequest.FlightTwoId,
+                StartDate = searchFlightAndRoomRequest.FlightStartDate,
+                ReturnedDate = searchFlightAndRoomRequest.FlightReturnedDate,
+                Adult = flightAdultCount,   // searchFlightAndRoomRequest.FlightAdult,
+                Child = flightChildCount,   // searchFlightAndRoomRequest.FlightChild,
+                Infant = flightInfantCount  // searchFlightAndRoomRequest.FlightInfant
+            };
+
+            // Get FLIGHTS
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
+
+            SearchRoomRequest searchRoomRequest = new()
+            {
+                AccomodationDateFrom = searchFlightAndRoomRequest.RoomAccomodationDateFrom,
+                AccomodationDateTo = searchFlightAndRoomRequest.RoomAccomodationDateTo,
+                HotelCodes = searchFlightAndRoomRequest.RoomHotelCodes,
+                AdultCount = searchFlightAndRoomRequest.RoomAdultCount,
+                ChildCount = searchFlightAndRoomRequest.RoomChildCount,
+                ChildAges = searchFlightAndRoomRequest.RoomChildAges,
+                PageNumber = searchFlightAndRoomRequest.RoomPageNumber,
+                PageSize = searchFlightAndRoomRequest.RoomPageSize
+            };
+
+            // Get ROOMS
+            var resultRoomSearch = await _contractExportRepository.SearchRoomAsync(searchRoomRequest);
+
+
+            // Combune results
+            foreach (var flight in resultFlightSearch)
+            {
+                foreach (var room in resultRoomSearch)
+                {
+                    retValue.Add(new SearchFligtAndRoomResponse()
+                    {
+                        flightSearchResponse = flight,
+                        roomSearchResponse = room,
+                        flightAndRoomTotalPrice = flight.TotalPrice + room.Price
+
+                        //// Flight part
+                        //Airline = flight.Airline,
+                        //ArrivalTime = flight.ArrivalTime,
+                        //CostPerTickets = flight.CostPerTickets,
+                        //DepartureAirportCode = flight.DepartureAirportCode,
+                        //DepartureTime = flight.DepartureTime,
+                        //DestinationAirportCode = flight.DestinationAirportCode,
+                        //DurationHours = flight.DurationHours,
+                        //DurationMinutes = flight.DurationMinutes,
+                        //FlightId = flight.FlightId,
+                        //FlightNumber = flight.FlightNumber,
+                        //NumberOfTravelers = flight.NumberOfTravelers,
+                        //ReturnedFlight = flight.ReturnedFlight,
+                        //AdultPrice = flight.AdultPrice,
+                        //ChildPrice = flight.ChildPrice,
+                        //InfantPrice = flight.InfantPrice,
+                        //TotalPrice = flight.TotalPrice,
+
+                        //// Room part
+                        //Room = room.Room,
+                        //RoomAccmdMenTypeCode = room.AccmdMenTypeCode,
+                        //RoomAccmdMenTypeName = room.AccmdMenTypeName,
+                        //RoomAccomLengthDay = room.AccomLengthDay,
+                        //RoomAccomodationPeriodBegin = room.AccomodationPeriodBegin,
+                        //RoomAccomodationPeriodEnd = room.AccomodationPeriodEnd,
+                        //RoomAdlPax = room.RoomAdlPax,
+                        //RoomBoard = room.Board,
+                        //RoomBoardDesc = room.BoardDesc,
+                        //RoomChangeDate = room.ChangeDate,
+                        //RoomChdPax = room.RoomChdPax,
+                        //RoomCreateDate = room.CreateDate,
+                        //RoomDesc = room.RoomDesc,
+                        //RoomHotelCode = room.HotelCode,
+                        //RoomHotelSeasonBegin = room.HotelSeasonBegin,
+                        //RoomHotelSeasonEnd = room.HotelSeasonEnd,
+                        //RoomNotCountExcludingAccomDate = room.NotCountExcludingAccomDate,
+                        //RoomOption = room.Option,
+                        //RoomPax = room.RoomPax,
+                        //RoomPrice = room.Price,
+                        //RoomPriceType = room.PriceType,
+                        //RoomRecID = room.RecID,
+                        //RoomReleaseDay = room.ReleaseDay,
+                        //RoomSPODefinit = room.SPODefinit,
+                        //RoomSpoNoApply = room.SpoNoApply,
+                        //RoomSPOPrices = room.SPOPrices,
+                        //RoomSyncDate = room.SyncDate,
+                        //RoomType = room.RoomType,
+                        //RoomTypeDesc = room.RoomTypeDesc,
+                        //RoomWeekendPercent = room.WeekendPercent,
+                        //RoomWeekendPrice = room.WeekendPrice
+                    });
+                }
+            }
+
+            return retValue;
+        }
+
+
+        public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        {
+            int flightAdultCount = 0;
+            int flightChildCount = 0;
+            int flightInfantCount = 0;
+            List<SearchFligtAndRoomResponse> retValue = new();
+
+            // Define child counts and ages for Flight seach
+            if (searchFlightAndRoomRequest.RoomChildAges != null)
+            {
+                foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
+                {
+                    if (man <= 2)
+                    { flightInfantCount++; }
+                    else if (man > 2 && man <= 12)
+                    { flightChildCount++; }
+                    else if (man > 12)
+                    { flightAdultCount++; }
+                }
+            }
+
+            SearchFlightResult searchFlightRequest = new()
+            {
+                FlightOneId = searchFlightAndRoomRequest.FlightOneId,
+                FlightTwoId = searchFlightAndRoomRequest.FlightTwoId,
+                StartDate = searchFlightAndRoomRequest.FlightStartDate,
+                ReturnedDate = searchFlightAndRoomRequest.FlightReturnedDate,
+                Adult = flightAdultCount,   // searchFlightAndRoomRequest.FlightAdult,
+                Child = flightChildCount,   // searchFlightAndRoomRequest.FlightChild,
+                Infant = flightInfantCount  // searchFlightAndRoomRequest.FlightInfant
+            };
+
+            // Get FLIGHTS
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
+
+            SearchRoomRequest searchRoomRequest = new()
+            {
+                AccomodationDateFrom = searchFlightAndRoomRequest.RoomAccomodationDateFrom,
+                AccomodationDateTo = searchFlightAndRoomRequest.RoomAccomodationDateTo,
+                AdultCount = searchFlightAndRoomRequest.RoomAdultCount,
+                ChildCount = searchFlightAndRoomRequest.RoomChildCount,
+                ChildAges = searchFlightAndRoomRequest.RoomChildAges,
+                PageNumber = searchFlightAndRoomRequest.RoomPageNumber,
+                PageSize = searchFlightAndRoomRequest.RoomPageSize
+            };
+
+            // Get ROOMS
+            var resultRoomSearch = await _contractExportRepository.SearchRoomLowestPricesAsync(searchRoomRequest);
+
+
+            // Combune results
+            foreach (var flight in resultFlightSearch)
+            {
+                foreach (var room in resultRoomSearch)
+                {
+                    retValue.Add(new SearchFligtAndRoomResponse()
+                    {
+                        flightSearchResponse = flight,
+                        roomSearchResponse = room,
+                        flightAndRoomTotalPrice = flight.TotalPrice + room.Price
+                    });
+                }
+            }
+
+            return retValue;
         }
     }
 

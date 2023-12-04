@@ -83,7 +83,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         //public async Task<HotelResponse> GetHotelByIdAsync(int id)
         public async Task<Hotel> GetHotelByIdAsync(int id)
         {
-            var entity = await _mainRepository.GetAsync(id, "Hotels");
+            //var entity = await _mainRepository.GetAsync(id, "Hotels");
+            var entity = await _mainRepository.GetAsync(id);
 
             if (entity == null)
             {
