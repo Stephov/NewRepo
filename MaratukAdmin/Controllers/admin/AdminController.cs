@@ -263,7 +263,7 @@ namespace MaratukAdmin.Controllers.admin
 
 
         [HttpPost("Currency")]
-        public async Task<ActionResult> GetCurrency(AddCurrency currency)
+        public async Task<ActionResult> AddCurrency(AddCurrency currency)
         {
             var result = await _currencyManager.AddCurrencyAsync(currency);
 
@@ -273,7 +273,7 @@ namespace MaratukAdmin.Controllers.admin
 
 
         [HttpPost("CurrencyRates")]
-        public async Task<ActionResult> GetCurrencyRates(AddCurrencyRates currency)
+        public async Task<ActionResult> AddCurrencyRates(AddCurrencyRates currency)
         {
             var result = await _currencyRatesManager.AddCurrencyRatesAsync(currency);
 

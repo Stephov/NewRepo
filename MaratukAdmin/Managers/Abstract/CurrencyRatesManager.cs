@@ -8,16 +8,20 @@ namespace MaratukAdmin.Managers.Abstract
     public class CurrencyRatesManager : ICurrencyRatesManager
     {
         private readonly IMainRepository<CurrencyRates> _mainRepository;
+        private readonly IMainRepository<Currency> _currencyRepository;
         private readonly IMapper _mapper;
 
-        public CurrencyRatesManager(IMainRepository<CurrencyRates> mainRepository, IMapper mapper)
+        public CurrencyRatesManager(IMainRepository<CurrencyRates> mainRepository, IMapper mapper, IMainRepository<Currency> currencyRepository)
         {
             _mainRepository = mainRepository;
             _mapper = mapper;
+            _currencyRepository = currencyRepository;
         }
         public async Task<CurrencyRates> AddCurrencyRatesAsync(AddCurrencyRates currency)
         {
             var entity = _mapper.Map<CurrencyRates>(currency);
+            entity.UpdateDate = DateTime.UtcNow;
+            entity.CodeIso =  _currencyRepository.GetAsync(currency.CurrencyId).Result.CodeIso;
             await _mainRepository.AddAsync(entity);
             return entity;
         }
@@ -41,7 +45,8 @@ namespace MaratukAdmin.Managers.Abstract
         public async Task<CurrencyRates> UpdateCurrencyRatesAsync(UpdateCurrencyRates currencyRates)
         {
             var entity = _mapper.Map<CurrencyRates>(currencyRates);
-
+            entity.UpdateDate = DateTime.UtcNow;
+            entity.CodeIso = _currencyRepository.GetAsync(currencyRates.Id).Result.CodeIso;
             await _mainRepository.UpdateAsync(entity);
             return entity;
         }
