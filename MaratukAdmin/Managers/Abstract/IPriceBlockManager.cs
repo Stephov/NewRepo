@@ -25,6 +25,7 @@ namespace MaratukAdmin.Managers.Abstract
 
         Task<DateResponse> GetFligthDateInfoAsync(int FlightId, int PriceBlockId, int DepartureCountryId, int DepartureCityId, int DestinationCountryId, int DestinationCityId, DateTime FromDate);
         Task<List<FinalFlightSearchResponse>> GetFligthSearchResultAsync(SearchFlightResult searchFlightResult);
+        Task<List<FinalFlightSearchResponse>> GetFligthSearchResultMockAsync(SearchFlightResult searchFlightResult);
 
         Task<PriceBlockServices> AddPriceBlockServicesAsync(AddPriceBlockServicesRequest priceBlock);
         //Task<FlightInfoResponse> GetPriceBlockInfoByIdAsync(int id);

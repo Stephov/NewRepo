@@ -2,9 +2,11 @@
 using MailKit.Search;
 using MaratukAdmin.Business.Models.Common;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
+using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Exceptions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
@@ -541,7 +543,7 @@ namespace MaratukAdmin.Managers.Concrete
                 DurationHours = group.First().DurationHours,
                 DurationMinutes = group.First().DurationMinutes,
                 CurrencyId = group.First().CurrencyId,
-                
+
             }).ToList();
 
                 return groupedFlights;
@@ -557,7 +559,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 FlightId = group.First().FlightId,
                 CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
-                TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result =>  result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result => result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
                 NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                 DepartureAirportCode = group.First().DepartureAirportCode,
                 DestinationAirportCode = group.First().DestinationAirportCode,
@@ -603,6 +605,47 @@ namespace MaratukAdmin.Managers.Concrete
             }
         }
 
+        public async Task<List<FinalFlightSearchResponse>> GetFligthSearchResultMockAsync(SearchFlightResult searchFlightResult)
+        {
+            FinalFlightSearchResponse finalResponse = new FinalFlightSearchResponse();
+            FlightSearchResponse TwoWay = new FlightSearchResponse();
+
+            if (searchFlightResult.FlightTwoId == null)
+            {
+                var resOneWay = await _functionRepository.GetFligthOneWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.StartDate);
+                var groupedFlights = resOneWay.GroupBy(result => result.FlightId)
+            .Select(group => new FinalFlightSearchResponse
+            {
+                FlightId = group.Key,
+                CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                TotalPrice = CalacTotalPrice(resOneWay.Where(result => result.FlightId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
+                DepartureAirportCode = group.First().DepartureAirportCode,
+                DestinationAirportCode = group.First().DestinationAirportCode,
+                DepartureTime = group.First().DepartureTime,
+                ArrivalTime = group.First().ArrivalTime,
+                AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
+                ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
+                InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
+                Airline = group.First().Airline,
+                FlightNumber = group.First().FlightNumber,
+                DurationHours = group.First().DurationHours,
+                DurationMinutes = group.First().DurationMinutes,
+                CurrencyId = group.First().CurrencyId,
+
+            }).ToList();
+
+                return groupedFlights;
+
+            }
+            else
+            {
+                var groupedFlights = await _functionRepository.GetFligthInfoFunctionMockAsync(searchFlightResult);
+
+                return groupedFlights;
+
+            }
+        }
 
         private double CalacTotalPrice(List<SearchResultFunction> searchResultFunctions, int adult, int child, int infant)
         {

@@ -65,6 +65,13 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpPost("SearchFlightAndRoomLowestPricesMock/")]
+        public async Task<IActionResult> SearchFlightAndRoomLowestPricesMock([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        {
+            var result = await _contractExportManager.SearchFlightAndRoomLowestPricesMockAsync(searchFlightAndRoomRequest);
+
+            return Ok(result);
+        }
 
         //{
         //  "flightOneId": 286,

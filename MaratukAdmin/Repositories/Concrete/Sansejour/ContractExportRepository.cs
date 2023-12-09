@@ -1,14 +1,22 @@
 ﻿using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Drawing.Printing;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System;
+using System.Collections.Generic;
+using Faker;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query;
+using MaratukAdmin.Dto.Response.Sansejour;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -1051,6 +1059,67 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             {
                 throw;
             }
+        }
+
+        public async Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        {
+            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest);
+
+            return await Task.FromResult(retValue);
+        }
+
+        private List<SyncSejourRate> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        {
+            var fakeRooms = new List<SyncSejourRate>();
+
+            try
+            {
+                // Generate 10 fake records
+                for (int i = 1; i <= 10; i++)
+                {
+                    var fakeFlight = new SyncSejourRate
+                    {
+                        SyncDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        HotelCode = Faker.StringFaker.Numeric(3),
+                        HotelSeasonBegin = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom, 
+                        HotelSeasonEnd = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateTo, 
+                        RecID = Faker.StringFaker.Numeric(8),
+                        CreateDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom, 
+                        ChangeDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom, 
+                        AccomodationPeriodBegin = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        AccomodationPeriodEnd = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        Room = Faker.StringFaker.Alpha(3),
+                        RoomDesc = Faker.Lorem.Words(1).FirstOrDefault(),
+                        RoomType = Faker.StringFaker.Alpha(3),
+                        RoomTypeDesc = "STANDARD",
+                        Board = "AI",
+                        BoardDesc = "ALL INCLUSIVE",
+                        RoomPax = searchFligtAndRoomRequest.RoomAdultCount + searchFligtAndRoomRequest.RoomChildCount,
+                        RoomAdlPax = searchFligtAndRoomRequest.RoomAdultCount,
+                        RoomChdPax = searchFligtAndRoomRequest.RoomChildCount,
+                        AccmdMenTypeCode = Faker.StringFaker.Numeric(12),
+                        AccmdMenTypeName = searchFligtAndRoomRequest.RoomAdultCount.ToString() + "Ad + " + searchFligtAndRoomRequest.RoomChildCount.ToString() + "Ch(Mek)(Erku)(Ereq)",
+                        ReleaseDay = 0,
+                        PriceType = "ROOM",
+                        Price = Faker.NumberFaker.Number(1, 5000),
+                        WeekendPrice = null,
+                        WeekendPercent = 0,
+                        AccomLengthDay = "0-999",
+                        Option = "Stay",
+                        SpoNoApply = null,
+                        SPOPrices = 2,
+                        SPODefinit = "EEA// 04/08/2023 M",
+                        NotCountExcludingAccomDate = "N"
+                    };
+
+                    fakeRooms.Add(fakeFlight);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return fakeRooms;
         }
         #endregion
     }
