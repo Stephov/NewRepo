@@ -105,6 +105,19 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         }
 
+
+        public async Task<Hotel> GetHotelByCodeMockAsync(string code)
+        {
+            var entity = await _hotelRepository.GetHoteByCodeMockAsync(code);
+
+            if (entity == null)
+            {
+                throw new ApiBaseException(StatusCodes.Status404NotFound);
+            }
+
+            return entity;
+
+        }
         public async Task<bool> RefreshHotelList()
         {
             //string databaseName = "DATA2020";

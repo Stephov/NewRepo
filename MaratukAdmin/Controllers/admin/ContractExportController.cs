@@ -56,7 +56,15 @@ namespace MaratukAdmin.Controllers.admin
 
             return Ok(result);
         }
-        
+
+        [HttpPost("SearchFlightAndRoomMock/")]
+        public async Task<IActionResult> SearchFlightAndRoomMockAsync([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        {
+            var result = await _contractExportManager.SearchFlightAndRoomMockAsync(searchFlightAndRoomRequest);
+
+            return Ok(result);
+        }
+
         [HttpPost("SearchFlightAndRoomLowestPrices/")]
         public async Task<IActionResult> SearchFlightAndRoomLowestPrices([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {

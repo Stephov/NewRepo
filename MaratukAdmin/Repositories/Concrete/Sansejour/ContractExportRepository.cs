@@ -23,6 +23,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
     public class ContractExportRepository : IContractExportRepository
     {
         protected readonly MaratukDbContext _dbContext;
+        private List<string> HotelCodes = new();
 
         public ContractExportRepository(MaratukDbContext dbContext)
         {
@@ -1010,6 +1011,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
         }
 
+        public async Task<List<SyncSejourRate>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        {
+            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
+
+            return await Task.FromResult(retValue);
+        }
         public async Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
         //public List<SyncSejourAccomodationDescription> SearchRoomNewAsync(SearchRoomRequest searchRequest)
         {
@@ -1063,14 +1070,15 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public async Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
         {
-            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest);
+            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
 
             return await Task.FromResult(retValue);
         }
 
-        private List<SyncSejourRate> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        private List<SyncSejourRate> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest, bool notRepeatableHotel)
         {
             var fakeRooms = new List<SyncSejourRate>();
+            string hotelCode = "";
 
             try
             {
@@ -1080,12 +1088,13 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                     var fakeFlight = new SyncSejourRate
                     {
                         SyncDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        HotelCode = Faker.StringFaker.Numeric(3),
-                        HotelSeasonBegin = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom, 
-                        HotelSeasonEnd = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateTo, 
+                        //HotelCode = Faker.StringFaker.Numeric(3),
+                        HotelCode = GenerateHotelCode(notRepeatableHotel),
+                        HotelSeasonBegin = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        HotelSeasonEnd = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateTo,
                         RecID = Faker.StringFaker.Numeric(8),
-                        CreateDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom, 
-                        ChangeDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom, 
+                        CreateDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        ChangeDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         AccomodationPeriodBegin = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         AccomodationPeriodEnd = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         Room = Faker.StringFaker.Alpha(3),
@@ -1120,6 +1129,23 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 throw;
             }
             return fakeRooms;
+        }
+
+        public string GenerateHotelCode(bool notRepeatableHotel)
+        {
+            string hotelCode = Faker.StringFaker.Numeric(3);
+
+            if (notRepeatableHotel && HotelCodes.Contains(hotelCode))             // Hotel should NOT repeat
+            {
+                hotelCode = GenerateHotelCode(notRepeatableHotel);
+            }
+
+            if (!HotelCodes.Contains(hotelCode))
+            {
+                HotelCodes.Add(hotelCode);
+            }
+
+            return hotelCode;
         }
         #endregion
     }

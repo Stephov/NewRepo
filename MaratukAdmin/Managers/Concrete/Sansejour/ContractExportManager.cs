@@ -572,7 +572,61 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
             return retValue;
         }
+        public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomMockAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        {
+            int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
+            int flightChildCount = 0;
+            int flightInfantCount = 0;
+            List<SearchFligtAndRoomResponse> retValue = new();
 
+            // Define child counts and ages for Flight seach
+            if (searchFlightAndRoomRequest.RoomChildAges != null)
+            {
+                foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
+                {
+                    if (man <= 2)
+                    { flightInfantCount++; }
+                    else if (man > 2 && man <= 12)
+                    { flightChildCount++; }
+                    else if (man > 12)
+                    { flightAdultCount++; }
+                }
+            }
+
+            SearchFlightResult searchFlightRequest = new()
+            {
+                FlightOneId = searchFlightAndRoomRequest.FlightOneId,
+                FlightTwoId = searchFlightAndRoomRequest.FlightTwoId,
+                StartDate = searchFlightAndRoomRequest.FlightStartDate,
+                ReturnedDate = searchFlightAndRoomRequest.FlightReturnedDate,
+                Adult = flightAdultCount,   // searchFlightAndRoomRequest.FlightAdult,
+                Child = flightChildCount,   // searchFlightAndRoomRequest.FlightChild,
+                Infant = flightInfantCount  // searchFlightAndRoomRequest.FlightInfant
+            };
+
+            // Get FLIGHTS
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);
+
+            // Get ROOMS
+            var resultRoomSearch = await _contractExportRepository.SearchRoomMockAsync(searchFlightAndRoomRequest);
+
+
+            // Combune results
+            foreach (var flight in resultFlightSearch)
+            {
+                foreach (var room in resultRoomSearch)
+                {
+                    retValue.Add(new SearchFligtAndRoomResponse()
+                    {
+                        flightSearchResponse = flight,
+                        roomSearchResponse = room,
+                        flightAndRoomTotalPrice = flight.TotalPrice + room.Price
+                    });
+                }
+            }
+
+            return retValue;
+        }
 
         public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {
@@ -640,7 +694,6 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
             return retValue;
         }
-
         public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {
             int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
