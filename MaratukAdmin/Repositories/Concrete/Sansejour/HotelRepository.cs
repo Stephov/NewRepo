@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Dto.Request;
+﻿using Bogus;
+using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
@@ -16,6 +17,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
     {
         protected readonly MaratukDbContext _dbContext;
         private readonly ICountryRepository _countryRepository;
+        private Faker faker = new();
 
         private List<Hotel> Hotels = null;
         private List<MaratukAdmin.Entities.Global.Country> Countries = null;
@@ -78,33 +80,33 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 int countryId;
                 if (Countries == null)
                 {
-                    countryId = Faker.RandomNumber.Next(1, 100);
+                    countryId = faker.Random.Number(1, 100);
                 }
                 else
                 {
-                    int countryIndex = Faker.RandomNumber.Next(1, Countries.Count);
+                    int countryIndex = faker.Random.Number(1, Countries.Count);
                     countryId = Countries[countryIndex].Id;
                 }
                 // Generate fake info
                 fakeHotel = new Hotel()
                 {
-                    Id = Faker.RandomNumber.Next(1, 100),
+                    Id = faker.Random.Number(1, 100),
                     Code = code,
-                    Name = Faker.Lorem.Words(1).FirstOrDefault(),
+                    Name = faker.Lorem.Word(),
                     //Country = Faker.RandomNumber.Next(1, 5000),
                     Country = countryId,
-                    City = Faker.RandomNumber.Next(1, 100),
-                    HotelCategoryId = Faker.RandomNumber.Next(1, 5),
-                    IsCruise = Faker.RandomNumber.Next(0, 1),
+                    City = faker.Random.Number(1, 100),
+                    HotelCategoryId = faker.Random.Number(1, 5),
+                    IsCruise = faker.Random.Number(0, 1),
 
-                    Address = Faker.Lorem.Words(1).FirstOrDefault(),
-                    GpsLatitude = Faker.StringFaker.Numeric(10),
-                    GpsLongitude = Faker.StringFaker.Numeric(10),
-                    PhoneNumber = Faker.Phone.Number(),
-                    Fax = Faker.Phone.Number(), 
-                    Email = Faker.Internet.Email(),
-                    Site = "www." + Faker.Lorem.Words(1).FirstOrDefault() + ".com",
-                    Description = Faker.Lorem.Sentence(10)
+                    Address = faker.Address.FullAddress(),
+                    GpsLatitude = faker.Address.Latitude().ToString(),
+                    GpsLongitude = faker.Address.Longitude().ToString(),
+                    PhoneNumber = faker.Phone.PhoneNumber(),
+                    Fax = faker.Phone.PhoneNumber(), 
+                    Email = faker.Internet.Email(),
+                    Site = "www." + faker.Lorem.Word() + ".com",
+                    Description = faker.Lorem.Sentence(10)
                 };
             }
             catch (Exception)

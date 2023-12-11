@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Dto.Request;
+﻿using Bogus;
+using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
@@ -14,7 +15,7 @@ namespace MaratukAdmin.Repositories.Concrete
     public class FunctionRepository : IFunctionRepository
     {
         protected readonly MaratukDbContext _context;
-
+        private Faker faker = new();
         public FunctionRepository(MaratukDbContext context)
         {
             _context = context;
@@ -119,30 +120,30 @@ namespace MaratukAdmin.Repositories.Concrete
                 // Generate 10 fake records
                 for (int i = 1; i <= 10; i++)
                 {
-                    double AdultPrice = Faker.RandomNumber.Next(1, 5000);
-                    double ChildPrice = Faker.RandomNumber.Next(1, 5000);
-                    double InfantPrice = Faker.RandomNumber.Next(1, 5000);
+                    double AdultPrice = faker.Random.Number(1, 5000); 
+                    double ChildPrice = faker.Random.Number(1, 5000);
+                    double InfantPrice = faker.Random.Number(1, 5000);
                     double TotalPrice = AdultPrice + ChildPrice + InfantPrice;
-                    int durationHours = Faker.RandomNumber.Next(1, 15);
+                    int durationHours = faker.Random.Number(1, 15);
 
                     var fakeFlight = new FinalFlightSearchResponse
                     {
-                        FlightId = Faker.RandomNumber.Next(),
-                        CostPerTickets = Faker.RandomNumber.Next(1, 5000),
+                        FlightId = faker.Random.Number(),
+                        CostPerTickets = faker.Random.Number(1, 5000),
                         TotalPrice = TotalPrice,
                         NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                        DepartureAirportCode = Faker.StringFaker.AlphaNumeric(10),
-                        DestinationAirportCode = Faker.StringFaker.AlphaNumeric(10),
-                        DepartureTime = Faker.DateTimeFaker.DateTime(),
-                        ArrivalTime = Faker.DateTimeFaker.DateTime(),
+                        DepartureAirportCode = faker.Random.AlphaNumeric(10),
+                        DestinationAirportCode = faker.Random.AlphaNumeric(10),
+                        DepartureTime = faker.Date.Recent(),
+                        ArrivalTime = faker.Date.Recent(),
                         AdultPrice = AdultPrice,
                         ChildPrice = ChildPrice,
                         InfantPrice = InfantPrice,
-                        Airline = Faker.Lorem.Words(1).FirstOrDefault(),
-                        FlightNumber = Faker.StringFaker.AlphaNumeric(5),
+                        Airline = faker.Lorem.Word(),
+                        FlightNumber = faker.Random.AlphaNumeric(5),
                         DurationHours = durationHours,
                         DurationMinutes = durationHours * 60,
-                        CurrencyId = Faker.RandomNumber.Next(1,3)
+                        CurrencyId = faker.Random.Number(1,3)
                     };
 
                     fakeFlights.Add(fakeFlight);

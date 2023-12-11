@@ -13,10 +13,10 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System;
 using System.Collections.Generic;
-using Faker;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
 using MaratukAdmin.Dto.Response.Sansejour;
+using Bogus;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -24,6 +24,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
     {
         protected readonly MaratukDbContext _dbContext;
         private List<string> HotelCodes = new();
+        private Faker faker = new ();
 
         public ContractExportRepository(MaratukDbContext dbContext)
         {
@@ -1092,25 +1093,25 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                         HotelCode = GenerateHotelCode(notRepeatableHotel),
                         HotelSeasonBegin = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         HotelSeasonEnd = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateTo,
-                        RecID = Faker.StringFaker.Numeric(8),
+                        RecID = faker.Random.String2(8, 8, "0123456789"),
                         CreateDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         ChangeDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         AccomodationPeriodBegin = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         AccomodationPeriodEnd = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        Room = Faker.StringFaker.Alpha(3),
-                        RoomDesc = Faker.Lorem.Words(1).FirstOrDefault(),
-                        RoomType = Faker.StringFaker.Alpha(3),
+                        Room = faker.Random.String2(3, 3).ToUpper(),
+                        RoomDesc = faker.Lorem.Word(),
+                        RoomType = faker.Random.String2(3, 3).ToUpper(),
                         RoomTypeDesc = "STANDARD",
                         Board = "AI",
                         BoardDesc = "ALL INCLUSIVE",
                         RoomPax = searchFligtAndRoomRequest.RoomAdultCount + searchFligtAndRoomRequest.RoomChildCount,
                         RoomAdlPax = searchFligtAndRoomRequest.RoomAdultCount,
                         RoomChdPax = searchFligtAndRoomRequest.RoomChildCount,
-                        AccmdMenTypeCode = Faker.StringFaker.Numeric(12),
+                        AccmdMenTypeCode = faker.Random.String2(12, 12, "0123456789"),
                         AccmdMenTypeName = searchFligtAndRoomRequest.RoomAdultCount.ToString() + "Ad + " + searchFligtAndRoomRequest.RoomChildCount.ToString() + "Ch(Mek)(Erku)(Ereq)",
                         ReleaseDay = 0,
                         PriceType = "ROOM",
-                        Price = Faker.NumberFaker.Number(1, 5000),
+                        Price = faker.Random.Number(1, 5000),
                         WeekendPrice = null,
                         WeekendPercent = 0,
                         AccomLengthDay = "0-999",
@@ -1133,7 +1134,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public string GenerateHotelCode(bool notRepeatableHotel)
         {
-            string hotelCode = Faker.StringFaker.Numeric(3);
+            //string hotelCode = Faker.StringFaker.Numeric(3);
+            string hotelCode = faker.Random.String2(3, 3, "0123456789");
 
             if (notRepeatableHotel && HotelCodes.Contains(hotelCode))             // Hotel should NOT repeat
             {
