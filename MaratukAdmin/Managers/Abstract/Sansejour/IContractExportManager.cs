@@ -17,7 +17,9 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
         Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest);
         Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
         Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest);
+        Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomMockAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest);
         Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest);
+        Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest);
 
     }
 }

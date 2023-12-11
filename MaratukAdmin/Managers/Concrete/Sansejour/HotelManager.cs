@@ -105,6 +105,19 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         }
 
+
+        public async Task<Hotel> GetHotelByCodeMockAsync(string code)
+        {
+            var entity = await _hotelRepository.GetHoteByCodeMockAsync(code);
+
+            if (entity == null)
+            {
+                throw new ApiBaseException(StatusCodes.Status404NotFound);
+            }
+
+            return entity;
+
+        }
         public async Task<bool> RefreshHotelList()
         {
             //string databaseName = "DATA2020";
@@ -175,6 +188,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 //var responseContent = await resp.Content.ReadAsStringAsync();
                 #endregion
 
+                #region *** Delete existing data and insert new ***
                 if (hotelsSansejourList != null)
                 {
                     await _transactionRepository.BeginTransAsync();                                             // Begin transaction
@@ -201,6 +215,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     //await _dbContext.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('" + tableName + "', RESEED, 0)");
 
                 }
+                #endregion
             }
             catch (Exception)
             {

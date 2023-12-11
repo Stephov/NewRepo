@@ -1,5 +1,7 @@
-﻿using MaratukAdmin.Managers.Abstract.Sansejour;
+﻿using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete;
+using MaratukAdmin.Managers.Concrete.Sansejour;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +10,7 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    //[Authorize(AuthenticationSchemes = "AdminScheme")]
     public class HotelController : BaseController
     {
         private readonly IHotelManager _hotelManager;
@@ -34,11 +36,21 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("GetHotelByCodeMock/")]
+        public async Task<ActionResult> GetHotelByCodeMock(string code)
+        {
+            var result = await _hotelManager.GetHotelByCodeMockAsync(code);
+
+            return Ok(result);
+        }
+
+
         [HttpGet("RefreshHotelList/")]
         public async Task<IActionResult> RefreshHotelList()
         {
-            var result = await _hotelManager.RefreshHotelList();
-            return Ok(result);
+            //var result = await _hotelManager.RefreshHotelList();
+            //return Ok(result);
+            return Ok();
         }
     }
 }

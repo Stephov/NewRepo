@@ -1,20 +1,30 @@
 ﻿using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Drawing.Printing;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query;
+using MaratukAdmin.Dto.Response.Sansejour;
+using Bogus;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
     public class ContractExportRepository : IContractExportRepository
     {
         protected readonly MaratukDbContext _dbContext;
+        private List<string> HotelCodes = new();
+        private Faker faker = new ();
 
         public ContractExportRepository(MaratukDbContext dbContext)
         {
@@ -1002,6 +1012,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
         }
 
+        public async Task<List<SyncSejourRate>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        {
+            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
+
+            return await Task.FromResult(retValue);
+        }
         public async Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
         //public List<SyncSejourAccomodationDescription> SearchRoomNewAsync(SearchRoomRequest searchRequest)
         {
@@ -1051,6 +1067,87 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             {
                 throw;
             }
+        }
+
+        public async Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        {
+            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
+
+            return await Task.FromResult(retValue);
+        }
+
+        private List<SyncSejourRate> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest, bool notRepeatableHotel)
+        {
+            var fakeRooms = new List<SyncSejourRate>();
+            string hotelCode = "";
+
+            try
+            {
+                // Generate 10 fake records
+                for (int i = 1; i <= 10; i++)
+                {
+                    var fakeFlight = new SyncSejourRate
+                    {
+                        SyncDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        //HotelCode = Faker.StringFaker.Numeric(3),
+                        HotelCode = GenerateHotelCode(notRepeatableHotel),
+                        HotelSeasonBegin = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        HotelSeasonEnd = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateTo,
+                        RecID = faker.Random.String2(8, 8, "0123456789"),
+                        CreateDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        ChangeDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        AccomodationPeriodBegin = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        AccomodationPeriodEnd = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
+                        Room = faker.Random.String2(3, 3).ToUpper(),
+                        RoomDesc = faker.Lorem.Word(),
+                        RoomType = faker.Random.String2(3, 3).ToUpper(),
+                        RoomTypeDesc = "STANDARD",
+                        Board = "AI",
+                        BoardDesc = "ALL INCLUSIVE",
+                        RoomPax = searchFligtAndRoomRequest.RoomAdultCount + searchFligtAndRoomRequest.RoomChildCount,
+                        RoomAdlPax = searchFligtAndRoomRequest.RoomAdultCount,
+                        RoomChdPax = searchFligtAndRoomRequest.RoomChildCount,
+                        AccmdMenTypeCode = faker.Random.String2(12, 12, "0123456789"),
+                        AccmdMenTypeName = searchFligtAndRoomRequest.RoomAdultCount.ToString() + "Ad + " + searchFligtAndRoomRequest.RoomChildCount.ToString() + "Ch(Mek)(Erku)(Ereq)",
+                        ReleaseDay = 0,
+                        PriceType = "ROOM",
+                        Price = faker.Random.Number(1, 5000),
+                        WeekendPrice = null,
+                        WeekendPercent = 0,
+                        AccomLengthDay = "0-999",
+                        Option = "Stay",
+                        SpoNoApply = null,
+                        SPOPrices = 2,
+                        SPODefinit = "EEA// 04/08/2023 M",
+                        NotCountExcludingAccomDate = "N"
+                    };
+
+                    fakeRooms.Add(fakeFlight);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return fakeRooms;
+        }
+
+        public string GenerateHotelCode(bool notRepeatableHotel)
+        {
+            //string hotelCode = Faker.StringFaker.Numeric(3);
+            string hotelCode = faker.Random.String2(3, 3, "0123456789");
+
+            if (notRepeatableHotel && HotelCodes.Contains(hotelCode))             // Hotel should NOT repeat
+            {
+                hotelCode = GenerateHotelCode(notRepeatableHotel);
+            }
+
+            if (!HotelCodes.Contains(hotelCode))
+            {
+                HotelCodes.Add(hotelCode);
+            }
+
+            return hotelCode;
         }
         #endregion
     }

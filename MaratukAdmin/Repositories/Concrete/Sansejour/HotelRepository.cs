@@ -1,7 +1,11 @@
-﻿using MaratukAdmin.Dto.Request;
+﻿using Bogus;
+using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
+using MaratukAdmin.Managers.Abstract;
+using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +16,16 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
     public class HotelRepository : IHotelRepository
     {
         protected readonly MaratukDbContext _dbContext;
+        private readonly ICountryRepository _countryRepository;
+        private Faker faker = new();
 
-        public HotelRepository(MaratukDbContext dbContext)
+        private List<Hotel> Hotels = null;
+        private List<MaratukAdmin.Entities.Global.Country> Countries = null;
+
+        public HotelRepository(MaratukDbContext dbContext, ICountryRepository countryRepository)
         {
             _dbContext = dbContext;
+            _countryRepository = countryRepository;
         }
 
         public async Task EraseHotelListAsync()
@@ -41,7 +51,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         }
 
 
-        public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
+        public async Task<List<Hotel>> GetAllHotelsAsync()
         {
             return await _dbContext.Hotel.ToListAsync();
         }
@@ -53,6 +63,57 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<Hotel> GetHoteByCodeMockAsync(string code)
+        {
+            Hotel retValue = GenerateFakeHotel(code);
 
+            return await Task.FromResult(retValue);
+        }
+
+        private Hotel GenerateFakeHotel(string code)
+        {
+            Hotel fakeHotel;
+            //Hotels = GetAllHotelsAsync().Result;
+            Countries = _countryRepository.GetAllAsync().Result;
+            try
+            {
+                int countryId;
+                if (Countries == null)
+                {
+                    countryId = faker.Random.Number(1, 100);
+                }
+                else
+                {
+                    int countryIndex = faker.Random.Number(1, Countries.Count);
+                    countryId = Countries[countryIndex].Id;
+                }
+                // Generate fake info
+                fakeHotel = new Hotel()
+                {
+                    Id = faker.Random.Number(1, 100),
+                    Code = code,
+                    Name = faker.Lorem.Word(),
+                    //Country = Faker.RandomNumber.Next(1, 5000),
+                    Country = countryId,
+                    City = faker.Random.Number(1, 100),
+                    HotelCategoryId = faker.Random.Number(1, 5),
+                    IsCruise = faker.Random.Number(0, 1),
+
+                    Address = faker.Address.FullAddress(),
+                    GpsLatitude = faker.Address.Latitude().ToString(),
+                    GpsLongitude = faker.Address.Longitude().ToString(),
+                    PhoneNumber = faker.Phone.PhoneNumber(),
+                    Fax = faker.Phone.PhoneNumber(), 
+                    Email = faker.Internet.Email(),
+                    Site = "www." + faker.Lorem.Word() + ".com",
+                    Description = faker.Lorem.Sentence(10)
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return fakeHotel;
+        }
     }
 }

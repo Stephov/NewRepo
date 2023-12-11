@@ -10,6 +10,7 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
         
         //Task<HotelResponse> GetHotelByIdAsync(int id);
         Task<Hotel> GetHotelByIdAsync(int id);
+        Task<Hotel> GetHotelByCodeMockAsync(string code);
         Task<bool> RefreshHotelList();
 
     }
