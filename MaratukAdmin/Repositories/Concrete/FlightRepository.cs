@@ -23,7 +23,7 @@ namespace MaratukAdmin.Repositories.Concrete
                 .ToListAsync();
         }
 
-        public async Task<Flight> GetFlightByIdAsync(int id)
+        public async Task<Flight> GetFlightByIdAsync(int? id)
         {
             return await _dbContext.Flight
                 //.Include(f => f.Schedules)

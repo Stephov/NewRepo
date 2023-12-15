@@ -9,7 +9,9 @@ using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using MimeKit.Tnef;
 using System;
+using System.Collections.Generic;
 
 namespace MaratukAdmin.Managers.Concrete
 {
@@ -19,6 +21,7 @@ namespace MaratukAdmin.Managers.Concrete
         //private readonly IMainRepository<BookedFlight> _mainRepository;
         private readonly IBookedFlightRepository _bookedFlightRepository;
         private readonly ICountryManager _countryManager;
+        private readonly IFlightRepository _flightRepository;
         private readonly ICurrencyRatesRepository _currencyRatesRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
@@ -26,7 +29,9 @@ namespace MaratukAdmin.Managers.Concrete
 
         public BookedFlightManager(IMapper mapper, IBookedFlightRepository bookedFlightRepository,
             ICountryManager countryManager,
-            IUserRepository userRepository, ICurrencyRatesRepository currencyRatesRepository)
+            IUserRepository userRepository,
+            ICurrencyRatesRepository currencyRatesRepository,
+            IFlightRepository flightRepository)
         {
 
             _bookedFlightRepository = bookedFlightRepository;
@@ -34,6 +39,7 @@ namespace MaratukAdmin.Managers.Concrete
             _userRepository = userRepository;
             _mapper = mapper;
             _currencyRatesRepository = currencyRatesRepository;
+            _flightRepository = flightRepository;
         }
 
         public async Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlight)
@@ -41,6 +47,18 @@ namespace MaratukAdmin.Managers.Concrete
             try
             {
                 var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
+                string agentName = string.Empty;
+                string companyName = string.Empty;
+                string agentPhone = string.Empty;
+                string agentEmail = string.Empty;
+                List<string> listOfArrivals = new List<string>();
+                string Fligthname1 = string.Empty;
+                string FligthNumber1 = string.Empty;
+                string Fligthname2 = string.Empty;
+                string FligthNumber2 = string.Empty;
+                string TotalCurrency = string.Empty;
+                string totalPay = string.Empty;
+                string maratukAgentEmail = string.Empty;
 
 
                 string orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
@@ -71,12 +89,55 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.GenderId = bookedFlight.GenderId;
                     booked.Dept = bookedFlight.TotalPrice;
 
+                    var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
+                    Fligthname1 = fligth.Name;
+                    FligthNumber1 = fligth.FlightValue;
+                    totalPay = booked.TotalPrice.ToString();
 
+                    if (booked.EndFlightId != null)
+                    {
+                        var fligth2 = await _flightRepository.GetFlightByIdAsync(booked.EndFlightId);
+                        Fligthname2 = fligth.Name;
+                        FligthNumber2 = fligth.FlightValue;
+                    }
 
+                    var agent = await _userRepository.GetAgencyUsersByIdAsync(booked.AgentId);
 
+                    if (agent != null)
+                    {
+                        agentName = agent.FullName;
+                        agentEmail = agent.Email;
+                        agentPhone = agent.PhoneNumber1;
+                    }
+
+                    listOfArrivals.Add(booked.Name + " " + booked.Surname);
+                    var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukAgentId);
+                    if(maratukAgent != null)
+                    {
+                        maratukAgentEmail = maratukAgent.Email;
+                    }
                     await _bookedFlightRepository.CreateBookedFlightAsync(booked);
 
                 }
+                string listOfArrivalsString = string.Join(", ", listOfArrivals);
+                string date = DateTime.Now.ToString();
+                string textBody = $@"
+{orderNumber}
+
+Agent: {companyName} 
+Creator: {agentName}
+Phone Number: {agentPhone}
+Email: {agentEmail}
+
+Full list of arrivals: {listOfArrivalsString}
+
+{Fligthname1} / {FligthNumber1} / 08:15-09:15
+{Fligthname2} / {FligthNumber2} / 22:15-23:15
+
+Total payable: {totalPay} 
+Date of sale: {date}";
+
+                MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBody);
                 return true;
             }
             catch
@@ -87,7 +148,7 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<BookedFlightResponseFinal> GetBookedFlightByAgentIdAsync(int id)
         {
-            BookedFlightResponseFinal  responseFinal = new BookedFlightResponseFinal();
+            BookedFlightResponseFinal responseFinal = new BookedFlightResponseFinal();
 
             var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
             ///todo  add last actual currency

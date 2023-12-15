@@ -50,9 +50,7 @@ namespace MaratukAdmin.Repositories.Concrete
         {
             return await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Email == email);
         }
-
-
-
+        
         public async Task<List<AgencyUser>> GetAgencyUsersAsync(int itn)
         {
             return await _dbContext.AgencyUser.Where(u => u.Itn == itn).ToListAsync();
