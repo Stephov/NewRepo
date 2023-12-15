@@ -42,6 +42,7 @@
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
         public int CurrencyId { get; set; }
+        public string CurrencyName { get; set; }
         public FlightSearchResponse ReturnedFlight { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace MaratukAdmin.Managers.Concrete
         private readonly IPriceBlockTypeManager _priceBlockTypeManager;
         private readonly IPricePackageManager _pricePackageManager;
         private readonly IServiceClassManager _serviceClassManager;
-        private readonly IAirlineManager _airlineManager;
+        private readonly ICurrencyManager _currencyManager;
         private readonly IAirportManager _airportManager;
         private readonly IFunctionRepository _functionRepository;
 
@@ -41,10 +41,10 @@ namespace MaratukAdmin.Managers.Concrete
                             IPriceBlockTypeManager priceBlockTypeManager,
                             IPricePackageManager pricePackageManager,
                             IServiceClassManager serviceClassManage,
-                            IAirlineManager airlineManager,
                             IAirportManager airportManager,
                             IPriceBlockRepository priceBlockRepository,
-                            IFunctionRepository functionRepository
+                            IFunctionRepository functionRepository,
+            ICurrencyManager currencyManager
                             )
         {
             _mainRepository = mainRepository;
@@ -54,7 +54,7 @@ namespace MaratukAdmin.Managers.Concrete
             _flightManager = flightManager;
             _pricePackageManager = pricePackageManager;
             _serviceClassManager = serviceClassManage;
-            _airlineManager = airlineManager;
+            _currencyManager = currencyManager;
             _airportManager = airportManager;
             _priceBlockTypeManager = priceBlockTypeManager;
             _priceBlockRepository = priceBlockRepository;
@@ -543,7 +543,7 @@ namespace MaratukAdmin.Managers.Concrete
                 DurationHours = group.First().DurationHours,
                 DurationMinutes = group.First().DurationMinutes,
                 CurrencyId = group.First().CurrencyId,
-
+                CurrencyName = _currencyManager.GetCurrencyNameByIdAsync(group.First().CurrencyId).Result.Name,
             }).ToList();
 
                 return groupedFlights;
