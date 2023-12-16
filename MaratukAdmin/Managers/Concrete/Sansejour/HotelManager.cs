@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Azure;
 using MailKit;
+using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
@@ -316,7 +318,39 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             return true;
         }
 
+        public async Task<Hotel> UpdateHotelAsync(UpdateHotelRequest updateHotelRequest)
+        {
+            Hotel result;
+            try
+            {
+                Hotel hotelEntity = await _mainRepository.GetAsync(updateHotelRequest.hotel.Id);
+                if (hotelEntity == null)
+                {
+                    throw new ApiBaseException(StatusCodes.Status404NotFound);
+                }
 
+                hotelEntity = updateHotelRequest.hotel;
+
+                await _transactionRepository.BeginTransAsync();                                             // Begin transaction
+
+                // create a new list to hold the schedules
+                //var schedules = new List<Schedule>();
+
+                // add the schedules to the flight
+                //entity.Schedules = schedules;
+
+                result = await _mainRepository.UpdateAsync(hotelEntity);
+
+                await _transactionRepository.CommitTransAsync();                                            // Commit transaction
+
+            }
+            catch (Exception)
+            {
+                await _transactionRepository.RollbackTransAsync();                                            // Rollback transaction
+                result = new();
+            }
+            return result;
+        }
 
 
     }

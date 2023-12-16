@@ -1,4 +1,6 @@
-﻿using MaratukAdmin.Dto.Request.Sansejour;
+﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Managers.Concrete.Sansejour;
@@ -51,6 +53,18 @@ namespace MaratukAdmin.Controllers.admin
 
             return Ok(result);
         }
+
+
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateFlightAsync([FromBody] UpdateHotelRequest hotelRequest)
+        {
+            var result = await _hotelManager.UpdateHotelAsync(hotelRequest);
+            return Ok(result);
+        }
+
+
 
 
         [HttpGet("RefreshHotelList/")]

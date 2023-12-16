@@ -40,7 +40,10 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(s =>
+{
+    s.EnableAnnotations();
+});
 
 
 builder.Services.AddLocalJWTAdminAuth(builder.Configuration);
