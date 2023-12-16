@@ -36,6 +36,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("GetHotelByCode/")]
+        public async Task<ActionResult> GetHotelByCode(string code)
+        {
+            var result = await _hotelManager.GetHotelByCodeAsync(code);
+
+            return Ok(result);
+        }
+
         [HttpGet("GetHotelByCodeMock/")]
         public async Task<ActionResult> GetHotelByCodeMock(string code)
         {

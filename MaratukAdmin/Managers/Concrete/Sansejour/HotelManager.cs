@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using MailKit;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
@@ -18,6 +19,7 @@ using MimeKit;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
@@ -83,8 +85,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         //public async Task<HotelResponse> GetHotelByIdAsync(int id)
         public async Task<Hotel> GetHotelByIdAsync(int id)
         {
-            //var entity = await _mainRepository.GetAsync(id, "Hotels");
             var entity = await _mainRepository.GetAsync(id);
+            //var entity = await _mainRepository.GetAsync(id);
 
             if (entity == null)
             {
@@ -105,8 +107,97 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         }
 
+        public async Task<HotelResponseModel> GetHotelByCodeAsync(string code)
+        {
+            // ***
+            //var query = _dbContext.SyncSejourRate
+            //.Join(distinctAccomodationDescriptions,
+            //rate => rate.AccmdMenTypeCode,
+            //accomodationDescription => accomodationDescription.Code,
+            //(rate, accomodationDescription) => new { Rate = rate, AccomodationDescription = accomodationDescription })
+            //.Where(joinResult =>
+            //joinResult.Rate.SyncDate == exportDate &&
+            //joinResult.Rate.RoomPax == roomPax &&
+            //joinResult.Rate.RoomAdlPax == adultPax &&
+            //joinResult.Rate.RoomChdPax == childPax &&
+            //joinResult.Rate.AccomodationPeriodBegin >= accomodationDateFrom &&
+            //joinResult.Rate.AccomodationPeriodEnd <= accomodationDateTo)
+            ////.Select(joinResult => joinResult.Rate);
+            //.OrderBy(joinResult => joinResult.Rate.Id)
+            //.Skip((pageNumber - 1) * pageSize)
+            //.Take(pageSize)
+            //.Select(joinResult => joinResult.Rate);
 
-        public async Task<Hotel> GetHotelByCodeMockAsync(string code)
+
+            //return await query.ToListAsync();
+
+            //public async Task<FlightEditResponse> GetFlightByIdAsync(int id)
+            //{
+            //    var entity = await _mainRepository.GetAsync(id, "Schedules");
+            //    if (entity == null)
+            //    {
+            //        throw new ApiBaseException(StatusCodes.Status404NotFound);
+            //    }
+
+            //    var flightEditResponse = new FlightEditResponse();
+            //    var sheduledEdit = new List<ScheduleEditResponse>();
+
+            //    flightEditResponse.Name = entity.Name;
+            //    flightEditResponse.Id = entity.Id;
+
+            //    flightEditResponse.DepartureCountryId = entity.DepartureCountryId;
+            //    flightEditResponse.DepartureCityId = entity.DepartureCityId;
+            //    flightEditResponse.DepartureAirportId = entity.DepartureAirportId;
+
+
+            //    flightEditResponse.DestinationCountryId = entity.DestinationCountryId;
+            //    flightEditResponse.DestinationCityId = entity.DestinationCityId;
+            //    flightEditResponse.DestinationAirportId = entity.DestinationAirportId;
+
+            //    flightEditResponse.FlightValue = entity.FlightValue;
+            //    flightEditResponse.AirlineId = entity.AirlineId;
+            //    flightEditResponse.AircraftId = entity.AircraftId;
+            //    flightEditResponse.DurationHours = entity.DurationHours;
+            //    flightEditResponse.DurationMinutes = entity.DurationMinutes;
+
+
+            //    if (entity.Schedules != null)
+            //    {
+            //        foreach (var shedul in entity.Schedules)
+            //        {
+            //            var schedule = new ScheduleEditResponse()
+            //            {
+            //                FlightStartDate = shedul.FlightStartDate,
+            //                FlightEndDate = shedul.FlightEndDate,
+            //                DepartureTime = shedul.DepartureTime,
+            //                ArrivalTime = shedul.ArrivalTime,
+            //                DayOfWeek = shedul.DayOfWeek.Split(',')
+            //            };
+
+
+
+            //            sheduledEdit.Add(schedule);
+
+            //        }
+            //    }
+
+            //    flightEditResponse.schedules = sheduledEdit;
+
+            //    return flightEditResponse;
+
+            //}
+            // ***
+            var entity = await _hotelRepository.GetHoteByCodeAsync(code);
+
+            if (entity == null)
+            {
+                throw new ApiBaseException(StatusCodes.Status404NotFound);
+            }
+
+            return entity;
+        }
+
+        public async Task<HotelResponseModel> GetHotelByCodeMockAsync(string code)
         {
             var entity = await _hotelRepository.GetHoteByCodeMockAsync(code);
 

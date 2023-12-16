@@ -1,4 +1,6 @@
-﻿namespace MaratukAdmin.Entities.Sansejour
+﻿using MaratukAdmin.Dto.Response;
+
+namespace MaratukAdmin.Entities.Sansejour
 {
     public class Hotel : BaseDbEntity
     {

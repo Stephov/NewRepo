@@ -24,7 +24,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
     {
         protected readonly MaratukDbContext _dbContext;
         private List<string> HotelCodes = new();
-        private Faker faker = new ();
+        private Faker faker = new();
 
         public ContractExportRepository(MaratukDbContext dbContext)
         {
@@ -1086,7 +1086,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 // Generate 10 fake records
                 for (int i = 1; i <= 10; i++)
                 {
-                    var fakeFlight = new SyncSejourRate
+                    SyncSejourRate fakeRoom = new()
                     {
                         SyncDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         //HotelCode = Faker.StringFaker.Numeric(3),
@@ -1122,7 +1122,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                         NotCountExcludingAccomDate = "N"
                     };
 
-                    fakeRooms.Add(fakeFlight);
+                    fakeRooms.Add(fakeRoom);
                 }
             }
             catch (Exception)

@@ -8,7 +8,8 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
     public interface IHotelRepository
     {
         //Task<Hotel> GetHotelByIdAsync(int id);
-        Task<Hotel> GetHoteByCodeMockAsync(string code);
+        Task<HotelResponseModel?> GetHoteByCodeAsync(string code);
+        Task<HotelResponseModel> GetHoteByCodeMockAsync(string code);
         Task<List<Hotel>> GetAllHotelsAsync();
         Task EraseHotelListAsync();
         Task FillNewHotelsListAsync(List<Hotel> hotelList);
