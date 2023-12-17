@@ -16,7 +16,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         protected readonly MaratukDbContext _dbContext;
         //private readonly IMainRepository<HotelImage> _mainRepository;
         private Faker faker = new();
-        private string filePath = "C:/_IMAGES/";
+        private readonly string filePath = @"\\16.171.6.213\C$\Uploads\";
 
         public HotelImagesRepository(MaratukDbContext dbContext)
         {
@@ -25,25 +25,31 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public async Task<HotelImage> AddHotelImageAsync(AddHotelImageRequest hotelImageRequest)
         {
-            IFormFile file = hotelImageRequest.FileContent;
-            string fullPath = filePath + file.FileName;
+            //string fullPath = filePath + fileContent.FileName;
+            IFormFile fileContent = hotelImageRequest.FileContent;
+            string fileName = fileContent.FileName;
+            string mediaType = fileContent.ContentType;
 
             try
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+                //using (var stream = new FileStream(fullPath, FileMode.Create))
+                //{
+                //    await fileContent.CopyToAsync(stream);
+                //}
 
+                using var memoryStream = new MemoryStream();
+                await fileContent.CopyToAsync(memoryStream);
+                byte[] fileBytes = memoryStream.ToArray();
 
                 HotelImage newHotelImage = new()
                 {
-                    FileName = file.FileName,
-                    FilePath = filePath,
+                    FileName = fileName,
+                    //FilePath = filePath,
                     FileTypeId = hotelImageRequest.FileTypeId,
+                    MediaType = mediaType,
+                    FileData = fileBytes,
                     HotelId = hotelImageRequest.HotelId,
                 };
-
 
                 await _dbContext.HotelImages.AddAsync(newHotelImage);
 

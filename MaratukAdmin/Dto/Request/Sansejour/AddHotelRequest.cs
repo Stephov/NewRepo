@@ -4,8 +4,8 @@
     {
         public string Code { get; set; }
         public string Name { get; set; }
-        public string Country { get; set; }
-        public string City { get; set; }
+        public int? Country { get; set; }
+        public int? City { get; set; }
         public int HotelCategoryId { get; set; }
         public int? IsCruise { get; set; }
         public string? Address { get; set; }

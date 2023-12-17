@@ -3,6 +3,7 @@ using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
+using System.Threading.Tasks;
 
 namespace MaratukAdmin.Managers.Abstract.Sansejour
 {
@@ -15,6 +16,7 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
         Task<Hotel> GetHotelByIdAsync(int id);
         Task<HotelResponseModel> GetHotelByCodeAsync(string code);
         Task<HotelResponseModel> GetHotelByCodeMockAsync(string code);
+        Task<Hotel> AddHotelAsync(AddHotelRequest hotelImageRequest);
         Task<Hotel> UpdateHotelAsync(UpdateHotelRequest hotel);
         Task<bool> RefreshHotelList();
 

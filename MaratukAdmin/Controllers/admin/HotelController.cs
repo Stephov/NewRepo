@@ -64,7 +64,26 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> AddHotel([FromBody] AddHotelRequest hotelRequest)
+        {
+            try
+            {
+                var result = await _hotelManager.AddHotelAsync(hotelRequest);
 
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
 
 
         [HttpGet("RefreshHotelList/")]

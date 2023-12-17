@@ -7,6 +7,7 @@ using MaratukAdmin.Managers.Concrete.Sansejour;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
 
 namespace MaratukAdmin.Controllers.admin
 {
@@ -85,6 +86,9 @@ namespace MaratukAdmin.Controllers.admin
         {
             try
             {
+                if (hotelRequest.FileContent == null || hotelRequest.FileContent.Length == 0)
+                { return BadRequest("No file attached"); }
+
                 var result = await _hotelImagesManager.AddHotelImageAsync(hotelRequest);
 
                 return Ok(result);

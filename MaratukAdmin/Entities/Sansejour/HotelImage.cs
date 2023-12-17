@@ -6,6 +6,8 @@
         public int FileTypeId { get; set; }
         public string? FileName { get; set; }
         public string? FilePath { get; set; }
+        public byte[] FileData { get; set; }
+        public string MediaType { get; set; }
 
     }
 }

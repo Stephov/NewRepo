@@ -1,4 +1,5 @@
 ﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
@@ -13,6 +14,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<List<Hotel>> GetAllHotelsAsync();
         Task EraseHotelListAsync();
         Task FillNewHotelsListAsync(List<Hotel> hotelList);
+        //Task<Hotel> AddHotelAsync(AddHotelRequest hotelRequest);
 
     }
 }

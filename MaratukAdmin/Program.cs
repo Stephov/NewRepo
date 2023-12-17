@@ -1,3 +1,4 @@
+using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Extensions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
@@ -145,6 +146,6 @@ app.UseAuthorization();
 app.MapHealthChecks("/healthcheck");
 app.MapControllers();
 
-
+app.UseStaticFiles();
 
 app.Run();

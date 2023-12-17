@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Bogus.DataSets;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
@@ -36,6 +37,20 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             _countryRepository = countryRepository;
             _hotelImagesRepository = hotelImagesRepository;
         }
+
+
+        //public async Task<Hotel> AddHotelAsync(AddHotelRequest hotelRequest)
+        //{
+        //    try
+        //    {
+        //        var entity = _mapper.Map<Hotel>(hotelRequest);
+        //        await _mainRepository.AddAsync(entity);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
 
         public async Task EraseHotelListAsync()
         {

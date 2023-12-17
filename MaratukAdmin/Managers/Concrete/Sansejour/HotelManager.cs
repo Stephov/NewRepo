@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure;
+using Bogus.DataSets;
 using MailKit;
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
@@ -14,6 +15,7 @@ using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Concrete;
+using MaratukAdmin.Repositories.Concrete.Sansejour;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
@@ -33,15 +35,14 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
     public class HotelManager : IHotelManager
     {
         private readonly IMainRepository<Hotel> _mainRepository;
-        //private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
         private readonly IHotelRepository _hotelRepository;
         private readonly IHttpRequestManager _httpRequestManager;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IDistributedCache _cache;
 
-
         public HotelManager(IMainRepository<Hotel> mainRepository,
-                            //IMapper mapper,
+                            IMapper mapper,
                             IHotelRepository hotelRepository,
                             IHttpRequestManager httpRequestManager,
                             ITransactionRepository transactionRepository,
@@ -50,7 +51,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             )
         {
             _mainRepository = mainRepository;
-            //_mapper = mapper;
+            _mapper = mapper;
             _hotelRepository = hotelRepository;
             _httpRequestManager = httpRequestManager;
             _transactionRepository = transactionRepository;
@@ -351,6 +352,15 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 result = new();
             }
             return result;
+        }
+
+        public async Task<Hotel> AddHotelAsync(AddHotelRequest hotelRequest)
+        {
+            //return await _hotelRepository.AddHotelAsync(hotelRequest);
+            var entity = _mapper.Map<Hotel>(hotelRequest);
+            await _mainRepository.AddAsync(entity);
+            
+            return entity;
         }
 
 
