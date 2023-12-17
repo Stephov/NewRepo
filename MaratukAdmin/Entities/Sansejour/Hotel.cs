@@ -10,7 +10,7 @@ namespace MaratukAdmin.Entities.Sansejour
         public int? Country { get; set; }
         public int? City { get; set; }
         public int? HotelCategoryId { get; set; }
-        public int? IsCruise { get; set; }
+        public byte? IsCruise { get; set; }
         public string ? Address { get; set; }
         public string? GpsLatitude { get; set;}
         public string? GpsLongitude { get; set;}

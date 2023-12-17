@@ -1,7 +1,11 @@
-﻿namespace MaratukAdmin.Dto.Request.Sansejour
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MaratukAdmin.Dto.Request.Sansejour
 {
     public class AddHotelImageRequest
     {
+        [Required]
+        public IFormFile FileContent { get; set; }
         public int HotelId { get; set; }
         public int FileTypeId { get; set; }
         public string? FileName { get; set; }

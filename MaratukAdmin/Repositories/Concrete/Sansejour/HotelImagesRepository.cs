@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Bogus.DataSets;
 using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
@@ -13,12 +14,49 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
     public class HotelImagesRepository : IHotelImagesRepository
     {
         protected readonly MaratukDbContext _dbContext;
+        //private readonly IMainRepository<HotelImage> _mainRepository;
         private Faker faker = new();
+        private string filePath = "C:/_IMAGES/";
 
         public HotelImagesRepository(MaratukDbContext dbContext)
         {
             _dbContext = dbContext;
         }
+
+        public async Task<HotelImage> AddHotelImageAsync(AddHotelImageRequest hotelImageRequest)
+        {
+            IFormFile file = hotelImageRequest.FileContent;
+            string fullPath = filePath + file.FileName;
+
+            try
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+
+                HotelImage newHotelImage = new()
+                {
+                    FileName = file.FileName,
+                    FilePath = filePath,
+                    FileTypeId = hotelImageRequest.FileTypeId,
+                    HotelId = hotelImageRequest.HotelId,
+                };
+
+
+                await _dbContext.HotelImages.AddAsync(newHotelImage);
+
+                await _dbContext.SaveChangesAsync();
+
+                return newHotelImage;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<HotelImage>> GetAllHotelImagesAsync()
         {
             return await _dbContext.HotelImages.ToListAsync();
@@ -36,7 +74,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public async Task<List<HotelImage>> GetHotelImagesByHotelIdMockAsync(int hotelId)
         {
-            return await Task.FromResult(GenerateFakeHotelImages(hotelId));   
+            return await Task.FromResult(GenerateFakeHotelImages(hotelId));
         }
 
         private List<HotelImage> GenerateFakeHotelImages(int hotelId)

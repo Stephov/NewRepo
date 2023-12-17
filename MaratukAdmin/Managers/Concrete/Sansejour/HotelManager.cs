@@ -329,24 +329,25 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     throw new ApiBaseException(StatusCodes.Status404NotFound);
                 }
 
+                // avelacnel AddHotelAsync - nor hotel grancelu hamar
                 hotelEntity = updateHotelRequest.hotel;
 
-                await _transactionRepository.BeginTransAsync();                                             // Begin transaction
 
-                // create a new list to hold the schedules
-                //var schedules = new List<Schedule>();
-
-                // add the schedules to the flight
-                //entity.Schedules = schedules;
+                //var executionStrategy = _transactionRepository.CreateExecutionStrategy();
+                //executionStrategy.Execute(
+                //() =>
+                //{
+                //    _transactionRepository.BeginTransAsync();                                             // Begin transaction
+                //    result = _mainRepository.UpdateAsync(updateHotelRequest.hotel).Result;
+                //    _transactionRepository.CommitTransAsync();                                            // Commit transaction
+                //});
 
                 result = await _mainRepository.UpdateAsync(hotelEntity);
-
-                await _transactionRepository.CommitTransAsync();                                            // Commit transaction
+                //result = await _mainRepository.UpdateAsync(updateHotelRequest.hotel);
 
             }
             catch (Exception)
             {
-                await _transactionRepository.RollbackTransAsync();                                            // Rollback transaction
                 result = new();
             }
             return result;

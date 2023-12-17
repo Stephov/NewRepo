@@ -161,7 +161,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                         Country = countryId,
                         City = faker.Random.Number(1, 100),
                         HotelCategoryId = faker.Random.Number(1, 5),
-                        IsCruise = faker.Random.Number(0, 1),
+                        //IsCruise = faker.Random.Number(0, 1),
+                        IsCruise = faker.Random.Byte(0,1),
 
                         Address = faker.Address.FullAddress(),
                         GpsLatitude = faker.Address.Latitude().ToString(),

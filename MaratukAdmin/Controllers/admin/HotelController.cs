@@ -58,7 +58,7 @@ namespace MaratukAdmin.Controllers.admin
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateFlightAsync([FromBody] UpdateHotelRequest hotelRequest)
+        public async Task<IActionResult> UpdateHotelAsync([FromBody] UpdateHotelRequest hotelRequest)
         {
             var result = await _hotelManager.UpdateHotelAsync(hotelRequest);
             return Ok(result);

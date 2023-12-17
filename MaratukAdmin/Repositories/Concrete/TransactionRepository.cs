@@ -1,6 +1,7 @@
 ﻿using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace MaratukAdmin.Repositories.Concrete
 {
@@ -25,6 +26,11 @@ namespace MaratukAdmin.Repositories.Concrete
         public async Task RollbackTransAsync()
         {
             await _dbContext.Database.RollbackTransactionAsync();
+        }
+
+        public IExecutionStrategy CreateExecutionStrategy()
+        {
+            return _dbContext.Database.CreateExecutionStrategy ();
         }
     }
 }
