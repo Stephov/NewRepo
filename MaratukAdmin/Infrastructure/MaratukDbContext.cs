@@ -35,7 +35,7 @@ namespace MaratukAdmin.Infrastructure
 
         public DbSet<Flight> Flight { get; set; }
         public DbSet<Hotel> Hotel { get; set; }
-        public DbSet<HotelImage> HotelImages { get; set; }
+        public DbSet<HotelImage> HotelImage { get; set; }
 
         public DbSet<SyncSejourContractExportView> SyncSejourContractExportView { get; set; }
         public DbSet<SyncSejourHotel> SyncSejourHotel { get; set; }

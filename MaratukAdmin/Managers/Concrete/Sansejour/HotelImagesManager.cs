@@ -18,7 +18,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         private readonly IHotelRepository _hotelRepository;
         private readonly IHttpRequestManager _httpRequestManager;
         private readonly ITransactionRepository _transactionRepository;
-       
+
 
         public HotelImagesManager(IMainRepository<HotelImage> mainRepository,
                             IHotelImagesRepository hotelImagesRepository,
@@ -54,15 +54,15 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         public async Task<List<HotelImage>> GetHotelImagesByHotelIdAsync(int hotelId)
         {
+            //var hotelImageEntity = await _hotelImagesRepository.GetHotelImagesByHotelIdAsync(hotelId);
+            var hotelEntity = await _hotelRepository.GetHotelByIdAsync(hotelId);
 
-            var entity = await _mainRepository.GetAllAsync(hotelId.ToString());
-
-            if (entity == null)
+            if (hotelEntity == null || hotelEntity.hotelImages == null)
             {
                 throw new ApiBaseException(StatusCodes.Status404NotFound);
             }
 
-            return entity;
+            return hotelEntity.hotelImages;
         }
 
 
@@ -70,7 +70,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         {
             List<HotelImage>? hotelImages;
 
-            var hotelEntity = await _hotelRepository.GetHoteByCodeAsync(hotelCode);
+            var hotelEntity = await _hotelRepository.GetHotelByCodeAsync(hotelCode);
             if (hotelEntity == null)
             { throw new ApiBaseException(StatusCodes.Status404NotFound); }
 
@@ -94,32 +94,43 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         public async Task<HotelImage> UpdateHotelImageAsync(UpdateHotelImageRequest hotelImageRequest)
         {
-            //IFormFile file = hotelImageRequest.FileContent;
-            //string fullPath = filePath + file.FileName;
-            //try
-            //{
-            //    using (var stream = new FileStream(filePath, FileMode.Create))
-            //    {
-            //        await file.CopyToAsync(stream);
-            //    }
+            HotelImage result;
+            IFormFile? fileContent = hotelImageRequest.FileContent;
+            string? fileName = fileContent?.FileName;
+            string? mediaType = fileContent?.ContentType;
+            int? fileTypeId = hotelImageRequest.hotelImage.FileTypeId;
 
-            //    var fileData = new HotelImage
-            //    {
-            //        FileName = file.FileName,
-            //        FilePath = filePath
-            //    };
+            try
+            {
+                HotelImage hotelImageEntity = await _mainRepository.GetAsync(hotelImageRequest.Id);
+                if (hotelImageEntity == null)
+                {
+                    throw new ApiBaseException(StatusCodes.Status404NotFound);
+                }
 
-            //    _hotelImagesRepository.db
-            //    _context.Files.Add(fileData);
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (Exception)
-            //{
+                //hotelImageEntity = hotelImageRequest.hotelImage;
 
-            //    throw;
-            //}
+                using var memoryStream = new MemoryStream();
+                if (fileContent != null)
+                { await fileContent.CopyToAsync(memoryStream); }
+                byte[] fileBytes = memoryStream.ToArray();
 
-            return await Task.FromResult(new HotelImage());
+                hotelImageEntity.FileName = fileName;
+                hotelImageEntity.FileTypeId = fileTypeId;
+                hotelImageEntity.MediaType = mediaType;
+                hotelImageEntity.FileData = fileBytes;
+                hotelImageEntity.HotelId = hotelImageRequest.hotelImage.HotelId;
+
+                result = await _mainRepository.UpdateAsync(hotelImageEntity);
+
+            }
+            catch (Exception)
+            {
+                result = new();
+            }
+
+            return result;
+            //return await _hotelImagesRepository.UpdateHotelImageAsync(hotelImageRequest);
         }
 
 

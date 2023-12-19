@@ -3,6 +3,7 @@ using Bogus.DataSets;
 using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
+using MaratukAdmin.Exceptions;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
@@ -51,7 +52,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                     HotelId = hotelImageRequest.HotelId,
                 };
 
-                await _dbContext.HotelImages.AddAsync(newHotelImage);
+                await _dbContext.HotelImage.AddAsync(newHotelImage);
 
                 await _dbContext.SaveChangesAsync();
 
@@ -63,19 +64,55 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
         }
 
+        public async Task<HotelImage> UpdateHotelImageAsync(UpdateHotelImageRequest hotelImageRequest)
+        {
+            IFormFile? fileContent = hotelImageRequest.FileContent;
+            string? fileName = fileContent?.FileName;
+            string? mediaType = fileContent?.ContentType;
+            int? fileTypeId = hotelImageRequest.hotelImage.FileTypeId;
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                if (fileContent != null)
+                { await fileContent.CopyToAsync(memoryStream); }
+                byte[] fileBytes = memoryStream.ToArray();
+
+                HotelImage newHotelImage = new()
+                {
+                    FileName = fileName,
+                    //FilePath = filePath,
+                    FileTypeId = fileTypeId,
+                    MediaType = mediaType,
+                    FileData = fileBytes,
+                    HotelId = hotelImageRequest.hotelImage.HotelId,
+                };
+
+                //await _dbContext.HotelImage.AddAsync(newHotelImage);
+
+                await _dbContext.SaveChangesAsync();
+
+                return newHotelImage;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<List<HotelImage>> GetAllHotelImagesAsync()
         {
-            return await _dbContext.HotelImages.ToListAsync();
+            return await _dbContext.HotelImage.ToListAsync();
         }
 
         public async Task<List<HotelImage>> GetAllHotelImagesMockAsync()
         {
-            return await _dbContext.HotelImages.ToListAsync();
+            return await _dbContext.HotelImage.ToListAsync();
         }
 
         public async Task<List<HotelImage>> GetHotelImagesByHotelIdAsync(int hotelId)
         {
-            return await _dbContext.HotelImages.Where(hi => hi.HotelId == hotelId).ToListAsync();
+            List<HotelImage> retValue = await _dbContext.HotelImage.Where(hi => hi.HotelId == hotelId).ToListAsync();
+            return retValue;
         }
 
         public async Task<List<HotelImage>> GetHotelImagesByHotelIdMockAsync(int hotelId)

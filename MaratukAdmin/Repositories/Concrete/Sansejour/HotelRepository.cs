@@ -89,7 +89,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
 
         //public async Task<HotelResponseModel?> GetHoteByCodeAsync(string code)
-        public async Task<HotelResponseModel?> GetHoteByCodeAsync(string code)
+        public async Task<HotelResponseModel?> GetHotelByCodeAsync(string code)
         {
             HotelResponseModel? retValue = new();
             //var query = from hot in _dbContext.Hotel
@@ -139,6 +139,24 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
             return await Task.FromResult(retValue);
         }
+
+        public async Task<HotelResponseModel?> GetHotelByIdAsync(int id)
+        {
+            HotelResponseModel? retValue = new();
+            
+            var hot = _dbContext.Hotel.FirstOrDefaultAsync(h => h.Id == id).Result;
+
+            if (hot != null)
+            {
+                retValue.hotel = hot;
+                var hotImages = _hotelImagesRepository.GetHotelImagesByHotelIdAsync(hot.Id).Result;
+
+                retValue.hotelImages = hotImages;
+            }
+
+            return await Task.FromResult(retValue);
+        }
+
         public async Task<HotelResponseModel> GetHoteByCodeMockAsync(string code)
         {
             HotelResponseModel retValue = GenerateFakeHotel(code);

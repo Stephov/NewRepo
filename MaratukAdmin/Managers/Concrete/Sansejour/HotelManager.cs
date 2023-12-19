@@ -190,7 +190,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
             //}
             // ***
-            var entity = await _hotelRepository.GetHoteByCodeAsync(code);
+            var entity = await _hotelRepository.GetHotelByCodeAsync(code);
 
             if (entity == null)
             {
@@ -330,7 +330,6 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     throw new ApiBaseException(StatusCodes.Status404NotFound);
                 }
 
-                // avelacnel AddHotelAsync - nor hotel grancelu hamar
                 hotelEntity = updateHotelRequest.hotel;
 
 

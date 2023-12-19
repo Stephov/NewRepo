@@ -11,6 +11,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<List<HotelImage>> GetAllHotelImagesMockAsync();
         
         Task<HotelImage> AddHotelImageAsync(AddHotelImageRequest hotelImageRequest);
+        //Task<HotelImage> UpdateHotelImageAsync(UpdateHotelImageRequest hotelImageRequest);
 
     }
 }

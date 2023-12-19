@@ -1,5 +1,6 @@
 ﻿using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Exceptions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete;
@@ -40,19 +41,49 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetHotelImagesByHotelId/")]
-        public async Task<ActionResult> GetHotelImagesByHotelId(int hotelId)
+        public async Task<ActionResult> GetHotelImagesByHotelId(int id)
         {
-            var result = await _hotelImagesManager.GetHotelImagesByHotelIdAsync(hotelId);
+            try
+            {
+                var result = await _hotelImagesManager.GetHotelImagesByHotelIdAsync(id);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (ApiBaseException)
+            {
+                return Ok("Data was not found");
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
         }
 
         [HttpGet("GetHotelImagesByHotelCode/")]
         public async Task<ActionResult> GetHotelImagesByHotelCode(string code)
         {
-            var result = await _hotelImagesManager.GetHotelImagesByHotelCodeAsync(code);
+            try
+            {
+                var result = await _hotelImagesManager.GetHotelImagesByHotelCodeAsync(code);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (ApiBaseException)
+            {
+                return Ok("Data was not found");
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
         }
 
         //[HttpGet("GetHotelImagesByHotelCodeMock/")]
@@ -70,8 +101,8 @@ namespace MaratukAdmin.Controllers.admin
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateHotelImage([FromForm] UpdateHotelImageRequest hotelImageRequest)
         {
-            if (hotelImageRequest.FileContent == null || hotelImageRequest.FileContent.Length == 0)
-                return BadRequest("Invalid file");
+            //if (hotelImageRequest.FileContent == null || hotelImageRequest.FileContent.Length == 0)
+            //  return BadRequest("Invalid file");
 
             var result = await _hotelImagesManager.UpdateHotelImageAsync(hotelImageRequest);
 

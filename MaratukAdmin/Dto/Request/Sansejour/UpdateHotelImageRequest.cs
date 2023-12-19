@@ -17,8 +17,8 @@ namespace MaratukAdmin.Dto.Request.Sansejour
     public class UpdateHotelImageRequest
     {
 
-        [Required]
-        public IFormFile FileContent { get; set; }
+        //[Required]
+        public IFormFile? FileContent { get; set; }
 
         [SwaggerSchema(ReadOnly = true)]
         public int Id { get; set; }
