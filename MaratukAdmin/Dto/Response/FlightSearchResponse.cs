@@ -44,5 +44,6 @@
         public int CurrencyId { get; set; }
         public string CurrencyName { get; set; }
         public FlightSearchResponse ReturnedFlight { get; set; }
+        public bool IsTwoWay { get; set; }
     }
 }

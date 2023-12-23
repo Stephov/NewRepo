@@ -331,56 +331,7 @@ namespace MaratukAdmin.Managers.Concrete
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
             int identity = 0;
 
-            /*var groupedFlights = result
-                .GroupBy(f => new
-                {
-                    f.DepartureCountryName,
-                    f.DepartureCountryId,
-                    f.DepartureCityName,
-                    f.DepartureCityId,
-                    f.DepartureAirportName,
-                    f.DepartureAirportCode,
-                    f.DestinationCountryName,
-                    f.DestinationCountryId,
-                    f.DestinationCityId,
-                    f.DestinationCityName,
-                    f.DestinationAirportName,
-                    f.DestinationAirportCode,
-                })
-                .Select(group => new GroupedFlight
-                {
-                    Id = ++identity,
-                    DepartureCountryName = group.Key.DepartureCountryName,
-                    DepartureCountryId = group.Key.DepartureCountryId,
-                    DepartureCityName = group.Key.DepartureCityName,
-                    DepartureCityId = group.Key.DepartureCityId,
-                    DepartureAirportName = group.Key.DepartureAirportName,
-                    DepartureAirportCode = group.Key.DepartureAirportCode,
-                    Destination = new List<Destination>
-                    {
-                        new Destination
-                        {
-                            FlightId = group.First().FlightId,
-                            PriceBlockId = group.First().PriceBlockId,
-                            DestinationCountryName = group.Key.DestinationCountryName,
-                            DestinationCountryId = group.Key.DestinationCountryId,
-                            DestinationCityName = group.Key.DestinationCityName,
-                            DestinationCityId = group.Key.DestinationCityId,
-                            DestinationAirportName = group.Key.DestinationAirportName,
-                            DestinationAirportCode = group.Key.DestinationAirportCode,
-                            Date = group.Select(f => new DateInfo
-                            {
-                                StartDate = f.StartDate,
-                                EndDate = f.EndDate,
-                                DayOfWeek = f.DayOfWeek,
-                                Price = f.Price,
-                                DepartureTime = f.DepartureTime,
-                                ArrivalTime = f.ArrivalTime,
-                            }).ToList()
-                        }
-                    }
-                })
-                .ToList();*/
+            
 
             var groupedFlights = result
      .GroupBy(f => new
@@ -464,13 +415,13 @@ namespace MaratukAdmin.Managers.Concrete
         {
 
 
-            var returned = await _functionRepository.GetFlightReturnDateAsync(PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId);
+           // var returned = await _functionRepository.GetFlightReturnDateAsync(PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId);
             var manual = await _functionRepository.GetFlightReturnDateForManualAsync(FromDate, FlightId);
             DateResponse result = new DateResponse();
-            List<RoundTripResponse> roundTrips = new List<RoundTripResponse>();
+           // List<RoundTripResponse> roundTrips = new List<RoundTripResponse>();
             List<ManualTripResponse> manualTrips = new List<ManualTripResponse>();
 
-            if (returned != null)
+            /*if (returned != null)
             {
                 foreach (var response in returned)
                 {
@@ -487,7 +438,7 @@ namespace MaratukAdmin.Managers.Concrete
                     roundTrips.Add(roundTrip);
                 }
 
-            }
+            }*/
 
             if (manual != null)
             {
@@ -509,7 +460,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             }
 
-            result.Date = roundTrips;
+            //result.Date = roundTrips;
             result.Manual = manualTrips;
 
             return result;
@@ -543,6 +494,7 @@ namespace MaratukAdmin.Managers.Concrete
                 DurationHours = group.First().DurationHours,
                 DurationMinutes = group.First().DurationMinutes,
                 CurrencyId = group.First().CurrencyId,
+                IsTwoWay = false,
                 CurrencyName = _currencyManager.GetCurrencyNameByIdAsync(group.First().CurrencyId).Result.Name,
             }).ToList();
 
@@ -552,7 +504,6 @@ namespace MaratukAdmin.Managers.Concrete
             else
             {
                 var resTwoWay = await _functionRepository.GetFligthTwoWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.FlightTwoId, searchFlightResult.StartDate, searchFlightResult.ReturnedDate);
-
 
                 var groupedFlights = resTwoWay.GroupBy(result => result.PriceBlockId)
             .Select(group => new FinalFlightSearchResponse
@@ -573,7 +524,8 @@ namespace MaratukAdmin.Managers.Concrete
                 DurationHours = group.First().DurationHours,
                 DurationMinutes = group.First().DurationMinutes,
                 CurrencyId = group.First().CurrencyId,
-                ReturnedFlight = new FlightSearchResponse()
+                IsTwoWay = true,
+                /*ReturnedFlight = new FlightSearchResponse()
                 {
                     FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
                     CostPerTickets = group.FirstOrDefault(res => res.FlightId != group.First().FlightId && res.AgeFrom == 12).Bruto,
@@ -591,7 +543,7 @@ namespace MaratukAdmin.Managers.Concrete
                     DurationHours = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationHours,
                     DurationMinutes = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationMinutes,
                     CurrencyId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).CurrencyId
-                }
+                }*/
             }).ToList();
 
 
