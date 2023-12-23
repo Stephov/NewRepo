@@ -510,7 +510,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 FlightId = group.First().FlightId,
                 CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
-                TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(result => result.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
+                TotalPrice = CalacTotalPriceTwo(resTwoWay.Where(res => res.FlightId == group.First().FlightId && res.PriceBlockId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
                 NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
                 DepartureAirportCode = group.First().DepartureAirportCode,
                 DestinationAirportCode = group.First().DestinationAirportCode,
@@ -525,7 +525,7 @@ namespace MaratukAdmin.Managers.Concrete
                 DurationMinutes = group.First().DurationMinutes,
                 CurrencyId = group.First().CurrencyId,
                 IsTwoWay = true,
-                /*ReturnedFlight = new FlightSearchResponse()
+                ReturnedFlight = new FlightSearchResponse()
                 {
                     FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
                     CostPerTickets = group.FirstOrDefault(res => res.FlightId != group.First().FlightId && res.AgeFrom == 12).Bruto,
@@ -543,7 +543,7 @@ namespace MaratukAdmin.Managers.Concrete
                     DurationHours = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationHours,
                     DurationMinutes = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).DurationMinutes,
                     CurrencyId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).CurrencyId
-                }*/
+                }
             }).ToList();
 
 
