@@ -1,4 +1,5 @@
 ﻿using MaratukAdmin.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace MaratukAdmin.Repositories.Abstract
 {
@@ -7,5 +8,6 @@ namespace MaratukAdmin.Repositories.Abstract
         Task BeginTransAsync();
         Task CommitTransAsync();
         Task RollbackTransAsync();
+        IExecutionStrategy CreateExecutionStrategy();
     }
 }

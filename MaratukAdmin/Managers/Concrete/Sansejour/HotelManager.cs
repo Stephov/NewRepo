@@ -1,6 +1,10 @@
 ﻿using AutoMapper;
 using Azure;
+using Bogus.DataSets;
 using MailKit;
+using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
@@ -11,6 +15,7 @@ using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Concrete;
+using MaratukAdmin.Repositories.Concrete.Sansejour;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
@@ -18,6 +23,7 @@ using MimeKit;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
@@ -29,15 +35,14 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
     public class HotelManager : IHotelManager
     {
         private readonly IMainRepository<Hotel> _mainRepository;
-        //private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
         private readonly IHotelRepository _hotelRepository;
         private readonly IHttpRequestManager _httpRequestManager;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IDistributedCache _cache;
 
-
         public HotelManager(IMainRepository<Hotel> mainRepository,
-                            //IMapper mapper,
+                            IMapper mapper,
                             IHotelRepository hotelRepository,
                             IHttpRequestManager httpRequestManager,
                             ITransactionRepository transactionRepository,
@@ -46,7 +51,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             )
         {
             _mainRepository = mainRepository;
-            //_mapper = mapper;
+            _mapper = mapper;
             _hotelRepository = hotelRepository;
             _httpRequestManager = httpRequestManager;
             _transactionRepository = transactionRepository;
@@ -83,8 +88,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         //public async Task<HotelResponse> GetHotelByIdAsync(int id)
         public async Task<Hotel> GetHotelByIdAsync(int id)
         {
-            //var entity = await _mainRepository.GetAsync(id, "Hotels");
             var entity = await _mainRepository.GetAsync(id);
+            //var entity = await _mainRepository.GetAsync(id);
 
             if (entity == null)
             {
@@ -105,8 +110,97 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         }
 
+        public async Task<HotelResponseModel> GetHotelByCodeAsync(string code)
+        {
+            // ***
+            //var query = _dbContext.SyncSejourRate
+            //.Join(distinctAccomodationDescriptions,
+            //rate => rate.AccmdMenTypeCode,
+            //accomodationDescription => accomodationDescription.Code,
+            //(rate, accomodationDescription) => new { Rate = rate, AccomodationDescription = accomodationDescription })
+            //.Where(joinResult =>
+            //joinResult.Rate.SyncDate == exportDate &&
+            //joinResult.Rate.RoomPax == roomPax &&
+            //joinResult.Rate.RoomAdlPax == adultPax &&
+            //joinResult.Rate.RoomChdPax == childPax &&
+            //joinResult.Rate.AccomodationPeriodBegin >= accomodationDateFrom &&
+            //joinResult.Rate.AccomodationPeriodEnd <= accomodationDateTo)
+            ////.Select(joinResult => joinResult.Rate);
+            //.OrderBy(joinResult => joinResult.Rate.Id)
+            //.Skip((pageNumber - 1) * pageSize)
+            //.Take(pageSize)
+            //.Select(joinResult => joinResult.Rate);
 
-        public async Task<Hotel> GetHotelByCodeMockAsync(string code)
+
+            //return await query.ToListAsync();
+
+            //public async Task<FlightEditResponse> GetFlightByIdAsync(int id)
+            //{
+            //    var entity = await _mainRepository.GetAsync(id, "Schedules");
+            //    if (entity == null)
+            //    {
+            //        throw new ApiBaseException(StatusCodes.Status404NotFound);
+            //    }
+
+            //    var flightEditResponse = new FlightEditResponse();
+            //    var sheduledEdit = new List<ScheduleEditResponse>();
+
+            //    flightEditResponse.Name = entity.Name;
+            //    flightEditResponse.Id = entity.Id;
+
+            //    flightEditResponse.DepartureCountryId = entity.DepartureCountryId;
+            //    flightEditResponse.DepartureCityId = entity.DepartureCityId;
+            //    flightEditResponse.DepartureAirportId = entity.DepartureAirportId;
+
+
+            //    flightEditResponse.DestinationCountryId = entity.DestinationCountryId;
+            //    flightEditResponse.DestinationCityId = entity.DestinationCityId;
+            //    flightEditResponse.DestinationAirportId = entity.DestinationAirportId;
+
+            //    flightEditResponse.FlightValue = entity.FlightValue;
+            //    flightEditResponse.AirlineId = entity.AirlineId;
+            //    flightEditResponse.AircraftId = entity.AircraftId;
+            //    flightEditResponse.DurationHours = entity.DurationHours;
+            //    flightEditResponse.DurationMinutes = entity.DurationMinutes;
+
+
+            //    if (entity.Schedules != null)
+            //    {
+            //        foreach (var shedul in entity.Schedules)
+            //        {
+            //            var schedule = new ScheduleEditResponse()
+            //            {
+            //                FlightStartDate = shedul.FlightStartDate,
+            //                FlightEndDate = shedul.FlightEndDate,
+            //                DepartureTime = shedul.DepartureTime,
+            //                ArrivalTime = shedul.ArrivalTime,
+            //                DayOfWeek = shedul.DayOfWeek.Split(',')
+            //            };
+
+
+
+            //            sheduledEdit.Add(schedule);
+
+            //        }
+            //    }
+
+            //    flightEditResponse.schedules = sheduledEdit;
+
+            //    return flightEditResponse;
+
+            //}
+            // ***
+            var entity = await _hotelRepository.GetHotelByCodeAsync(code);
+
+            if (entity == null)
+            {
+                throw new ApiBaseException(StatusCodes.Status404NotFound);
+            }
+
+            return entity;
+        }
+
+        public async Task<HotelResponseModel> GetHotelByCodeMockAsync(string code)
         {
             var entity = await _hotelRepository.GetHoteByCodeMockAsync(code);
 
@@ -225,7 +319,48 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             return true;
         }
 
+        public async Task<Hotel> UpdateHotelAsync(UpdateHotelRequest updateHotelRequest)
+        {
+            Hotel result;
+            try
+            {
+                Hotel hotelEntity = await _mainRepository.GetAsync(updateHotelRequest.hotel.Id);
+                if (hotelEntity == null)
+                {
+                    throw new ApiBaseException(StatusCodes.Status404NotFound);
+                }
 
+                hotelEntity = updateHotelRequest.hotel;
+
+
+                //var executionStrategy = _transactionRepository.CreateExecutionStrategy();
+                //executionStrategy.Execute(
+                //() =>
+                //{
+                //    _transactionRepository.BeginTransAsync();                                             // Begin transaction
+                //    result = _mainRepository.UpdateAsync(updateHotelRequest.hotel).Result;
+                //    _transactionRepository.CommitTransAsync();                                            // Commit transaction
+                //});
+
+                result = await _mainRepository.UpdateAsync(hotelEntity);
+                //result = await _mainRepository.UpdateAsync(updateHotelRequest.hotel);
+
+            }
+            catch (Exception)
+            {
+                result = new();
+            }
+            return result;
+        }
+
+        public async Task<Hotel> AddHotelAsync(AddHotelRequest hotelRequest)
+        {
+            //return await _hotelRepository.AddHotelAsync(hotelRequest);
+            var entity = _mapper.Map<Hotel>(hotelRequest);
+            await _mainRepository.AddAsync(entity);
+            
+            return entity;
+        }
 
 
     }

@@ -1,3 +1,4 @@
+using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Extensions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
@@ -40,7 +41,10 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(s =>
+{
+    s.EnableAnnotations();
+});
 
 
 builder.Services.AddLocalJWTAdminAuth(builder.Configuration);
@@ -142,6 +146,6 @@ app.UseAuthorization();
 app.MapHealthChecks("/healthcheck");
 app.MapControllers();
 
-
+app.UseStaticFiles();
 
 app.Run();

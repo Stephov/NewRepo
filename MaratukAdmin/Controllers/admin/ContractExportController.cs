@@ -50,32 +50,54 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpPost("SearchFlightAndRoom/")]
-        public async Task<IActionResult> SearchFlightAndRoom([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        public async Task<IActionResult> SearchFlightAndRoom([FromBody] SearchFligtAndRoomRequestBaseModel requestModel)
         {
+            SearchFligtAndRoomRequest searchFlightAndRoomRequest = new(requestModel);
+            //{
+            //    FlightOneId = requestModel.FlightOneId,
+            //    FlightTwoId = requestModel.FlightTwoId,
+            //    FlightStartDate = requestModel.FlightStartDate,
+            //    FlightReturnedDate = requestModel.FlightReturnedDate,
+            //    RoomAdultCount = requestModel.RoomAdultCount,
+            //    RoomChildCount = requestModel.RoomChildCount,
+            //    RoomChildAges = requestModel.RoomChildAges
+            //};
+
             var result = await _contractExportManager.SearchFlightAndRoomAsync(searchFlightAndRoomRequest);
 
             return Ok(result);
         }
 
         [HttpPost("SearchFlightAndRoomMock/")]
-        public async Task<IActionResult> SearchFlightAndRoomMockAsync([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        //public async Task<IActionResult> SearchFlightAndRoomMockAsync([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        public async Task<IActionResult> SearchFlightAndRoomMockAsync([FromBody] SearchFligtAndRoomRequestBaseModel requestModel)
         {
+            SearchFligtAndRoomRequest searchFlightAndRoomRequest = new(requestModel);
+            //var result = await _contractExportManager.SearchFlightAndRoomMockAsync(searchFlightAndRoomRequest);
             var result = await _contractExportManager.SearchFlightAndRoomMockAsync(searchFlightAndRoomRequest);
 
             return Ok(result);
         }
 
         [HttpPost("SearchFlightAndRoomLowestPrices/")]
-        public async Task<IActionResult> SearchFlightAndRoomLowestPrices([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        //public async Task<IActionResult> SearchFlightAndRoomLowestPrices([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        public async Task<IActionResult> SearchFlightAndRoomLowestPrices([FromBody] SearchFligtAndRoomRequestBaseModel requestModel)
         {
+            SearchFligtAndRoomRequest searchFlightAndRoomRequest = new(requestModel);
+
+            //var result = await _contractExportManager.SearchFlightAndRoomLowestPricesAsync(searchFlightAndRoomRequest);
             var result = await _contractExportManager.SearchFlightAndRoomLowestPricesAsync(searchFlightAndRoomRequest);
 
             return Ok(result);
         }
 
         [HttpPost("SearchFlightAndRoomLowestPricesMock/")]
-        public async Task<IActionResult> SearchFlightAndRoomLowestPricesMock([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        //public async Task<IActionResult> SearchFlightAndRoomLowestPricesMock([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        public async Task<IActionResult> SearchFlightAndRoomLowestPricesMock([FromBody] SearchFligtAndRoomRequestBaseModel requestModel)
         {
+            SearchFligtAndRoomRequest searchFlightAndRoomRequest = new(requestModel);
+
+            //var result = await _contractExportManager.SearchFlightAndRoomLowestPricesMockAsync(searchFlightAndRoomRequest);
             var result = await _contractExportManager.SearchFlightAndRoomLowestPricesMockAsync(searchFlightAndRoomRequest);
 
             return Ok(result);
