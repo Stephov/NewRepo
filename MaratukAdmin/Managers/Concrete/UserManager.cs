@@ -67,7 +67,7 @@ namespace MaratukAdmin.Managers.Concrete
             string hash = PasswordHasher.GenerateHashForEmail(email);
             try
             {
-                MailService.SendEmail(email, "Forgot Mail", $"please add new password, http://localhost:3000/user/updatePassword?email={email}&HashId={hash} ");
+                MailService.SendEmail(email, "Forgot Mail", $"please add new password, http://13.51.156.155/user/updatePassword?email={email}&HashId={hash} ");
                 return true;
             }
             catch
