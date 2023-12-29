@@ -64,6 +64,14 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<bool> ForgotPassword(string email)
         {
 
+
+            var user = await _userRepository.GetAgencyUserAsync(email);
+
+            if(user == null)
+            {
+                return false;
+            }
+
             string hash = PasswordHasher.GenerateHashForEmail(email);
             try
             {
