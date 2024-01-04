@@ -120,7 +120,7 @@ namespace MaratukAdmin.Repositories.Concrete
                 // Generate 10 fake records
                 for (int i = 1; i <= 10; i++)
                 {
-                    double AdultPrice = faker.Random.Number(1, 5000); 
+                    double AdultPrice = faker.Random.Number(1, 5000);
                     double ChildPrice = faker.Random.Number(1, 5000);
                     double InfantPrice = faker.Random.Number(1, 5000);
                     double TotalPrice = AdultPrice + ChildPrice + InfantPrice;
@@ -143,7 +143,7 @@ namespace MaratukAdmin.Repositories.Concrete
                         FlightNumber = faker.Random.AlphaNumeric(5),
                         DurationHours = durationHours,
                         DurationMinutes = durationHours * 60,
-                        CurrencyId = faker.Random.Number(1,3)
+                        CurrencyId = faker.Random.Number(1, 3)
                     };
 
                     fakeFlights.Add(fakeFlight);

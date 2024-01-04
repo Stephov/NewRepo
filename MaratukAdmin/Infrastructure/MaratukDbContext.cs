@@ -1,3 +1,4 @@
+using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Entities.Sansejour;
@@ -16,6 +17,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<SearchResultFunction> SearchResultFunctionOneWay { get; set; }
         public DbSet<SearchResultFunctionTwoWay> SearchResultFunctionTwoWay { get; set; }
         public DbSet<FlightReturnDateForManual> FlightReturnDateForManual { get; set; }
+        public DbSet<RoomSearchResponse> RoomSearchResponse { get; set; }
         public DbSet<FlightReturnDate> FlightReturnDate { get; set; }
 
         public DbSet<AgencyUser>? AgencyUser { get; set; }
@@ -194,6 +196,8 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<SearchResultFunctionTwoWay>().HasNoKey().ToView("GetFlightResultTwoWay");
             modelBuilder.Entity<FlightReturnDateForManual>().HasNoKey().ToView("GetFlightReturnDateForManual");
             modelBuilder.Entity<FlightReturnDate>().HasNoKey().ToView("GetFlightReturnDate");
+            modelBuilder.Entity<RoomSearchResponse>().HasNoKey().ToView("Sp_Search_Room");
+            modelBuilder.Entity<RoomSearchResponse>().HasNoKey().ToView("Sp_Search_Room_LowestPrices");
 
 
            

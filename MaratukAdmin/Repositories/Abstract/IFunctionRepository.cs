@@ -1,6 +1,9 @@
 ﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
+using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
+using MaratukAdmin.Entities.Sansejour;
 
 namespace MaratukAdmin.Repositories.Abstract
 {
