@@ -1142,7 +1142,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                         SPODefinit = "EEA// 04/08/2023 M",
                         NotCountExcludingAccomDate = "N",
                         HotelName = faker.Lorem.Word(),
-                        HotelCategoryId = faker.Random.Number(1, 5)
+                        HotelCategoryId = faker.Random.Number(1, 5),
+                        FilePath = faker.Image.PlaceImgUrl()
                     };
 
                     fakeRooms.Add(fakeRoom);
