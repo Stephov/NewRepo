@@ -6,7 +6,8 @@ namespace MaratukAdmin.Dto.Response.Sansejour
     {
         public double? flightAndRoomTotalPrice { get; set; }
         public FinalFlightSearchResponse flightSearchResponse { get; set; }
-        public SyncSejourRate roomSearchResponse { get; set; }
+        //public SyncSejourRate roomSearchResponse { get; set; }
+        public RoomSearchResponse roomSearchResponse { get; set; }
 
         //public DateTime RoomSyncDate { get; set; }
         //public string? RoomHotelCode { get; set; }
