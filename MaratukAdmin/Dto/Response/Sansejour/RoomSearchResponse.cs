@@ -40,5 +40,7 @@ namespace MaratukAdmin.Dto.Response.Sansejour
 
         public string? HotelName { get; set; }
         public int? HotelCategoryId { get; set; }
+        public string? FilePath { get; set; }
+
     }
 }

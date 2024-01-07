@@ -489,8 +489,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             };
 
             // Get FLIGHTS
-            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
-            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
+            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);          // MOCK
 
             SearchRoomRequest searchRoomRequest = new()
             {
@@ -663,8 +663,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             };
 
             // Get FLIGHTS
-            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
-            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
+            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);      // MOCK
 
 
             SearchRoomRequest searchRoomRequest = new()
@@ -731,11 +731,11 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             };
 
             // Get FLIGHTS
-            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);      // MOCK
 
             // Get ROOMS
             //var resultRoomSearch = await _contractExportRepository.SearchRoomAsync(searchRoomRequest);
-            var resultRoomSearch = await _contractExportRepository.SearchRoomLowestPricesMockAsync(searchFlightAndRoomRequest);
+            var resultRoomSearch = await _contractExportRepository.SearchRoomLowestPricesMockAsync(searchFlightAndRoomRequest);                     // MOCK
 
 
             // Combune results
