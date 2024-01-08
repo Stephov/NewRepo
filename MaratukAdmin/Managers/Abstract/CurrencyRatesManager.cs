@@ -21,7 +21,7 @@ namespace MaratukAdmin.Managers.Abstract
         {
             var entity = _mapper.Map<CurrencyRates>(currency);
             entity.UpdateDate = DateTime.UtcNow;
-            entity.CodeIso =  _currencyRepository.GetAsync(currency.CurrencyId).Result.CodeIso;
+            entity.CodeIso = _currencyRepository.GetAsync(currency.CurrencyId).Result.CodeIso;
             await _mainRepository.AddAsync(entity);
             return entity;
         }
@@ -31,7 +31,7 @@ namespace MaratukAdmin.Managers.Abstract
             return await _mainRepository.DeleteAsync(id);
         }
 
-        public  async Task<CurrencyRates> GetCurrencyRateNameByIdAsync(int id)
+        public async Task<CurrencyRates> GetCurrencyRateNameByIdAsync(int id)
         {
             return await _mainRepository.GetAsync(id);
         }
@@ -39,7 +39,15 @@ namespace MaratukAdmin.Managers.Abstract
         public async Task<List<CurrencyRates>> GetCurrencyRatesAsync()
         {
             var result = await _mainRepository.GetAllAsync();
-            return result.OrderBy(n => n.StartDate).ToList();
+
+
+            List<CurrencyRates> lastCurrencies = result
+    .GroupBy(c => c.CurrencyId)
+    .Select(group => group.OrderByDescending(c => c.UpdateDate).FirstOrDefault())
+    .ToList();
+
+
+            return lastCurrencies;
         }
 
         public async Task<CurrencyRates> UpdateCurrencyRatesAsync(UpdateCurrencyRates currencyRates)
