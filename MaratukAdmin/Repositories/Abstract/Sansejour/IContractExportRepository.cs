@@ -1,4 +1,5 @@
 ﻿using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
 
@@ -56,10 +57,14 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
 
 
         Task<List<SyncSejourRate>> SearchRoomOldAsync(SearchRoomRequest searchRequest);
-        Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest);
-        Task<List<SyncSejourRate>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
-        Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
-        Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
+        //Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest);
+        Task<List<RoomSearchResponse>> SearchRoomAsync(SearchRoomRequest searchRequest);
+        //Task<List<SyncSejourRate>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
+        Task<List<RoomSearchResponse>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
+        Task<List<RoomSearchResponse>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
+        //Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
+        //Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
+        Task<List<RoomSearchResponse>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
         Task<DateTime?> GetMaxSyncDateAsync();
         DateTime? GetMaxSyncDate();
     }

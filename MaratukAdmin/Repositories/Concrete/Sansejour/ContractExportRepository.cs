@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
 using MaratukAdmin.Dto.Response.Sansejour;
 using Bogus;
+using Bogus.DataSets;
+using MaratukAdmin.Entities;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -709,8 +711,9 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
         }
 
-        public async Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest)
-        //public List<SyncSejourAccomodationDescription> SearchRoomNewAsync(SearchRoomRequest searchRequest)
+        //public async Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest)
+        public async Task<List<RoomSearchResponse>> SearchRoomAsync(SearchRoomRequest searchRequest)
+
         {
             try
             {
@@ -740,7 +743,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 //                                                    roomPax, adultPax, childPax,
                 //                                                    childAge1, childAge2, childAge3, childAge4, childAge5).ToListAsync();
 
-                var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
+                //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
+                var result = await _dbContext.RoomSearchResponse.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
                                                                     "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
                                                                     "@roomPax, @adultPax, @childPax, " +
                                                                     "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
@@ -1012,14 +1016,16 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
         }
 
-        public async Task<List<SyncSejourRate>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        //public async Task<List<SyncSejourRate>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        public async Task<List<RoomSearchResponse>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
         {
-            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
+            //List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
+            List<RoomSearchResponse> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
 
             return await Task.FromResult(retValue);
         }
-        public async Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
-        //public List<SyncSejourAccomodationDescription> SearchRoomNewAsync(SearchRoomRequest searchRequest)
+        //public async Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
+        public async Task<List<RoomSearchResponse>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
         {
             try
             {
@@ -1041,26 +1047,38 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
                 string hotelCodes = searchRequest.HotelCodes != null ? string.Join(",", searchRequest.HotelCodes) : string.Empty;
 
-                var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
-                                                                    "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
-                                                                    "@roomPax, @adultPax, @childPax, " +
-                                                                    "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
-                                                                    "@hotelCodes, @pageNumber, @pageSize",
-                                                                    new SqlParameter("exportDate", exportDate),
-                                                                    new SqlParameter("accomodationDateFrom", accomodationDateFrom),
-                                                                    new SqlParameter("accomodationDateTo", accomodationDateTo),
-                                                                    new SqlParameter("roomPax", roomPax),
-                                                                    new SqlParameter("adultPax", adultPax),
-                                                                    new SqlParameter("childPax", childPax),
-                                                                    new SqlParameter("childAge1", childAge1 ?? (object)DBNull.Value),
-                                                                    new SqlParameter("childAge2", childAge2 ?? (object)DBNull.Value),
-                                                                    new SqlParameter("childAge3", childAge3 ?? (object)DBNull.Value),
-                                                                    new SqlParameter("childAge4", childAge4 ?? (object)DBNull.Value),
-                                                                    new SqlParameter("childAge5", childAge5 ?? (object)DBNull.Value),
-                                                                    new SqlParameter("hotelCodes", hotelCodes),
-                                                                    new SqlParameter("pageNumber", pageNumber),
-                                                                    new SqlParameter("pageSize", pageSize))
-                                                                    .ToListAsync();
+                //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
+                var result = await _dbContext.RoomSearchResponse.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
+                                                                        "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
+                                                                        "@roomPax, @adultPax, @childPax, " +
+                                                                        "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
+                                                                        "@hotelCodes, @pageNumber, @pageSize",
+                                                                        new SqlParameter("exportDate", exportDate),
+                                                                        new SqlParameter("accomodationDateFrom", accomodationDateFrom),
+                                                                        new SqlParameter("accomodationDateTo", accomodationDateTo),
+                                                                        new SqlParameter("roomPax", roomPax),
+                                                                        new SqlParameter("adultPax", adultPax),
+                                                                        new SqlParameter("childPax", childPax),
+                                                                        new SqlParameter("childAge1", childAge1 ?? (object)DBNull.Value),
+                                                                        new SqlParameter("childAge2", childAge2 ?? (object)DBNull.Value),
+                                                                        new SqlParameter("childAge3", childAge3 ?? (object)DBNull.Value),
+                                                                        new SqlParameter("childAge4", childAge4 ?? (object)DBNull.Value),
+                                                                        new SqlParameter("childAge5", childAge5 ?? (object)DBNull.Value),
+                                                                        new SqlParameter("hotelCodes", hotelCodes),
+                                                                        new SqlParameter("pageNumber", pageNumber),
+                                                                        new SqlParameter("pageSize", pageSize))
+                                                                        .ToListAsync();
+
+                //var result = await _dbContext.RoomSearchResponse.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
+                //                                                    "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
+                //                                                    "@roomPax, @adultPax, @childPax, " +
+                //                                                    "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
+                //                                                    "@hotelCodes, @pageNumber, @pageSize",
+                //                                                    exportDate, accomodationDateFrom, accomodationDateTo,
+                //                                                    roomPax, adultPax, childPax,
+                //                                                    childAge1, childAge2, childAge3, childAge4, childAge5,
+                //                                                    hotelCodes, pageNumber, pageSize)
+                //                                                    .ToListAsync();
                 return result;
             }
             catch (Exception)
@@ -1069,16 +1087,19 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
         }
 
-        public async Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        //public async Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
+        public async Task<List<RoomSearchResponse>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
         {
-            List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
+            //List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
+            List<RoomSearchResponse> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
 
             return await Task.FromResult(retValue);
         }
 
-        private List<SyncSejourRate> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest, bool notRepeatableHotel)
+        //private List<SyncSejourRate> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest, bool notRepeatableHotel)
+        private List<RoomSearchResponse> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest, bool notRepeatableHotel)
         {
-            var fakeRooms = new List<SyncSejourRate>();
+            var fakeRooms = new List<RoomSearchResponse>();
             string hotelCode = "";
 
             try
@@ -1086,7 +1107,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 // Generate 10 fake records
                 for (int i = 1; i <= 10; i++)
                 {
-                    SyncSejourRate fakeRoom = new()
+                    RoomSearchResponse fakeRoom = new()
                     {
                         SyncDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
                         //HotelCode = Faker.StringFaker.Numeric(3),
@@ -1119,7 +1140,10 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                         SpoNoApply = null,
                         SPOPrices = 2,
                         SPODefinit = "EEA// 04/08/2023 M",
-                        NotCountExcludingAccomDate = "N"
+                        NotCountExcludingAccomDate = "N",
+                        HotelName = faker.Lorem.Word(),
+                        HotelCategoryId = faker.Random.Number(1, 5),
+                        FilePath = faker.Image.PlaceImgUrl()
                     };
 
                     fakeRooms.Add(fakeRoom);
