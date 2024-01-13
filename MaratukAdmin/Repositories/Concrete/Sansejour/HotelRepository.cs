@@ -7,6 +7,7 @@ using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Managers.Abstract;
+using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
@@ -26,16 +27,20 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         protected readonly MaratukDbContext _dbContext;
         private readonly ICountryRepository _countryRepository;
         private readonly IHotelImagesRepository _hotelImagesRepository;
-        private Faker faker = new();
+        private readonly IFakeDataGenerationManager _fakeDataGenerationManager;
 
         //private List<Hotel> Hotels = null;
-        private List<MaratukAdmin.Entities.Global.Country> Countries = new();
+        
 
-        public HotelRepository(MaratukDbContext dbContext, ICountryRepository countryRepository, IHotelImagesRepository hotelImagesRepository)
+        public HotelRepository(MaratukDbContext dbContext
+                    , ICountryRepository countryRepository
+                    , IHotelImagesRepository hotelImagesRepository
+                    , IFakeDataGenerationManager fakeDataGenerationManager)
         {
             _dbContext = dbContext;
             _countryRepository = countryRepository;
             _hotelImagesRepository = hotelImagesRepository;
+            _fakeDataGenerationManager = fakeDataGenerationManager;
         }
 
 
@@ -143,7 +148,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<HotelResponseModel?> GetHotelByIdAsync(int id)
         {
             HotelResponseModel? retValue = new();
-            
+
             var hot = _dbContext.Hotel.FirstOrDefaultAsync(h => h.Id == id).Result;
 
             if (hot != null)
@@ -159,66 +164,11 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public async Task<HotelResponseModel> GetHoteByCodeMockAsync(string code)
         {
-            HotelResponseModel retValue = GenerateFakeHotel(code);
+            HotelResponseModel retValue = _fakeDataGenerationManager.GenerateFakeHotel(code);
 
             return await Task.FromResult(retValue);
         }
 
-        private HotelResponseModel GenerateFakeHotel(string code)
-        {
-            HotelResponseModel fakeHotel;
-            //Hotels = GetAllHotelsAsync().Result;
-            Countries = _countryRepository.GetAllAsync().Result;
-            try
-            {
-                int countryId;
-                if (Countries == null)
-                {
-                    countryId = faker.Random.Number(1, 100);
-                }
-                else
-                {
-                    int countryIndex = faker.Random.Number(1, Countries.Count);
-                    countryId = Countries[countryIndex].Id;
-                }
-
-                // Generate fake info
-                fakeHotel = new HotelResponseModel()
-                {
-                    hotel = new Hotel()
-                    {
-                        Id = faker.Random.Number(1, 100),
-                        Code = code,
-                        Name = faker.Lorem.Word(),
-                        //Country = Faker.RandomNumber.Next(1, 5000),
-                        Country = countryId,
-                        City = faker.Random.Number(1, 100),
-                        HotelCategoryId = faker.Random.Number(1, 5),
-                        //IsCruise = faker.Random.Number(0, 1),
-                        IsCruise = faker.Random.Byte(0,1),
-
-                        Address = faker.Address.FullAddress(),
-                        GpsLatitude = faker.Address.Latitude().ToString(),
-                        GpsLongitude = faker.Address.Longitude().ToString(),
-                        PhoneNumber = faker.Phone.PhoneNumber(),
-                        Fax = faker.Phone.PhoneNumber(),
-                        Email = faker.Internet.Email(),
-                        Site = "www." + faker.Lorem.Word() + ".com",
-                        Description = faker.Lorem.Sentence(10)
-                    }
-                };
-
-                // Generate fake hotel images
-                var hotImages = _hotelImagesRepository.GetHotelImagesByHotelIdMockAsync(fakeHotel.hotel.Id).Result;
-
-                fakeHotel.hotelImages = hotImages;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return fakeHotel;
-        }
     }
 
 

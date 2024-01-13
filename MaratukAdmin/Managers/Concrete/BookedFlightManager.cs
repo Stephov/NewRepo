@@ -112,7 +112,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                     listOfArrivals.Add(booked.Name + " " + booked.Surname);
                     var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukAgentId);
-                    if(maratukAgent != null)
+                    if (maratukAgent != null)
                     {
                         maratukAgentEmail = maratukAgent.Email;
                     }
@@ -122,20 +122,16 @@ namespace MaratukAdmin.Managers.Concrete
                 string listOfArrivalsString = string.Join(", ", listOfArrivals);
                 string date = DateTime.Now.ToString();
                 string textBody = $@"
-{orderNumber}
-
-Agent: {companyName} 
-Creator: {agentName}
-Phone Number: {agentPhone}
-Email: {agentEmail}
-
-Full list of arrivals: {listOfArrivalsString}
-
-{Fligthname1} / {FligthNumber1} / 08:15-09:15
-{Fligthname2} / {FligthNumber2} / 22:15-23:15
-
-Total payable: {totalPay} 
-Date of sale: {date}";
+                                    {orderNumber}
+                                    Agent: {companyName} 
+                                    Creator: {agentName}
+                                    Phone Number: {agentPhone}
+                                    Email: {agentEmail}
+                                    Full list of arrivals: {listOfArrivalsString}
+                                    {Fligthname1} / {FligthNumber1} / 08:15-09:15
+                                    {Fligthname2} / {FligthNumber2} / 22:15-23:15
+                                    Total payable: {totalPay} 
+                                    Date of sale: {date}";
 
                 MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBody);
                 return true;

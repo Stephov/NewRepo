@@ -42,6 +42,8 @@ namespace MaratukAdmin.AutoMapper
             CreateMap<AddCurrency, Currency>();
             CreateMap<AddRoomCategoryRequest, RoomCategory>();
             CreateMap<AddHotelRequest, Hotel>();
+            CreateMap<AddRoomRequest, Room>();
+            CreateMap<AddRoomTypeRequest, RoomType>();
             CreateMap<AddHotelImageRequest, HotelImage>();
 
 

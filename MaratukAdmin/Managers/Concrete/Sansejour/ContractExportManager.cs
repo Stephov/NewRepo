@@ -443,7 +443,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         }
 
         //public async Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
-        public async Task<List<RoomSearchResponse>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
+        public async Task<List<RoomSearchResponseLowestPrices>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
         {
             try
             {
@@ -630,12 +630,12 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
             return retValue;
         }
-        public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
+        public async Task<List<SearchFligtAndRoomLowestPricesResponse>> SearchFlightAndRoomLowestPricesAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {
             int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
             int flightChildCount = 0;
             int flightInfantCount = 0;
-            List<SearchFligtAndRoomResponse> retValue = new();
+            List<SearchFligtAndRoomLowestPricesResponse> retValue = new();
 
             // Define child counts and ages for Flight seach
             if (searchFlightAndRoomRequest.RoomChildAges != null)
@@ -687,7 +687,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             {
                 foreach (var room in resultRoomSearch)
                 {
-                    retValue.Add(new SearchFligtAndRoomResponse()
+                    retValue.Add(new SearchFligtAndRoomLowestPricesResponse()
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,

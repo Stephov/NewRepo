@@ -16,21 +16,20 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
 using MaratukAdmin.Dto.Response.Sansejour;
-using Bogus;
-using Bogus.DataSets;
 using MaratukAdmin.Entities;
+using MaratukAdmin.Managers.Abstract.Sansejour;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
     public class ContractExportRepository : IContractExportRepository
     {
         protected readonly MaratukDbContext _dbContext;
-        private List<string> HotelCodes = new();
-        private Faker faker = new();
+        protected readonly IFakeDataGenerationManager _fakeDataGenerationManager;
 
-        public ContractExportRepository(MaratukDbContext dbContext)
+        public ContractExportRepository(MaratukDbContext dbContext, IFakeDataGenerationManager fakeDataGenerationManager)
         {
             _dbContext = dbContext;
+            _fakeDataGenerationManager = fakeDataGenerationManager;
         }
 
 
@@ -1020,12 +1019,13 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<List<RoomSearchResponse>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
         {
             //List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
-            List<RoomSearchResponse> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
+            //List<RoomSearchResponse> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, false);
+            List<RoomSearchResponse> retValue = _fakeDataGenerationManager.GenerateFakeRooms(searchFligtAndRoomRequest, false);
 
             return await Task.FromResult(retValue);
         }
         //public async Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
-        public async Task<List<RoomSearchResponse>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
+        public async Task<List<RoomSearchResponseLowestPrices>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest)
         {
             try
             {
@@ -1048,7 +1048,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 string hotelCodes = searchRequest.HotelCodes != null ? string.Join(",", searchRequest.HotelCodes) : string.Empty;
 
                 //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
-                var result = await _dbContext.RoomSearchResponse.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
+                var result = await _dbContext.RoomSearchResponseLowestPrices.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
                                                                         "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
                                                                         "@roomPax, @adultPax, @childPax, " +
                                                                         "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
@@ -1091,88 +1091,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<List<RoomSearchResponse>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)
         {
             //List<SyncSejourRate> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
-            List<RoomSearchResponse> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
+            //List<RoomSearchResponse> retValue = GenerateFakeRooms(searchFligtAndRoomRequest, true);
+            List<RoomSearchResponse> retValue = _fakeDataGenerationManager.GenerateFakeRooms(searchFligtAndRoomRequest, true);
 
             return await Task.FromResult(retValue);
         }
 
-        //private List<SyncSejourRate> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest, bool notRepeatableHotel)
-        private List<RoomSearchResponse> GenerateFakeRooms(SearchFligtAndRoomRequest searchFligtAndRoomRequest, bool notRepeatableHotel)
-        {
-            var fakeRooms = new List<RoomSearchResponse>();
-            string hotelCode = "";
-
-            try
-            {
-                // Generate 10 fake records
-                for (int i = 1; i <= 10; i++)
-                {
-                    RoomSearchResponse fakeRoom = new()
-                    {
-                        SyncDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        //HotelCode = Faker.StringFaker.Numeric(3),
-                        HotelCode = GenerateHotelCode(notRepeatableHotel),
-                        HotelSeasonBegin = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        HotelSeasonEnd = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateTo,
-                        RecID = faker.Random.String2(8, 8, "0123456789"),
-                        CreateDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        ChangeDate = (DateTime)searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        AccomodationPeriodBegin = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        AccomodationPeriodEnd = searchFligtAndRoomRequest.RoomAccomodationDateFrom,
-                        Room = faker.Random.String2(3, 3).ToUpper(),
-                        RoomDesc = faker.Lorem.Word(),
-                        RoomType = faker.Random.String2(3, 3).ToUpper(),
-                        RoomTypeDesc = "STANDARD",
-                        Board = "AI",
-                        BoardDesc = "ALL INCLUSIVE",
-                        RoomPax = searchFligtAndRoomRequest.RoomAdultCount + searchFligtAndRoomRequest.RoomChildCount,
-                        RoomAdlPax = searchFligtAndRoomRequest.RoomAdultCount,
-                        RoomChdPax = searchFligtAndRoomRequest.RoomChildCount,
-                        AccmdMenTypeCode = faker.Random.String2(12, 12, "0123456789"),
-                        AccmdMenTypeName = searchFligtAndRoomRequest.RoomAdultCount.ToString() + "Ad + " + searchFligtAndRoomRequest.RoomChildCount.ToString() + "Ch(Mek)(Erku)(Ereq)",
-                        ReleaseDay = 0,
-                        PriceType = "ROOM",
-                        Price = faker.Random.Number(1, 5000),
-                        WeekendPrice = null,
-                        WeekendPercent = 0,
-                        AccomLengthDay = "0-999",
-                        Option = "Stay",
-                        SpoNoApply = null,
-                        SPOPrices = 2,
-                        SPODefinit = "EEA// 04/08/2023 M",
-                        NotCountExcludingAccomDate = "N",
-                        HotelName = faker.Lorem.Word(),
-                        HotelCategoryId = faker.Random.Number(1, 5),
-                        FilePath = faker.Image.PlaceImgUrl()
-                    };
-
-                    fakeRooms.Add(fakeRoom);
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return fakeRooms;
-        }
-
-        public string GenerateHotelCode(bool notRepeatableHotel)
-        {
-            //string hotelCode = Faker.StringFaker.Numeric(3);
-            string hotelCode = faker.Random.String2(3, 3, "0123456789");
-
-            if (notRepeatableHotel && HotelCodes.Contains(hotelCode))             // Hotel should NOT repeat
-            {
-                hotelCode = GenerateHotelCode(notRepeatableHotel);
-            }
-
-            if (!HotelCodes.Contains(hotelCode))
-            {
-                HotelCodes.Add(hotelCode);
-            }
-
-            return hotelCode;
-        }
         #endregion
     }
 }

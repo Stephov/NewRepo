@@ -1,8 +1,6 @@
-﻿using MaratukAdmin.Entities.Sansejour;
-
-namespace MaratukAdmin.Dto.Response.Sansejour
+﻿namespace MaratukAdmin.Dto.Response.Sansejour
 {
-    public class RoomSearchResponse //: RoomSearchResponseLowestPrices
+    public class RoomSearchResponseLowestPrices
     {
         public DateTime SyncDate { get; set; }
         public string? HotelCode { get; set; }
@@ -41,25 +39,5 @@ namespace MaratukAdmin.Dto.Response.Sansejour
         public int? HotelCategoryId { get; set; }
         public int? HotelFileTypeId { get; set; }
         public string? HotelFilePath { get; set; }
-
-        // *****************************************
-
-        public string? HotelCountryName { get; set; }
-        public string? HotelCountryNameEng { get; set; }
-        public string? HotelCityName { get; set; }
-        public string? HotelCityNameEng { get; set; }
-
-        public byte? HotelIsCruise { get; set; }
-        public string? HotelAddress { get; set; }
-        public string? HotelGpsLatitude { get; set; }
-        public string? HotelGpsLongitude { get; set; }
-        public string? HotelPhoneNumber { get; set; }
-        public string? HotelFax { get; set; }
-        public string? HotelEmail { get; set; }
-        public string? HotelSite { get; set; }
-        public DateTime? HotelCheckIn { get; set; }
-        public DateTime? HotelCheckOut { get; set; }
-        public string? HotelDescription { get; set; }
-
     }
 }

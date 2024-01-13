@@ -5,6 +5,8 @@ using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Exceptions;
 using MaratukAdmin.Infrastructure;
+using MaratukAdmin.Managers.Abstract.Sansejour;
+using MaratukAdmin.Managers.Concrete.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +20,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         //private readonly IMainRepository<HotelImage> _mainRepository;
         private Faker faker = new();
         private readonly string filePath = @"\\16.171.6.213\C$\Uploads\";
+        protected readonly IFakeDataGenerationManager _fakeDataGenerationManager;
 
-        public HotelImagesRepository(MaratukDbContext dbContext)
+        public HotelImagesRepository(MaratukDbContext dbContext, IFakeDataGenerationManager fakeDataGenerationManager)
         {
             _dbContext = dbContext;
+            _fakeDataGenerationManager = fakeDataGenerationManager;
         }
 
         public async Task<HotelImage> AddHotelImageAsync(AddHotelImageRequest hotelImageRequest)
@@ -117,33 +121,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public async Task<List<HotelImage>> GetHotelImagesByHotelIdMockAsync(int hotelId)
         {
-            return await Task.FromResult(GenerateFakeHotelImages(hotelId));
-        }
-
-        private List<HotelImage> GenerateFakeHotelImages(int hotelId)
-        {
-            List<HotelImage> fakeHotelImages = new();
-
-            try
-            {
-                for (int i = 1; i <= 5; i++)
-                {
-                    HotelImage fakeHotelImage = new()
-                    {
-                        HotelId = hotelId,
-                        FileTypeId = faker.Random.Number(1, 2),
-                        FileName = faker.Random.Word() + ".jpg",
-                        FilePath = faker.System.FilePath()
-                    };
-
-                    fakeHotelImages.Add(fakeHotelImage);
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return fakeHotelImages;
+            return await Task.FromResult(_fakeDataGenerationManager.GenerateFakeHotelImages(hotelId));
         }
     }
 }
