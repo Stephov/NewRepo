@@ -83,6 +83,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 {
                     BookedHotelGuest bookedGuest = new()
                     {
+                        OrderNumber = orderNumber,
+                        IsAdult = hotelGuest.IsAdult,
                         GenderId = hotelGuest.GenderId,
                         Name = hotelGuest.Name,
                         Surname = hotelGuest.SurName,

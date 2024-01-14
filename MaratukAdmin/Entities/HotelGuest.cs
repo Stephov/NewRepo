@@ -2,7 +2,7 @@
 {
     public class HotelGuest
     {
-
+        public int IsAdult { get; set; }
         public int GenderId { get; set; }
         public string? Name { get; set; }
         public string? SurName { get; set; }
