@@ -70,17 +70,19 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         HotelName = faker.Lorem.Word(),
                         HotelCategoryId = faker.Random.Number(1, 5),
                         HotelFileTypeId = faker.Random.Number(1, 2),
-                        HotelFilePath = faker.Image.PlaceImgUrl(),
-                        HotelAddress = faker.Address.ToString(),
-                        HotelCheckIn = faker.Date.Recent(1),
-                        HotelCheckOut = faker.Date.Recent(1),
-                        HotelCityName = faker.Lorem.Word(),
-                        HotelCityNameEng = faker.Lorem.Word(),
-                        HotelCountryName = faker.Lorem.Word(),
-                        HotelCountryNameEng = faker.Lorem.Word(),
-                        HotelDescription = faker.Lorem.Word(),
-                        HotelEmail = faker.Person.Email,
-                        HotelFax = faker.Person.Phone
+                        FilePath = faker.Image.PlaceImgUrl(),
+
+                        //HotelAddress = faker.Address.ToString(),
+                        //HotelCheckIn = faker.Date.Recent(1),
+                        //HotelCheckOut = faker.Date.Recent(1),
+                        //HotelCityName = faker.Lorem.Word(),
+                        //HotelCityNameEng = faker.Lorem.Word(),
+                        //HotelCountryName = faker.Lorem.Word(),
+                        //HotelCountryNameEng = faker.Lorem.Word(),
+                        //HotelDescription = faker.Lorem.Word(),
+                        //HotelEmail = faker.Person.Email,
+                        //HotelFax = faker.Person.Phone
+
                         //HotelGpsLatitude =
                         //Address = faker.Address.FullAddress(),
                         //GpsLatitude = faker.Address.Latitude().ToString(),

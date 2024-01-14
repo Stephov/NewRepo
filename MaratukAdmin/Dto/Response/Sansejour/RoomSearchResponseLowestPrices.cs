@@ -37,7 +37,7 @@
 
         public string? HotelName { get; set; }
         public int? HotelCategoryId { get; set; }
-        public int? HotelFileTypeId { get; set; }
-        public string? HotelFilePath { get; set; }
+        //public int? HotelFileTypeId { get; set; }
+        public string? FilePath { get; set; }
     }
 }

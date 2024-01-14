@@ -14,7 +14,8 @@ namespace MaratukAdmin.Infrastructure
 
         public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
         public DbSet<BookedFlight> BookedFlights { get; set; }
-        public DbSet<BookedHotel> BookedHotels { get; set; }
+        public DbSet<BookedHotel> BookedHotel { get; set; }
+        public DbSet<BookedHotelGuest> BookedHotelGuest { get; set; }
         public DbSet<SearchResultFunction> SearchResultFunctionOneWay { get; set; }
         public DbSet<SearchResultFunctionTwoWay> SearchResultFunctionTwoWay { get; set; }
         public DbSet<FlightReturnDateForManual> FlightReturnDateForManual { get; set; }
@@ -88,6 +89,9 @@ namespace MaratukAdmin.Infrastructure
                .HasKey(e => e.Id);
             
             modelBuilder.Entity<BookedHotel>()
+               .HasKey(e => e.Id);
+            
+            modelBuilder.Entity<BookedHotelGuest>()
                .HasKey(e => e.Id);
 
             modelBuilder.Entity<RefreshToken>()

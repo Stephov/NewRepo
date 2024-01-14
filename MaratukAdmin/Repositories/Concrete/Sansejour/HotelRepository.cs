@@ -97,45 +97,29 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<HotelResponseModel?> GetHotelByCodeAsync(string code)
         {
             HotelResponseModel? retValue = new();
-            //var query = from hot in _dbContext.Hotel
-            //            where hot.Code == code
-            //            join hotImages in _dbContext.HotelImages on hot.Id equals hotImages.HotelId //into hotImagesGroup
-            //                                                                                        //from hotelImage in hotImagesGroup.DefaultIfEmpty()
-            //            select new
-            //            {
-            //                //hotel = new Hotel()
-            //                //{
-            //                //    Address = hot.Address,
-            //                //    City = hot.City,
-            //                //    Code = hot.Code,
-            //                //    Country = hot.Country,
-            //                //    Description = hot.Description,
-            //                //    Email = hot.Email,
-            //                //    Fax = hot.Fax,
-            //                //    GpsLatitude = hot.GpsLatitude,
-            //                //    GpsLongitude = hot.GpsLongitude,
-            //                //    HotelCategoryId = hot.HotelCategoryId,
-            //                //    Id = hot.Id,
-            //                //    IsCruise = hot.IsCruise,
-            //                //    Name = hot.Name,
-            //                //    PhoneNumber = hot.PhoneNumber,
-            //                //    Site = hot.Site
-            //                //},
-            //                hotel = hot,
-            //                //hotelImages = hotImagesGroup.ToList()
-            //                hotelImages = hotImages
-            //            };
-
-            ////return await query.SingleOrDefaultAsync();
-
-            //retValue = (HotelResponseModel)query;
-            //return await Task.FromResult(retValue);
 
             var hot = _dbContext.Hotel.FirstOrDefaultAsync(h => h.Code == code).Result;
 
             if (hot != null)
             {
                 retValue.hotel = hot;
+
+                var hotCountry = await _dbContext.Country.FirstOrDefaultAsync(c => c.Id == hot.Country);
+
+                if(hotCountry != null)
+                {
+                    retValue.hotelCountryName= hotCountry.Name;
+                    retValue.hotelCountryNameEng= hotCountry.NameENG;
+                }
+
+                var hotCity = await _dbContext.City.FirstOrDefaultAsync(c => c.Id == hot.City);
+
+                if (hotCity != null)
+                {
+                    retValue.hotelCountryName = hotCity.Name;
+                    retValue.hotelCountryNameEng = hotCity.NameEng;
+                }
+
                 //var hotImages = _dbContext.HotelImages.Where(hi => hi.HotelId == hot.Id).ToList();
                 var hotImages = _hotelImagesRepository.GetHotelImagesByHotelIdAsync(hot.Id).Result;
 

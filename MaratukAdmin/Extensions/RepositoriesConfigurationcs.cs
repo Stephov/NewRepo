@@ -15,6 +15,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IAdminRepository, AdminRepository>()
             .AddScoped<IFlightRepository, FlightRepository>()
             .AddScoped<IHotelRepository, HotelRepository>()
+            .AddScoped<IBookedHotelRepository, BookedHotelRepository>()
             .AddScoped<IHotelImagesRepository, HotelImagesRepository>()
             .AddScoped<IContractExportRepository, ContractExportRepository>()
             .AddScoped<ITransactionRepository, TransactionRepository>()

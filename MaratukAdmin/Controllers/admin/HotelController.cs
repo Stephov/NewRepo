@@ -16,10 +16,14 @@ namespace MaratukAdmin.Controllers.admin
     public class HotelController : BaseController
     {
         private readonly IHotelManager _hotelManager;
+        private readonly IBookedHotelManager _bookedHotelManager;
+
         public HotelController(IHotelManager hotelManager,
+                                IBookedHotelManager bookedHotelManager,
                                 JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
             _hotelManager = hotelManager;
+            _bookedHotelManager = bookedHotelManager;
         }
 
         [HttpGet]
@@ -97,13 +101,11 @@ namespace MaratukAdmin.Controllers.admin
         [HttpPost("BookHotel")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> BookHotel([FromBody] List<AddBookedFlight> addBookedFlight)
+        public async Task<ActionResult> BookHotel([FromBody] AddBookHotelRequest addBookHotelRequest)
         {
             try
             {
-                //call manager
-                var result = await _bookedFlightManager.AddBookedFlightAsync(addBookedFlight);
-
+                var result = await _bookedHotelManager.AddBookedHotelAsync(addBookHotelRequest);
                 return Ok(result);
             }
             catch (ArgumentException ex)
