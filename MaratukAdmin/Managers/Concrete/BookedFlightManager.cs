@@ -155,14 +155,44 @@ Date of sale: {date}";
             var groupedBookedFlights = listBookedFlights.GroupBy(flight => flight.OrderNumber).ToList();
 
             var bookedFlightResponses = new List<BookedFlightResponse>();
-            double totalDeptUsd = listBookedFlights
-    .Where(bf => bf.Rate == "USD")
-    .Sum(bf => bf.Dept ?? 0);
+            double totalDeptUsd = 0;
+            double totalDeptEur = 0;
 
 
-            double totalDeptEur = listBookedFlights
-   .Where(bf => bf.Rate == "EUR")
-   .Sum(bf => bf.Dept ?? 0);
+            /* var groupedFlights = listBookedFlights
+               .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+               .Select(group => new
+               {
+                   OrderNumber = group.Key.OrderNumber,
+                   Currency = group.Key.Rate,
+                   TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+               });*/
+
+
+            var groupedFlights = listBookedFlights
+     .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+     .Select(group => new
+     {
+         Currency = group.Key.Rate,
+         TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+     });
+
+
+            foreach (var result in groupedFlights)
+            {
+
+                if (result.Currency == "USD")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptUsd += result.TotalDept;
+                }
+
+                if (result.Currency == "EUR")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptEur += result.TotalDept;
+                }
+            }
 
 
 
@@ -181,7 +211,8 @@ Date of sale: {date}";
                     GenderName = (flight.GenderId == 1) ? "Male" : "Female"
                 }).ToList();
 
-                var firstFlightInGroup = group.First(); // You can take any flight from the group to extract common properties
+                var firstFlightInGroup = group.First(); 
+                // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponse
                 {
                     bookedUsers = bookedUsers,
@@ -231,16 +262,35 @@ Date of sale: {date}";
 
             var listBookedFlights = await _bookedFlightRepository.GetAllBookedFlightAsync(response);
 
-            double totalDeptUsd = listBookedFlights
-   .Where(bf => bf.Rate == "USD")
-   .Sum(bf => bf.Dept ?? 0);
-
-
-            double totalDeptEur = listBookedFlights
-   .Where(bf => bf.Rate == "EUR")
-   .Sum(bf => bf.Dept ?? 0);
+            double totalDeptUsd = 0;
+            double totalDeptEur = 0;
 
             var groupedBookedFlights = listBookedFlights.GroupBy(flight => flight.OrderNumber).ToList();
+
+
+            var groupedFlights = listBookedFlights
+     .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+     .Select(group => new
+     {
+         Currency = group.Key.Rate,
+         TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+     });
+
+
+            foreach (var result in groupedFlights)
+            {
+
+                if (result.Currency == "USD")
+                {
+                    totalDeptUsd += result.TotalDept;
+                }
+
+                if (result.Currency == "EUR")
+                {
+                    totalDeptEur += result.TotalDept;
+                }
+            }
+
 
             var bookedFlightResponses = new List<BookedFlightResponse>();
 
