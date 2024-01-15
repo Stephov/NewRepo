@@ -112,7 +112,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                     listOfArrivals.Add(booked.Name + " " + booked.Surname);
                     var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukAgentId);
-                    if(maratukAgent != null)
+                    if (maratukAgent != null)
                     {
                         maratukAgentEmail = maratukAgent.Email;
                     }
@@ -149,15 +149,23 @@ Date of sale: {date}";
         public async Task<BookedFlightResponseFinal> GetBookedFlightByAgentIdAsync(int id)
         {
             BookedFlightResponseFinal responseFinal = new BookedFlightResponseFinal();
-
-            var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
             ///todo  add last actual currency
             var listBookedFlights = await _bookedFlightRepository.GetBookedFlightByAgentIdAsync(id);
 
             var groupedBookedFlights = listBookedFlights.GroupBy(flight => flight.OrderNumber).ToList();
 
             var bookedFlightResponses = new List<BookedFlightResponse>();
-            double totalDeptUsd = listBookedFlights.Sum(bf => bf.Dept ?? 0);
+            double totalDeptUsd = listBookedFlights
+    .Where(bf => bf.Rate == "USD")
+    .Sum(bf => bf.Dept ?? 0);
+
+
+            double totalDeptEur = listBookedFlights
+   .Where(bf => bf.Rate == "EUR")
+   .Sum(bf => bf.Dept ?? 0);
+
+
+
 
             foreach (var group in groupedBookedFlights)
             {
@@ -209,7 +217,7 @@ Date of sale: {date}";
 
             responseFinal.bookedFlightResponses = bookedFlightResponses;
             responseFinal.DeptUSD = (int)totalDeptUsd * -1;
-            responseFinal.DeptEUR = 0;
+            responseFinal.DeptEUR = (int)totalDeptEur * -1;
 
             return responseFinal;
         }
@@ -218,14 +226,19 @@ Date of sale: {date}";
         {
             BookedFlightResponseFinal responseFinal = new BookedFlightResponseFinal();
 
-            var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
-
 
             var response = await _userRepository.GetAgencyUsersAsync(Itn);
 
             var listBookedFlights = await _bookedFlightRepository.GetAllBookedFlightAsync(response);
 
-            double totalDeptUsd = listBookedFlights.Sum(bf => bf.Dept ?? 0);
+            double totalDeptUsd = listBookedFlights
+   .Where(bf => bf.Rate == "USD")
+   .Sum(bf => bf.Dept ?? 0);
+
+
+            double totalDeptEur = listBookedFlights
+   .Where(bf => bf.Rate == "EUR")
+   .Sum(bf => bf.Dept ?? 0);
 
             var groupedBookedFlights = listBookedFlights.GroupBy(flight => flight.OrderNumber).ToList();
 
@@ -281,7 +294,7 @@ Date of sale: {date}";
 
             responseFinal.bookedFlightResponses = bookedFlightResponses;
             responseFinal.DeptUSD = (int)totalDeptUsd * -1;
-            responseFinal.DeptEUR = 0;
+            responseFinal.DeptEUR = (int)totalDeptEur * -1;
 
             return responseFinal;
 
