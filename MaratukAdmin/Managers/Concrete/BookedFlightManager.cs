@@ -159,15 +159,6 @@ Date of sale: {date}";
             double totalDeptEur = 0;
 
 
-            /* var groupedFlights = listBookedFlights
-               .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
-               .Select(group => new
-               {
-                   OrderNumber = group.Key.OrderNumber,
-                   Currency = group.Key.Rate,
-                   TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
-               });*/
-
 
             var groupedFlights = listBookedFlights
      .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
@@ -193,9 +184,6 @@ Date of sale: {date}";
                     totalDeptEur += result.TotalDept;
                 }
             }
-
-
-
 
             foreach (var group in groupedBookedFlights)
             {
