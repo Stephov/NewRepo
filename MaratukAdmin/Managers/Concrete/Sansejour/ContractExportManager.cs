@@ -489,8 +489,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             };
 
             // Get FLIGHTS
-            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
-            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);          // MOCK
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
+            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);          // MOCK
 
             SearchRoomRequest searchRoomRequest = new()
             {
@@ -663,8 +663,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             };
 
             // Get FLIGHTS
-            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
-            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);      // MOCK
+            List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
+            //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);      // MOCK
 
 
             SearchRoomRequest searchRoomRequest = new()

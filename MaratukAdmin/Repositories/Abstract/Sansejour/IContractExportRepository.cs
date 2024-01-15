@@ -32,6 +32,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task AddNewSejourSpecialOffersAsync(List<SyncSejourSpecialOffer> syncSpecialOffer);
 
 
+        Task<SyncSejourRate> GetSyncSejourRateByIdAsync (int id);
         Task<List<SyncSejourRate>> GetSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null);
         Task<bool> DeleteSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null);
         Task<bool> DeleteSyncSejourRatesByDateRAWAsync(DateTime exportDate, string? hotelCode = null);

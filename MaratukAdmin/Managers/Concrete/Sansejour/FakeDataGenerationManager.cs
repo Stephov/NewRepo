@@ -69,7 +69,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         NotCountExcludingAccomDate = "N",
                         HotelName = faker.Lorem.Word(),
                         HotelCategoryId = faker.Random.Number(1, 5),
-                        HotelFileTypeId = faker.Random.Number(1, 2),
+                        //HotelFileTypeId = faker.Random.Number(1, 2),
+                        //FileTypeId = faker.Random.Number(1, 2),
                         FilePath = faker.Image.PlaceImgUrl(),
 
                         //HotelAddress = faker.Address.ToString(),

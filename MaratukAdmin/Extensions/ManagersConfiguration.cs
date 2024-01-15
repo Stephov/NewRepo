@@ -26,6 +26,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IAirlineManager, AirlineManager>()
             .AddScoped<IGenderManager, GenderManager>()
             .AddScoped<IBookedFlightManager, BookedFlightManager>()
+            .AddScoped<IBookedFlightAndHotelManager, BookedFlightAndHotelManager>()
             .AddScoped<IAircraftManager, AircraftManager>()
             .AddScoped<IAirServiceManager, AirServiceManager>()
             .AddScoped<IOrderStatusManager, OrderStatusManager>()

@@ -72,6 +72,18 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return true;
         }
 
+        public async Task<SyncSejourRate> GetSyncSejourRateByIdAsync(int id)
+        {
+            try
+            {
+                return await _dbContext.SyncSejourRate.Where(c => c.Id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<SyncSejourContractExportView>> GetSyncSejourContractsByDateAsync(DateTime exportDate)
         {
             try

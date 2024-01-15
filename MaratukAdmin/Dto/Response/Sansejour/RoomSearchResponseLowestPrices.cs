@@ -2,6 +2,7 @@
 {
     public class RoomSearchResponseLowestPrices
     {
+        public int Id { get; set; }
         public DateTime SyncDate { get; set; }
         public string? HotelCode { get; set; }
         public DateTime? HotelSeasonBegin { get; set; }

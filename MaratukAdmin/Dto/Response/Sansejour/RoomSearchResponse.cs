@@ -4,6 +4,7 @@ namespace MaratukAdmin.Dto.Response.Sansejour
 {
     public class RoomSearchResponse //: RoomSearchResponseLowestPrices
     {
+        public int Id { get; set; }
         public DateTime SyncDate { get; set; }
         public string? HotelCode { get; set; }
         public DateTime? HotelSeasonBegin { get; set; }
@@ -39,7 +40,7 @@ namespace MaratukAdmin.Dto.Response.Sansejour
 
         public string? HotelName { get; set; }
         public int? HotelCategoryId { get; set; }
-        public int? HotelFileTypeId { get; set; }
+        //public int? HotelFileTypeId { get; set; }
         public string? FilePath { get; set; }
 
         // *****************************************

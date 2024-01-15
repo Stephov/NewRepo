@@ -6,7 +6,6 @@
         public int AgentId { get; set; }
         public DateTime DateOfOrder { get; set; }
         public string ToureTypeId { get; set; }
-        public int? HotelId { get; set; }
         public string? HotelCode { get; set; }
         public int? RoomId { get; set; }
         public string? RoomCode { get; set; }
