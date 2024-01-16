@@ -32,6 +32,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task AddNewSejourSpecialOffersAsync(List<SyncSejourSpecialOffer> syncSpecialOffer);
 
 
+        Task<SyncSejourRate> GetSyncSejourRateByIdAsync (int id);
         Task<List<SyncSejourRate>> GetSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null);
         Task<bool> DeleteSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null);
         Task<bool> DeleteSyncSejourRatesByDateRAWAsync(DateTime exportDate, string? hotelCode = null);
@@ -61,7 +62,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<List<RoomSearchResponse>> SearchRoomAsync(SearchRoomRequest searchRequest);
         //Task<List<SyncSejourRate>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
         Task<List<RoomSearchResponse>> SearchRoomMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
-        Task<List<RoomSearchResponse>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
+        Task<List<RoomSearchResponseLowestPrices>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
         //Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
         //Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
         Task<List<RoomSearchResponse>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);

@@ -14,10 +14,13 @@ namespace MaratukAdmin.Infrastructure
 
         public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
         public DbSet<BookedFlight> BookedFlights { get; set; }
+        public DbSet<BookedHotel> BookedHotel { get; set; }
+        public DbSet<BookedHotelGuest> BookedHotelGuest { get; set; }
         public DbSet<SearchResultFunction> SearchResultFunctionOneWay { get; set; }
         public DbSet<SearchResultFunctionTwoWay> SearchResultFunctionTwoWay { get; set; }
         public DbSet<FlightReturnDateForManual> FlightReturnDateForManual { get; set; }
         public DbSet<RoomSearchResponse> RoomSearchResponse { get; set; }
+        public DbSet<RoomSearchResponseLowestPrices> RoomSearchResponseLowestPrices { get; set; }
         public DbSet<FlightReturnDate> FlightReturnDate { get; set; }
 
         public DbSet<AgencyUser>? AgencyUser { get; set; }
@@ -37,6 +40,8 @@ namespace MaratukAdmin.Infrastructure
 
         public DbSet<Flight> Flight { get; set; }
         public DbSet<Hotel> Hotel { get; set; }
+        public DbSet<Room> Room { get; set; }
+        public DbSet<RoomType> RoomType { get; set; }
         public DbSet<HotelImage> HotelImage { get; set; }
 
         public DbSet<SyncSejourContractExportView> SyncSejourContractExportView { get; set; }
@@ -82,6 +87,12 @@ namespace MaratukAdmin.Infrastructure
 
             modelBuilder.Entity<BookedFlight>()
                .HasKey(e => e.Id);
+            
+            modelBuilder.Entity<BookedHotel>()
+               .HasKey(e => e.Id);
+            
+            modelBuilder.Entity<BookedHotelGuest>()
+               .HasKey(e => e.Id);
 
             modelBuilder.Entity<RefreshToken>()
                 .HasKey(r => r.Id);
@@ -117,6 +128,12 @@ namespace MaratukAdmin.Infrastructure
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<Hotel>()
+                .HasKey(r => r.Id);
+            
+            modelBuilder.Entity<Room>()
+                .HasKey(r => r.Id);
+            
+            modelBuilder.Entity<RoomType>()
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<HotelImage>()
@@ -197,7 +214,7 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<FlightReturnDateForManual>().HasNoKey().ToView("GetFlightReturnDateForManual");
             modelBuilder.Entity<FlightReturnDate>().HasNoKey().ToView("GetFlightReturnDate");
             modelBuilder.Entity<RoomSearchResponse>().HasNoKey().ToView("Sp_Search_Room");
-            modelBuilder.Entity<RoomSearchResponse>().HasNoKey().ToView("Sp_Search_Room_LowestPrices");
+            modelBuilder.Entity<RoomSearchResponseLowestPrices>().HasNoKey().ToView("Sp_Search_Room_LowestPrices");
 
 
            

@@ -18,6 +18,8 @@ namespace MaratukAdmin.Entities.Sansejour
         public string? Fax { get; set;}
         public string? Email { get; set;}
         public string? Site { get; set;}
+        public DateTime? CheckIn { get; set;}
+        public DateTime? CheckOut { get; set;}
         public string? Description { get; set;}
 
         //public HotelCategory HotelCategory { get; set; }

@@ -46,7 +46,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             IHotelRepository hotelRepository,
                             IHttpRequestManager httpRequestManager,
                             ITransactionRepository transactionRepository,
-                            IDistributedCache cache
+                            IDistributedCache cache,
+                            IFakeDataGenerationManager fakeDataGenerationManager
 
             )
         {

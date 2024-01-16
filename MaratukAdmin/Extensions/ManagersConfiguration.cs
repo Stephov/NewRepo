@@ -15,15 +15,18 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IFlightManager, FlightManager>()
 
             .AddScoped<IHotelManager, HotelManager>()
+            .AddScoped<IBookedHotelManager, BookedHotelManager>()
             .AddScoped<IHotelImagesManager, HotelImagesManager>()
             .AddScoped<IContractExportManager, ContractExportManager>()
             .AddScoped<IHttpRequestManager, HttpRequestManager>()
+            .AddScoped<IFakeDataGenerationManager, FakeDataGenerationManager>()
 
             .AddScoped<ICountryManager, CountryManager>()
             .AddScoped<ICityManager, CityManager>()
             .AddScoped<IAirlineManager, AirlineManager>()
             .AddScoped<IGenderManager, GenderManager>()
             .AddScoped<IBookedFlightManager, BookedFlightManager>()
+            .AddScoped<IBookedFlightAndHotelManager, BookedFlightAndHotelManager>()
             .AddScoped<IAircraftManager, AircraftManager>()
             .AddScoped<IAirServiceManager, AirServiceManager>()
             .AddScoped<IOrderStatusManager, OrderStatusManager>()
