@@ -17,12 +17,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             _dbContext = dbContext;
         }
 
-        public async Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel, List<BookedHotelGuest> bookedHotelGuests)
+        public async Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel)
         {
             try
             {
                 await _dbContext.BookedHotel.AddAsync(bookedHotel);
-                await _dbContext.BookedHotelGuest.AddRangeAsync(bookedHotelGuests);
+                //await _dbContext.BookedHotelGuest.AddRangeAsync(bookedHotelGuests);
 
                 await _dbContext.SaveChangesAsync();
             }
@@ -38,18 +38,20 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             var agentIds = agencyUsers.Select(au => au.Id).ToList();
 
-            var result = await (from bh in _dbContext.BookedHotel
-                                join g in _dbContext.BookedHotelGuest on bh.OrderNumber equals g.OrderNumber
-                                where agentIds.Contains(bh.AgentId)
-                                select new BookedHotelResponse
-                                {
-                                    BookedHotel = bh,
-                                    BookedHotelGuests = _dbContext.BookedHotelGuest
-                                                          .Where(gh => gh.OrderNumber == bh.OrderNumber)
-                                                          .ToList()
-                                }).ToListAsync();
+            //var result = await (from bh in _dbContext.BookedHotel
+            //                    join g in _dbContext.BookedHotelGuest on bh.OrderNumber equals g.OrderNumber
+            //                    where agentIds.Contains(bh.AgentId)
+            //                    select new BookedHotelResponse
+            //                    {
+            //                        BookedHotel = bh,
+            //                        BookedHotelGuests = _dbContext.BookedHotelGuest
+            //                                              .Where(gh => gh.OrderNumber == bh.OrderNumber)
+            //                                              .ToList()
+            //                    }).ToListAsync();
 
-            return result;
+            //return result;
+
+            return new List<BookedHotelResponse>();
         }
     }
 }

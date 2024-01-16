@@ -49,11 +49,11 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         
-        [HttpGet("AllBookHotel/{Itn:int}")]
+        [HttpGet("BookFlightAndHotel/{Itn:int}")]
         [AllowAnonymous]
-        public async Task<List<BookedHotelResponse>> GetAllBookFlightAsync(int Itn)
+        public async Task<List<BookedHotelResponse>> GetAllBookedFlightsAndHotelsAsync(int Itn)
         {
-            var res = await _bookedFlightAndHotelManager.GetBookedHotelAsync(Itn);
+            var res = await _bookedFlightAndHotelManager.GetBookedFlightsAndHotelsAsync(Itn);
             return res;
         }
     }

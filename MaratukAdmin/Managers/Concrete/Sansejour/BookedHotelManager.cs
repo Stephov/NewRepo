@@ -63,19 +63,19 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 BookedHotel bookedHotel = new()
                 {
                     OrderNumber = orderNumber,
-                    AgentId = addBookedHotel.AgentId,
+                    //AgentId = addBookedHotel.AgentId,
                     CountryId = addBookedHotel.CountryId,
-                    DateOfOrder = DateTime.Now,
+                    //DateOfOrder = DateTime.Now,
                     ToureTypeId = "Hotel",
                     //HotelId = 1,
                     HotelCode = addBookedHotel.HotelCode,
                     TotalPrice = addBookedHotel.TotalPrice,
-                    Rate = addBookedHotel.Rate,
+                    //Rate = addBookedHotel.Rate,
                     TotalPriceAmd = USDRate * addBookedHotel.TotalPrice,
                     GuestsCount = addBookedHotel.GuestsCount,
                     TourStartDate = addBookedHotel.TourStartDate,
                     TourEndDate = addBookedHotel.TourEndDate,
-                    MaratukAgentId = addBookedHotel.MaratukAgentId,
+                    //MaratukAgentId = addBookedHotel.MaratukAgentId,
                     Dept = addBookedHotel.TotalPrice
                 };
 
@@ -112,7 +112,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     listOfGuests.Add(hotelGuest.Name + " " + hotelGuest.SurName);
                 }
 
-                await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel, bookedHotelGuests);
+                await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);
 
                 var agent = await _userRepository.GetAgencyUsersByIdAsync(addBookedHotel.AgentId);
 

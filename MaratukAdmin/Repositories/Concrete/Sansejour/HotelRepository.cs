@@ -116,8 +116,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
                 if (hotCity != null)
                 {
-                    retValue.hotelCountryName = hotCity.Name;
-                    retValue.hotelCountryNameEng = hotCity.NameEng;
+                    retValue.hotelCityName = hotCity.Name;
+                    retValue.hotelCityNameEng = hotCity.NameEng;
                 }
 
                 //var hotImages = _dbContext.HotelImages.Where(hi => hi.HotelId == hot.Id).ToList();
