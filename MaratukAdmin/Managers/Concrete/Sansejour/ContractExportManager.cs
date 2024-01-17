@@ -508,7 +508,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             var resultRoomSearch = await _contractExportRepository.SearchRoomAsync(searchRoomRequest);
 
 
-            // Combune results
+            // Combine results
             foreach (var flight in resultFlightSearch)
             {
                 foreach (var room in resultRoomSearch)
@@ -614,7 +614,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             var resultRoomSearch = await _contractExportRepository.SearchRoomMockAsync(searchFlightAndRoomRequest);
 
 
-            // Combune results
+            // Combine results
             foreach (var flight in resultFlightSearch)
             {
                 foreach (var room in resultRoomSearch)
@@ -682,7 +682,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             var resultRoomSearch = await _contractExportRepository.SearchRoomLowestPricesAsync(searchRoomRequest);
 
 
-            // Combune results
+            // Combine results
             foreach (var flight in resultFlightSearch)
             {
                 foreach (var room in resultRoomSearch)
@@ -738,7 +738,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             var resultRoomSearch = await _contractExportRepository.SearchRoomLowestPricesMockAsync(searchFlightAndRoomRequest);                     // MOCK
 
 
-            // Combune results
+            // Combine results
             foreach (var flight in resultFlightSearch)
             {
                 foreach (var room in resultRoomSearch)

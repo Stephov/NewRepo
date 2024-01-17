@@ -6,6 +6,7 @@ namespace MaratukAdmin.Dto.Response.Sansejour
     {
         public int Id { get; set; }
         public DateTime SyncDate { get; set; }
+        public int HotelId { get; set; }
         public string? HotelCode { get; set; }
         public DateTime? HotelSeasonBegin { get; set; }
         public DateTime? HotelSeasonEnd { get; set; }

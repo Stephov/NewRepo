@@ -185,7 +185,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     GuestsCount = guestsCount,
                     TourStartDate = tourStartDate,
                     TourEndDate = tourEndDate,
-                    Dept = bookedFlightAndHotel.Price
+                    Dept = bookedFlightAndHotel.Price,
+                    Board = bookedFlightAndHotel.Board,
+                    BoardDesc = bookedFlightAndHotel.BoardDesc
                 };
 
                 await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);

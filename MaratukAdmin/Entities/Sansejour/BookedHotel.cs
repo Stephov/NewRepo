@@ -8,6 +8,8 @@
         public string ToureTypeId { get; set; }
         public int? HotelId { get; set; }
         public string? HotelCode { get; set; }
+        public string? Board { get; set; }
+        public string? BoardDesc { get; set; }
         public int SejourRateId { get; set; }
 
         public string? Room { get; set; }
