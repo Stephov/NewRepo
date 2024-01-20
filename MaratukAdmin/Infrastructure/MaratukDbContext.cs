@@ -15,12 +15,15 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
         public DbSet<BookedFlight> BookedFlights { get; set; }
         public DbSet<BookedHotel> BookedHotel { get; set; }
+        public DbSet<AgentStatus> AgentStatus { get; set; }
+        public DbSet<MaratukAgentStatus> MaratukAgentStatus { get; set; }
         public DbSet<BookedHotelGuest> BookedHotelGuest { get; set; }
         public DbSet<SearchResultFunction> SearchResultFunctionOneWay { get; set; }
         public DbSet<SearchResultFunctionTwoWay> SearchResultFunctionTwoWay { get; set; }
         public DbSet<FlightReturnDateForManual> FlightReturnDateForManual { get; set; }
         public DbSet<RoomSearchResponse> RoomSearchResponse { get; set; }
         public DbSet<RoomSearchResponseLowestPrices> RoomSearchResponseLowestPrices { get; set; }
+        public DbSet<BookedInfoFlightPartResponse> BookedInfoFlightPartResponse { get; set; }
         public DbSet<FlightReturnDate> FlightReturnDate { get; set; }
 
         public DbSet<AgencyUser>? AgencyUser { get; set; }
@@ -89,6 +92,12 @@ namespace MaratukAdmin.Infrastructure
                .HasKey(e => e.Id);
             
             modelBuilder.Entity<BookedHotel>()
+               .HasKey(e => e.Id);
+            
+            modelBuilder.Entity<AgentStatus>()
+               .HasKey(e => e.Id);
+            
+            modelBuilder.Entity<MaratukAgentStatus>()
                .HasKey(e => e.Id);
             
             modelBuilder.Entity<BookedHotelGuest>()
@@ -214,6 +223,7 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<FlightReturnDateForManual>().HasNoKey().ToView("GetFlightReturnDateForManual");
             modelBuilder.Entity<FlightReturnDate>().HasNoKey().ToView("GetFlightReturnDate");
             modelBuilder.Entity<RoomSearchResponse>().HasNoKey().ToView("Sp_Search_Room");
+            modelBuilder.Entity<BookedInfoFlightPartResponse>().HasNoKey().ToView("GetBookedInfoFlightPart");
             modelBuilder.Entity<RoomSearchResponseLowestPrices>().HasNoKey().ToView("Sp_Search_Room_LowestPrices");
 
 

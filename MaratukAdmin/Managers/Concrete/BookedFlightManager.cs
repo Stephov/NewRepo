@@ -210,6 +210,7 @@ namespace MaratukAdmin.Managers.Concrete
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
+                    AgentStatusId = firstFlightInGroup.AgentStatusId,
                     AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
                     TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                     PassengersCount = firstFlightInGroup.PassengersCount,
@@ -218,6 +219,7 @@ namespace MaratukAdmin.Managers.Concrete
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                    MaratukAgentStatusId = firstFlightInGroup.MaratukAgentStatusId,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
