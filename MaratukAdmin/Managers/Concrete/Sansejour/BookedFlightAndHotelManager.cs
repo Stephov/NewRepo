@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Bogus.DataSets;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
@@ -28,6 +29,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         protected readonly MaratukDbContext _dbContext;
         private readonly IBookedFlightRepository _bookedFlightRepository;
         private readonly IBookedHotelRepository _bookedHotelRepository;
+        private readonly IBookedFlightAndHotelRepository _bookedFlightAndHotelRepository;
+
         private readonly IHotelRepository _hotelRepository;
         //private readonly IContractExportRepository _contractExportRepository;
         //private readonly ITransactionRepository _transactionRepository;
@@ -40,6 +43,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         public BookedFlightAndHotelManager(MaratukDbContext dbContext,
                                             IBookedFlightRepository bookedFlightRepository,
                                             IBookedHotelRepository bookedHotelRepository,
+                                            IBookedFlightAndHotelRepository bookedFlightAndHotelRepository,
                                             IHotelRepository hotelRepository,
                                             //IContractExportRepository contractExportRepository,
                                             //ITransactionRepository transactionRepository,
@@ -53,6 +57,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             _dbContext = dbContext;
             _bookedFlightRepository = bookedFlightRepository;
             _bookedHotelRepository = bookedHotelRepository;
+            _bookedFlightAndHotelRepository = bookedFlightAndHotelRepository;
             _hotelRepository = hotelRepository;
             //_contractExportRepository = contractExportRepository;
             //_transactionRepository = transactionRepository;
@@ -233,12 +238,14 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             return orderNumber;
         }
 
-        public async Task<List<BookedHotelResponse>> GetBookedFlightsAsync(int countryId, int cityId, int agentId, int Itn
-                                                                     ,DateTime? startDate, DateTime? endDate, string flighTNumber)
+        public async Task<List<BookedHotelResponse>> GetBookedFlightsAsync(int Itn)
         {
-            List<BookedHotelResponse> retValue = new();
+            throw new NotImplementedException();
+        }
 
-            return retValue;
+        public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(BookedInfoFlightPartRequest request)
+        {
+            return await _bookedFlightAndHotelRepository.GetBookedInfoFlighPartAsync(request);
         }
     }
 }

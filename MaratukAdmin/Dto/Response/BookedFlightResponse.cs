@@ -13,6 +13,7 @@
         public double TotalPrice { get; set; }
         public string Rate { get; set; }
         public int AgentId { get; set; }
+        public int AgentStatusId { get; set; }
         public string AgentName { get; set; }
 
         public double TotalPriceAmd { get; set; }
@@ -22,6 +23,7 @@
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukAgentId { get; set; }
+        public int MaratukAgentStatusId { get; set; }
         public string? MaratukAgentName { get; set; }
         public int CountryId { get; set; }
         public string? CountryName { get; set; }

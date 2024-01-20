@@ -9,6 +9,7 @@ using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace MaratukAdmin.Controllers.admin
 {
@@ -57,12 +58,25 @@ namespace MaratukAdmin.Controllers.admin
             return res;
         }
 
-        [HttpGet("GetBookedFlights")]
+        [HttpGet("GetBookedInfoFlighPartAsync")]
         [AllowAnonymous]
-        public async Task<List<BookedHotelResponse>> GetAllBookedFlightsAsync(int countryId, int cityId, int agentId, int Itn
-                                                                               , DateTime? startDate, DateTime? endDate, string flighTNumber)
+        public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
+                                                                                [Required] DateTime startDate, [Required] DateTime endDate)
         {
-            var res = await _bookedFlightAndHotelManager.GetBookedFlightsAsync(countryId, cityId, agentId, Itn, startDate, endDate, flighTNumber);
+            BookedInfoFlightPartRequest request = new()
+            {
+                AgentId = agentId,
+                MaratukAgentId = agentId,
+                CityId = cityId,
+                CountryId = countryId,
+                StartDate = startDate,
+                EndDate = endDate,
+                StartFlightId = startFlightId
+                //EndFlightId = endFlightId
+            };
+
+            var res = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartAsync(request);
+
             return res;
         }
     }
