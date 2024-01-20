@@ -233,9 +233,12 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             return orderNumber;
         }
 
-        public async Task<List<BookedHotelResponse>> GetBookedFlightsAndHotelsAsync(int Itn)
+        public async Task<List<BookedHotelResponse>> GetBookedFlightsAsync(int countryId, int cityId, int agentId, int Itn
+                                                                     ,DateTime? startDate, DateTime? endDate, string flighTNumber)
         {
-            return new List<BookedHotelResponse>();
+            List<BookedHotelResponse> retValue = new();
+
+            return retValue;
         }
     }
 }

@@ -48,12 +48,21 @@ namespace MaratukAdmin.Controllers.admin
             }
         }
 
-        
-        [HttpGet("BookFlightAndHotel/{Itn:int}")]
+
+        [HttpGet("GetBookedFlight/{Itn:int}")]
         [AllowAnonymous]
         public async Task<List<BookedHotelResponse>> GetAllBookedFlightsAndHotelsAsync(int Itn)
         {
-            var res = await _bookedFlightAndHotelManager.GetBookedFlightsAndHotelsAsync(Itn);
+            var res = await _bookedFlightAndHotelManager.GetBookedFlightsAsync(Itn);
+            return res;
+        }
+
+        [HttpGet("GetBookedFlights")]
+        [AllowAnonymous]
+        public async Task<List<BookedHotelResponse>> GetAllBookedFlightsAsync(int countryId, int cityId, int agentId, int Itn
+                                                                               , DateTime? startDate, DateTime? endDate, string flighTNumber)
+        {
+            var res = await _bookedFlightAndHotelManager.GetBookedFlightsAsync(countryId, cityId, agentId, Itn, startDate, endDate, flighTNumber);
             return res;
         }
     }
