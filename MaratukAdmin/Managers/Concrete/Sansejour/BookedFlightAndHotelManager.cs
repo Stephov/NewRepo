@@ -247,5 +247,34 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         {
             return await _bookedFlightAndHotelRepository.GetBookedInfoFlighPartAsync(request);
         }
+
+        public Task<List<BookedInfoFlightPartGroupedResponse>> GetBookedInfoFlighPartGroupAsync(List<BookedInfoFlightPartResponse> request)
+        {
+            List<BookedInfoFlightPartGroupedResponse> retValue = new();
+
+            var groupedFlights = request.GroupBy(stD => stD.TourStartDate)
+                        .Select(group => new BookedInfoFlightPartGroupedResponse()
+                        {
+                            TourStartDate = group.Key,
+                            Summa = group.Select(s => s.Summa).Sum(),
+                            MaratukAgentStatus = group.Select(stat => stat.MaratukAgentStatus).FirstOrDefault(),
+                            StatusCount = group.Select(stCnt => stCnt.MaratukAgentStatus).Count()
+                        }
+                        ).ToList();
+
+            //var groupedFlights = listBookedFlights
+            //.GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+            //.Select(group => new
+            //{
+            //    Currency = group.Key.Rate,
+            //    TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+            //});
+
+            //retValue = groupedFlights;
+
+            //return retValue;
+            throw new NotImplementedException();
+
+        }
     }
 }

@@ -60,8 +60,9 @@ namespace MaratukAdmin.Controllers.admin
 
         [HttpGet("GetBookedInfoFlighPartAsync")]
         [AllowAnonymous]
-        public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
-                                                                                [Required] DateTime startDate, [Required] DateTime endDate)
+        //public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
+        public async Task<IActionResult> GetBookedInfoFlighPart(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
+                                                                                [Required] DateTime startDate, [Required] DateTime endDate, bool groupByFlight = false)
         {
             BookedInfoFlightPartRequest request = new()
             {
@@ -71,13 +72,22 @@ namespace MaratukAdmin.Controllers.admin
                 CountryId = countryId,
                 StartDate = startDate,
                 EndDate = endDate,
-                StartFlightId = startFlightId
+                StartFlightId = startFlightId,
+                GroupByStartFlightId = groupByFlight
                 //EndFlightId = endFlightId
             };
 
             var res = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartAsync(request);
 
-            return res;
+            if (request.GroupByStartFlightId)
+            {
+                var res1 = _bookedFlightAndHotelManager.GetBookedInfoFlighPartGroupAsync(res);
+                return Ok(res1);
+            }
+            else
+            {
+                return Ok(res);
+            }
         }
     }
 }
