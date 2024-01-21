@@ -9,6 +9,7 @@ using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace MaratukAdmin.Controllers.admin
@@ -58,7 +59,7 @@ namespace MaratukAdmin.Controllers.admin
             return res;
         }
 
-        [HttpGet("GetBookedInfoFlighPartAsync")]
+        [HttpGet("GetBookedInfoFlighPart")]
         [AllowAnonymous]
         //public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
         public async Task<IActionResult> GetBookedInfoFlighPart(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
@@ -77,16 +78,18 @@ namespace MaratukAdmin.Controllers.admin
                 //EndFlightId = endFlightId
             };
 
-            var res = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartAsync(request);
+            var flightPart = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartAsync(request);
+
+            var des = JsonConvert.SerializeObject(flightPart);
 
             if (request.GroupByStartFlightId)
             {
-                var res1 = _bookedFlightAndHotelManager.GetBookedInfoFlighPartGroupAsync(res);
-                return Ok(res1);
+                var groupedFlightPart = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartGroupAsync(flightPart);
+                return Ok(groupedFlightPart);
             }
             else
             {
-                return Ok(res);
+                return Ok(flightPart);
             }
         }
     }

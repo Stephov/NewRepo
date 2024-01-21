@@ -12,7 +12,7 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
         Task<string> AddBookedFlightAndHotelAsync(BookedFlightAndHotel bookedFlightAndHotel);
         Task<List<BookedHotelResponse>> GetBookedFlightsAsync(int Itn);
         Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(BookedInfoFlightPartRequest request);
-        Task<List<BookedInfoFlightPartGroupedResponse>> GetBookedInfoFlighPartGroupAsync(List<BookedInfoFlightPartResponse> request);
+        Task<BookedInfoFlightPartGroupedResponse> GetBookedInfoFlighPartGroupAsync(List<BookedInfoFlightPartResponse> request);
 
 
         //Task<BookedFlightResponseFinal> GetBookedFlightAsync(int Itn);
