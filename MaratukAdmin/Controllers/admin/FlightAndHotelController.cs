@@ -9,6 +9,7 @@ using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace MaratukAdmin.Controllers.admin
@@ -58,10 +59,11 @@ namespace MaratukAdmin.Controllers.admin
             return res;
         }
 
-        [HttpGet("GetBookedInfoFlighPartAsync")]
+        [HttpGet("GetBookedInfoFlighPart")]
         [AllowAnonymous]
-        public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
-                                                                                [Required] DateTime startDate, [Required] DateTime endDate)
+        //public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
+        public async Task<IActionResult> GetBookedInfoFlighPart(int countryId, int cityId, int agentId, [Required] int startFlightId, // int endFlightId,
+                                                                                [Required] DateTime startDate, [Required] DateTime endDate, bool groupByFlight = false)
         {
             BookedInfoFlightPartRequest request = new()
             {
@@ -71,13 +73,24 @@ namespace MaratukAdmin.Controllers.admin
                 CountryId = countryId,
                 StartDate = startDate,
                 EndDate = endDate,
-                StartFlightId = startFlightId
+                StartFlightId = startFlightId,
+                GroupByStartFlightId = groupByFlight
                 //EndFlightId = endFlightId
             };
 
-            var res = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartAsync(request);
+            var flightPart = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartAsync(request);
 
-            return res;
+            var des = JsonConvert.SerializeObject(flightPart);
+
+            if (request.GroupByStartFlightId)
+            {
+                var groupedFlightPart = await _bookedFlightAndHotelManager.GetBookedInfoFlighPartGroupAsync(flightPart);
+                return Ok(groupedFlightPart);
+            }
+            else
+            {
+                return Ok(flightPart);
+            }
         }
     }
 }

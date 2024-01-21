@@ -15,6 +15,7 @@ using MaratukAdmin.Repositories.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Repositories.Concrete.Sansejour;
 using MaratukAdmin.Utils;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MimeKit;
@@ -246,6 +247,60 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(BookedInfoFlightPartRequest request)
         {
             return await _bookedFlightAndHotelRepository.GetBookedInfoFlighPartAsync(request);
+        }
+
+        //public Task<List<BookedInfoFlightPartGroupedResponse>?> GetBookedInfoFlighPartGroupAsync(List<BookedInfoFlightPartResponse> request)
+        //public async Task<List<BookedInfoFlightPartGroupedResponse>?> GetBookedInfoFlighPartGroupAsync(List<BookedInfoFlightPartResponse> request)
+        public async Task<BookedInfoFlightPartGroupedResponse> GetBookedInfoFlighPartGroupAsync(List<BookedInfoFlightPartResponse> request)
+        {
+            BookedInfoFlightPartGroupedResponse retValue = new();
+
+
+            var groupedData = request
+                        .GroupBy(item => new { item.TourStartDate, item.MaratukAgentStatus })
+                        .Select(group => new GroupedFlightInfo
+                        {
+                            TourStartDate = group.Key.TourStartDate,
+                            MaratukAgentStatus = group.Key.MaratukAgentStatus,
+                            StatusCount = group.Count(),
+                            Summa = group.Sum(item => item.Summa)
+                        })
+                        .ToList();
+
+            var groupedFlights = new BookedInfoFlightPartGroupedResponse
+            {
+                groupedFlightInfo = groupedData,
+                SummaTotal = groupedData.Sum(item => item.Summa)
+            };
+
+            //var groupedFlights = request.GroupBy(stD => new { stD.TourStartDate, stD.MaratukAgentStatus })
+                        //.Select(group => new BookedInfoFlightPartGroupedResponse()
+                        //{
+                            //GroupedFlight = new List<GroupedFlightInfo>()
+                            //{
+                            //    TourStartDate = group.Key.TourStartDate,
+                            //    Summa = group.Select(s => s.Summa).Sum(),
+                            //    //MaratukAgentStatus = group.Select(stat => stat.MaratukAgentStatus).FirstOrDefault(),
+                            //    MaratukAgentStatus = group.Key.MaratukAgentStatus,
+                            //    StatusCount = group.Select(stCnt => stCnt.MaratukAgentStatus).Count()
+                            //}
+                        //}
+                        //).ToList();
+
+            //var groupedFlights = listBookedFlights
+            //.GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+            //.Select(group => new
+            //{
+            //    Currency = group.Key.Rate,
+            //    TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+            //});
+
+            retValue = groupedFlights;
+
+            //return retValue;
+            //throw new NotImplementedException();
+            return await Task.FromResult(retValue);
+
         }
     }
 }
