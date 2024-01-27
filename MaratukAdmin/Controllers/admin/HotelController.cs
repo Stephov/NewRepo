@@ -93,9 +93,9 @@ namespace MaratukAdmin.Controllers.admin
         [HttpGet("RefreshHotelList/")]
         public async Task<IActionResult> RefreshHotelList()
         {
-            //var result = await _hotelManager.RefreshHotelList();
-            //return Ok(result);
-            return Ok();
+            var result = await _hotelManager.RefreshHotelList();
+            return Ok(result);
+            //return Ok();
         }
 
         [HttpPost("BookHotel")]

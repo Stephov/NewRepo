@@ -53,7 +53,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<SyncSejourSpecialOffer> SyncSejourSpecialOffer { get; set; }
         public DbSet<SyncSejourRate> SyncSejourRate { get; set; }
         public DbSet<SyncSejourAccomodationType> SyncSejourAccomodationType { get; set; }
-        public DbSet<SyncSejourAccomodationDescription> SyncSejourAccomodationDescription { get; set; }
+        public DbSet<SyncSejourAccomodationDescription> SyncSejourAccomodationDescription1 { get; set; }
 
 
 

@@ -32,7 +32,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         {
             string databaseName = "DATA2020";
             string userName = "MARTUK";
-            string password = "MAR2023";
+            string password = "MAR2024";
             string language = "en";
             string token = "";
             try
@@ -1092,6 +1092,23 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     string season = reqModel.Season;
                     string hotelCode = reqModel.HotelCode;
 
+                    //string soapEnvelope = $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:san=""http://www.sansejour.com/"">
+                    //           <soapenv:Header/>
+                    //           <soapenv:Body>
+                    //              <san:GetSejourContractExportView>
+                    //                 <san:token>{token}</san:token>
+                    //                 <san:Params>
+                    //                    <san:HotelCodes>
+                    //                       <san:string>{hotelCode}</san:string>
+                    //                    </san:HotelCodes>
+                    //                    <san:SeasonNumbers>
+                    //                       <san:string>{season}</san:string>
+                    //                    </san:SeasonNumbers>
+                    //                 </san:Params>
+                    //              </san:GetSejourContractExportView>
+                    //           </soapenv:Body>
+                    //        </soapenv:Envelope>";
+
                     string soapEnvelope = $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:san=""http://www.sansejour.com/"">
                                <soapenv:Header/>
                                <soapenv:Body>
@@ -1101,9 +1118,6 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                                         <san:HotelCodes>
                                            <san:string>{hotelCode}</san:string>
                                         </san:HotelCodes>
-                                        <san:SeasonNumbers>
-                                           <san:string>{season}</san:string>
-                                        </san:SeasonNumbers>
                                      </san:Params>
                                   </san:GetSejourContractExportView>
                                </soapenv:Body>

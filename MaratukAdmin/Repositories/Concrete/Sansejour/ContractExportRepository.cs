@@ -171,8 +171,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             try
             {
-                await _dbContext.SyncSejourHotel.AddAsync(syncHotel);
-                await _dbContext.SaveChangesAsync();
+                var hotel = _dbContext.SyncSejourHotel.Where(c => c.HotelCode == syncHotel.HotelCode).FirstOrDefault();
+                if (hotel == null)
+                {
+                    await _dbContext.SyncSejourHotel.AddAsync(syncHotel);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
             catch (Exception)
             {
@@ -523,7 +527,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 //                .Where(c => c.Code == ((code == null) ? c.Code : code))
                 //                .ToListAsync();
 
-                IQueryable<SyncSejourAccomodationDescription> query = _dbContext.SyncSejourAccomodationDescription;
+                IQueryable<SyncSejourAccomodationDescription> query = _dbContext.SyncSejourAccomodationDescription1;
 
                 if (code != null)
                 {
@@ -541,7 +545,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             try
             {
-                await _dbContext.SyncSejourAccomodationDescription.AddRangeAsync(accmdList);
+                await _dbContext.SyncSejourAccomodationDescription1.AddRangeAsync(accmdList);
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception)
@@ -681,7 +685,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 int pageSize = searchRequest.PageSize;
 
 
-                var distinctAccomodationDescriptions = _dbContext.SyncSejourAccomodationDescription
+                var distinctAccomodationDescriptions = _dbContext.SyncSejourAccomodationDescription1
                     .Where(accomodationDescription =>
                         (childAge1 == null || (childAge1 >= accomodationDescription.ChMinAge && childAge1 <= accomodationDescription.ChMaxAge)) &&
                         (childAge2 == null || (childAge2 >= accomodationDescription.ChMinAge && childAge2 <= accomodationDescription.ChMaxAge)) &&

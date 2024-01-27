@@ -20,6 +20,8 @@ using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Dto.Response;
+//using System.Transactions;
+//using MaratukAdmin.Infrastructure;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
 {
@@ -32,6 +34,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         private readonly ITransactionRepository _transactionRepository;
         private readonly IDistributedCache _cache;
         private readonly IPriceBlockManager _priceBlockManager;
+        //protected readonly MaratukDbContext _dbContext;
 
 
         public ContractExportManager(IMainRepository<SyncSejourContractExportView> mainRepository,
@@ -41,6 +44,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             ITransactionRepository transactionRepository,
                             IDistributedCache cache,
                             IPriceBlockManager priceBlockManager
+                            //MaratukDbContext dbContext
 
             )
         {
@@ -51,6 +55,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             _transactionRepository = transactionRepository;
             _cache = cache;
             _priceBlockManager = priceBlockManager;
+            //_dbContext = dbContext;
         }
         public async Task<bool> GetSejourContractExportView(List<HotelSansejourResponse>? hotelsList = null)
         {
@@ -80,8 +85,14 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
                 dateStartLoop = DateTime.Now;
 
-                await _transactionRepository.BeginTransAsync();                                             // Begin transaction
-
+                //await _transactionRepository.BeginTransAsync();                                             // Begin transaction
+                //await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                //using (Microsoft.EntityFrameworkCore.Storage.IExecutionStrategy strategy = _dbContext.Database.CreateExecutionStrategy())
+                //{
+                //    await strategy.ExecuteAsync(async () =>
+                //    {
+                //        using (var transaction = _dbContext.Database.BeginTransaction())
+                //        {
 
                 // *** Loop for HOTELS ***
                 foreach (var hotel in hotelsList)
@@ -93,7 +104,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     GetSejourContractExportViewRequestModel reqModel = new()
                     {
                         Token = token,
-                        Season = "S23",
+                        //Season = "W23",
                         HotelCode = hotel.Code
                     };
 
@@ -119,7 +130,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     syncDateFormat = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.DateFormat
                                     .Replace("mm", "MM");
 
-                    dateString = "28/09/2023";
+                    //dateString = "28/09/2023";
                     syncDateFormat = "dd/MM/yyyy";
                     syncDate = DateTime.ParseExact(dateString, syncDateFormat, CultureInfo.InvariantCulture);
 
@@ -298,13 +309,18 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
                 (int, int) counts = await _contractExportRepository.DescribeListOfAccomodationTypesAsync(accmdTypes);
 
-                await _transactionRepository.CommitTransAsync();                                            // Commit transaction
+
+                //await _transactionRepository.CommitTransAsync();                                            // Commit transaction
+                //await transaction.CommitAsync();
 
                 elapsed = DateTime.Now - dateStartSession;
                 System.Diagnostics.Debug.WriteLine($"--- FINISHED --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, Elapsed: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
                 System.Diagnostics.Debug.WriteLine($"--- AVERAGE : {Math.Round((elapsed.TotalSeconds / (processedHotels + skippedHotels)), 2)} seconds");
                 System.Diagnostics.Debug.WriteLine($"--- Total Accomodations: {counts.Item1}, Described: {counts.Item2}");
-
+                
+                //        }
+                //    });
+                //}
 
                 retValue = true;
             }
@@ -500,8 +516,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 AdultCount = searchFlightAndRoomRequest.RoomAdultCount,
                 ChildCount = searchFlightAndRoomRequest.RoomChildCount,
                 ChildAges = searchFlightAndRoomRequest.RoomChildAges,
-                PageNumber = searchFlightAndRoomRequest.RoomPageNumber,
-                PageSize = searchFlightAndRoomRequest.RoomPageSize
+                PageNumber = searchFlightAndRoomRequest.PageNumber,
+                PageSize = searchFlightAndRoomRequest.PageSize
             };
 
             // Get ROOMS
@@ -674,8 +690,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 AdultCount = searchFlightAndRoomRequest.RoomAdultCount,
                 ChildCount = searchFlightAndRoomRequest.RoomChildCount,
                 ChildAges = searchFlightAndRoomRequest.RoomChildAges,
-                PageNumber = searchFlightAndRoomRequest.RoomPageNumber,
-                PageSize = searchFlightAndRoomRequest.RoomPageSize
+                PageNumber = searchFlightAndRoomRequest.PageNumber,
+                PageSize = searchFlightAndRoomRequest.PageSize
             };
 
             // Get ROOMS
