@@ -9,6 +9,7 @@
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int StartFlightId { get; set; }
+        public bool GroupByStartFlightId { get; set; } = false;
         //public int EndFlightId { get; set; }
     }
 }
