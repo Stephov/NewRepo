@@ -184,6 +184,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                 await _userRepository.AddRefreshToken(refresh);
                 response.name = user.Name;
+                response.Role= user.Role;
                 return response;
             }
 

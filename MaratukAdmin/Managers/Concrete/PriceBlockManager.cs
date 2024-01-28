@@ -393,6 +393,7 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             dest.Date.Add(new DateInfo()
                             {
+                                FligthId = res.FlightId,
                                 StartDate = res.StartDate,
                                 EndDate = res.EndDate,
                                 DayOfWeek = res.DayOfWeek,

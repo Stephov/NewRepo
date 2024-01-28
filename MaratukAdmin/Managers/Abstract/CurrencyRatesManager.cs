@@ -21,7 +21,6 @@ namespace MaratukAdmin.Managers.Abstract
         {
             var entity = _mapper.Map<CurrencyRates>(currency);
             entity.UpdateDate = DateTime.UtcNow;
-            entity.CodeIso = _currencyRepository.GetAsync(currency.CurrencyId).Result.CodeIso;
             await _mainRepository.AddAsync(entity);
             return entity;
         }
@@ -54,7 +53,6 @@ namespace MaratukAdmin.Managers.Abstract
         {
             var entity = _mapper.Map<CurrencyRates>(currencyRates);
             entity.UpdateDate = DateTime.UtcNow;
-            entity.CodeIso = _currencyRepository.GetAsync(currencyRates.Id).Result.CodeIso;
             await _mainRepository.UpdateAsync(entity);
             return entity;
         }
