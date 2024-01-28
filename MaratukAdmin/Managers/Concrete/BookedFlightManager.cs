@@ -492,5 +492,124 @@ namespace MaratukAdmin.Managers.Concrete
                 return false;
             }
         }
+
+
+        public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookedFlightForAccAsync(int pageNumber, int pageSize)
+        {
+            BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
+
+            var listBookedFlightsAll = await _bookedFlightRepository.GetBookedFlightByMaratukAgentForAccAsync();
+
+            var groupedBookedFlights = listBookedFlightsAll.GroupBy(flight => flight.OrderNumber).ToList();
+
+
+            int distinctOrderNumbersCount = groupedBookedFlights.Count;
+
+
+
+
+            var listBookedFlights = groupedBookedFlights
+    .Skip((pageNumber - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
+
+
+
+            int totalPages = (int)Math.Ceiling((double)distinctOrderNumbersCount / pageSize);
+
+            ///todo  add last actual currency
+
+
+            var bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
+            double totalDeptUsd = 0;
+            double totalDeptEur = 0;
+
+
+
+            var groupedFlights = listBookedFlightsAll
+                                .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+                                .Select(group => new
+                                {
+                                    Currency = group.Key.Rate,
+                                    TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+                                });
+
+
+            foreach (var result in groupedFlights)
+            {
+
+                if (result.Currency == "USD")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptUsd += result.TotalDept;
+                }
+
+                if (result.Currency == "EUR")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptEur += result.TotalDept;
+                }
+            }
+
+            foreach (var group in listBookedFlights)
+            {
+                var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
+                {
+                    Id = flight.Id,
+                    Name = flight.Name,
+                    Surname = flight.Surname,
+                    PhoneNumber = flight.PhoneNumber,
+                    BirthDay = flight.BirthDay,
+                    Email = flight.Email,
+                    Passport = flight.Passport,
+                    PasportExpiryDate = flight.PasportExpiryDate,
+                    GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                }).ToList();
+
+                var firstFlightInGroup = group.First();
+                // You can take any flight from the group to extract common properties
+                var bookedFlightResponse = new BookedFlightResponseForMaratuk
+                {
+                    bookedUsers = bookedUsers,
+                    Id = firstFlightInGroup.Id,
+                    OrderNumber = firstFlightInGroup.OrderNumber,
+                    DateOfOrder = firstFlightInGroup.DateOfOrder,
+                    ToureTypeId = firstFlightInGroup.ToureTypeId,
+                    HotelId = firstFlightInGroup.HotelId,
+                    TicketNumber = firstFlightInGroup.TicketNumber,
+                    OrderStatusId = firstFlightInGroup.OrderStatusId,
+                    TotalPrice = firstFlightInGroup.TotalPrice,
+                    Rate = firstFlightInGroup.Rate,
+                    AgentId = firstFlightInGroup.AgentId,//add agentName
+                    AgentStatusId = firstFlightInGroup.AgentStatusId,
+                    AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                    TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
+                    PassengersCount = firstFlightInGroup.PassengersCount,
+                    TourStartDate = firstFlightInGroup.TourStartDate,
+                    TourEndDate = firstFlightInGroup.TourEndDate,
+                    DeadLine = firstFlightInGroup.DeadLine,
+                    Paid = firstFlightInGroup.Paid,
+                    MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                    MaratukAgentStatusId = firstFlightInGroup.MaratukAgentStatusId,
+                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                    CountryId = firstFlightInGroup.CountryId,
+                    CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                    Dept = firstFlightInGroup.Dept,
+                    StartFlightId = firstFlightInGroup.StartFlightId,
+                    EndFlightId = firstFlightInGroup.EndFlightId,
+                };
+
+                bookedFlightResponses.Add(bookedFlightResponse);
+            }
+
+
+            responseFinal.bookedFlightResponses = bookedFlightResponses;
+            responseFinal.DeptUSD = (int)totalDeptUsd * -1;
+            responseFinal.DeptEUR = (int)totalDeptEur * -1;
+            responseFinal.TotalPages = totalPages;
+
+            return responseFinal;
+        }
+
     }
 }

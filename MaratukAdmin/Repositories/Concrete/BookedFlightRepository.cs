@@ -80,5 +80,18 @@ namespace MaratukAdmin.Repositories.Concrete
         }
 
 
+
+        public async Task<List<BookedFlight>> GetBookedFlightByMaratukAgentForAccAsync()
+        {
+
+
+            List<int> orderStatusIds = new List<int> { 2, 4 };
+
+            var result = await _dbContext.BookedFlights
+                .Where(c => orderStatusIds.Contains(c.OrderStatusId))
+                .ToListAsync();
+
+            return result;
+        }
     }
 }

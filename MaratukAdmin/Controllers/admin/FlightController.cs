@@ -148,6 +148,14 @@ namespace MaratukAdmin.Controllers.admin
             return res;
         }
 
+        [HttpGet("GetBookFlightForAccountat")]
+        [AllowAnonymous]
+        public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookFlightForMaratukAgentAsync(int pageNumber = 1, int pageSize = 10)
+        {
+            var res = await _bookedFlightManager.GetBookedFlightForAccAsync(pageNumber, pageSize);
+            return res;
+        }
+
         [HttpGet("AllBookFlight/{Itn:int}")]
         [AllowAnonymous]
         public async Task<BookedFlightResponseFinal> GetAllBookFlightAsync(int Itn)
