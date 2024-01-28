@@ -10,6 +10,7 @@
         public string PriceBlockStateId { get; set; }
         public string TripTypeId { get; set; }
         public int TripDays { get; set; }
+        public bool OnlyFligth { get; set; }
 
     }
 }

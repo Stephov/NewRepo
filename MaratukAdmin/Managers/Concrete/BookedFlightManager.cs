@@ -494,7 +494,7 @@ namespace MaratukAdmin.Managers.Concrete
         }
 
 
-        public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookedFlightByMaratukAgentIdAsync(int pageNumber, int pageSize)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookedFlightForAccAsync(int pageNumber, int pageSize)
         {
             BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
 
@@ -516,9 +516,6 @@ namespace MaratukAdmin.Managers.Concrete
 
 
             int totalPages = (int)Math.Ceiling((double)distinctOrderNumbersCount / pageSize);
-
-            ///todo  add last actual currency
-
 
             var bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
             double totalDeptUsd = 0;
@@ -567,7 +564,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }).ToList();
 
                 var firstFlightInGroup = group.First();
-                // You can take any flight from the group to extract common properties
+
                 var bookedFlightResponse = new BookedFlightResponseForMaratuk
                 {
                     bookedUsers = bookedUsers,

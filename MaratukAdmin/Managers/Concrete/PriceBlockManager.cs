@@ -78,6 +78,7 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockDb.PriceBlockStateId = priceBlockRequest.PriceBlockStateId;
             priceBlockDb.TripTypeId = priceBlockRequest.TripTypeId;
             priceBlockDb.TripDays = priceBlockRequest.TripDays;
+            priceBlockDb.OnlyFligth = priceBlockRequest.OnlyFligth;
 
 
 
@@ -105,6 +106,7 @@ namespace MaratukAdmin.Managers.Concrete
             entity.PriceBlockStateId = price.PriceBlockStateId;
             entity.TripTypeId = price.TripTypeId;
             entity.TripDays = price.TripDays;
+            entity.OnlyFligth = price.OnlyFligth;
 
             // map the ScheduleRequests to Schedules
 
@@ -154,7 +156,7 @@ namespace MaratukAdmin.Managers.Concrete
                         PriceBlockStateId = priceBlock.PriceBlockStateId == 1 ? "Active" : "Not Active",
                         TripTypeId = (priceBlock.TripTypeId == 1) ? "One Way" : (priceBlock.TripTypeId == 2) ? "Round Trip" : "Manual",
                         TripDays = priceBlock.TripDays,
-
+                        OnlyFligth = priceBlock.OnlyFligth,
                     };
                     priceBlockResponses.Add(priceBlockRespons);
                 }
@@ -200,6 +202,7 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockEditResponse.PriceBlockStateId = entity.PriceBlockStateId;
             priceBlockEditResponse.TripTypeId = entity.TripTypeId;
             priceBlockEditResponse.TripDays = entity.TripDays;
+            priceBlockEditResponse.OnlyFligth = entity.OnlyFligth;
 
 
             return priceBlockEditResponse;

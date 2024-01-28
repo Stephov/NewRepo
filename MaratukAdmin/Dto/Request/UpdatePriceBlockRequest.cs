@@ -17,6 +17,7 @@ namespace MaratukAdmin.Dto.Request
         public int PriceBlockStateId { get; set; }
         public int TripTypeId { get; set; }
         public int TripDays { get; set; }
+        public bool OnlyFligth { get; set; }
 
     }
 }
