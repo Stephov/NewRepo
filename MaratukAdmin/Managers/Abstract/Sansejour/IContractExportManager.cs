@@ -2,6 +2,7 @@
 using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities.Sansejour;
+using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Managers.Concrete;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,8 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
 {
     public interface IContractExportManager
     {
-        Task<bool> GetSejourContractExportView(List<HotelSansejourResponse>? hotelsList = null);
+        //Task<bool> GetSejourContractExportView(List<HotelSansejourResponse>? hotelsList = null);
+        Task<bool> GetSejourContractExportView(string? hotelCode);
         //Task<IActionResult> FillSejourContractExportView();
 
         Task<(int, int)> DescribeAccomodationTypes(List<SyncSejourAccomodationType> accmdType);

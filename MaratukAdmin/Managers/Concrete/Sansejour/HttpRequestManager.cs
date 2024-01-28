@@ -163,6 +163,86 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             return response;
         }
 
+        public async Task<List<string>> GetChangedHotelListSansejourAsync(string beginDate)
+        {
+            List<string> response = new();
+            try
+            {
+                string token = await _cache.GetStringAsync("token");
+
+                //string soapEnvelope = $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:san=""http://www.sansejour.com/"">
+                //                    <soapenv:Header/>
+                //                    <soapenv:Body>
+                //                        <san:GetHotels>
+                //                            <san:token>{token}</san:token>
+                //                        </san:GetHotels>
+                //                    </soapenv:Body>
+                //                </soapenv:Envelope>";
+
+                string soapEnvelope = $@"<soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">
+                                  <soap:Body>
+                                    <GetChangedHotelList xmlns=""http://www.sansejour.com/"">
+                                      <token>{token}</token>
+                                      <BeginDate>{beginDate}</BeginDate>
+                                    </GetChangedHotelList>
+                                  </soap:Body>
+                                </soap:Envelope>";
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://196.219.84.44/sws/Common.asmx");
+                request.Headers.Add("SOAPAction", "http://www.sansejour.com/GetChangedHotelList");
+                request.Content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
+
+                var resp = await SendAsync(request);
+
+                var responseContent = await resp.Content.ReadAsStringAsync();
+
+                if (!string.IsNullOrEmpty(responseContent))
+                {
+                    // Deserialize XML to object
+                    XDocument doc = XDocument.Parse(responseContent);
+
+                    XNamespace soap = "http://schemas.xmlsoap.org/soap/envelope/";
+                    XNamespace ns = "http://www.sansejour.com/";
+
+                    //var hotelList = doc.Descendants(ns + "GetChangedHotelListResult").Elements("string")
+                    //                    .Select(x => x.Value)
+                    //                    .ToList();
+
+                    //var hotelList = doc.Descendants(soap + "Body").Elements(ns + "GetChangedHotelListResponse").Elements(ns + "GetChangedHotelListResult").Elements("string")
+                    //                    .Select(x => x.Value)
+                    //                    .ToList();
+
+                    var hotelList = doc.Descendants(soap + "Body")
+                                        .Elements(ns + "GetChangedHotelListResponse")
+                                        .Elements(ns + "GetChangedHotelListResult")
+                                        .Elements(ns + "string")
+                                        .Select(x => x.Value)
+                                        .ToList();
+
+                    response = hotelList;
+
+                    //var xmlSerializer = new XmlSerializer(typeof(SansejourGetChangedHotelListResponse));
+
+                    //using (var reader = new StringReader(responseContent))
+                    //{
+                    //    var sansResp = (SansejourGetChangedHotelListResponse)xmlSerializer.Deserialize(reader);
+
+                    //    if (sansResp != null)
+                    //    {
+                    //        response = sansResp.Body.HotelCodes.ToList();
+                    //    }
+                    //}
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                response = new();
+            }
+
+            return response;
+        }
+
         public async Task<bool> CheckTokenAsync(string token)
         {
             bool checkToken = false;

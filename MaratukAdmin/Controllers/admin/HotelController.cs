@@ -16,13 +16,16 @@ namespace MaratukAdmin.Controllers.admin
     public class HotelController : BaseController
     {
         private readonly IHotelManager _hotelManager;
+        private readonly IHotelBoardManager _hotelBoardManager;
         private readonly IBookedHotelManager _bookedHotelManager;
 
         public HotelController(IHotelManager hotelManager,
+                                IHotelBoardManager hotelBoardManager,   
                                 IBookedHotelManager bookedHotelManager,
                                 JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
             _hotelManager = hotelManager;
+            _hotelBoardManager = hotelBoardManager;
             _bookedHotelManager = bookedHotelManager;
         }
 
@@ -58,6 +61,21 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("GetHotelBoardByCode/")]
+        public async Task<ActionResult> GetHotelBoardByCode(string code)
+        {
+            var result = await _hotelBoardManager.GetHotelBoardByCodeAsync(code);
+
+            return Ok(result);
+        }
+
+        [HttpGet("GetAllHotelBoards/")]
+        public async Task<ActionResult> GetAllHotelBoards()
+        {
+            var result = await _hotelBoardManager.GetAllHotelBoardsAsync();
+
+            return Ok(result);
+        }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]

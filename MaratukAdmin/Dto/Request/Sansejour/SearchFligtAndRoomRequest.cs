@@ -23,6 +23,7 @@ namespace MaratukAdmin.Dto.Request.Sansejour
         public DateTime? RoomExportDate { get; set; }
         public DateTime? RoomAccomodationDateFrom { get; set; }
         public DateTime? RoomAccomodationDateTo { get; set; }
+        public string? Board { get; set; }
         //public int RoomTotalCount { get { return RoomAdultCount + (RoomChildCount ?? 0); } }
         public int RoomTotalCount { get { return _roomTotalCount; } }
         //public int PageNumber { get { return _pageNumber; } }
@@ -39,6 +40,7 @@ namespace MaratukAdmin.Dto.Request.Sansejour
             FlightTwoId = baseModel.FlightTwoId;
             FlightStartDate = baseModel.FlightStartDate;
             FlightReturnedDate = baseModel.FlightReturnedDate;
+            Board = baseModel.Board;
             RoomAdultCount = baseModel.RoomAdultCount;
             RoomChildCount = baseModel.RoomChildCount;
             RoomChildAges = baseModel.RoomChildAges;

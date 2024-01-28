@@ -6,11 +6,20 @@ namespace MaratukAdmin.Dto.Response.Sansejour
     public class SansejourGetChangedHotelListResponse
     {
         [XmlElement(Namespace = "http://schemas.xmlsoap.org/soap/envelope/")]
-        public GetChangedHotelBody Body { get; set; }
+        public GetChangedHotelListResult Body { get; set; }
     }
-    public class GetChangedHotelBody
+    public class GetChangedHotelListResult
     {
         [XmlElement(Namespace = "http://www.sansejour.com/")]
-        public GetHotelsResponse GetHotelsResponse { get; set; }
+
+        [XmlElement("GetChangedHotelListResult")]
+        [XmlChoiceIdentifier]
+        public List<string> HotelCodes { get; set; }
     }
+
+    //public class GetHotelData
+    //{
+    //    [XmlElement("HotelDataItem")]
+    //    public List<HotelDataItem> HotelDataItems { get; set; }
+    //}
 }

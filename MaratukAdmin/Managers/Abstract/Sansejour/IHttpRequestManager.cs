@@ -11,6 +11,8 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
         Task<HttpResponseMessage> SendAsync(string baseAddress, string reqUrl, HttpRequestMessage request);
         Task<HttpResponseMessage> SendAsync(HttpRequestMessage request);
         Task<List<HotelSansejourResponse>> GetAllHotelsSansejourAsync();
+        Task<List<string>> GetChangedHotelListSansejourAsync(string beginDate);
+
         Task<SyncSejourContractExportViewResponse> GetSejourContractExportViewAsync(GetSejourContractExportViewRequestModel reqModel);
         
 

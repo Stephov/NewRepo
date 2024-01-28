@@ -2,6 +2,8 @@
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
+using MaratukAdmin.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace MaratukAdmin.Repositories.Abstract.Sansejour
 {
@@ -56,6 +58,9 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<List<SyncSejourAccomodationDescription>> GetSyncSejourAccomodationDescriptionAsync(string? code = null);
         List<SyncSejourAccomodationDescription> DescribeAccomodationType(string accmdCode);
 
+        //Task<List<HotelBoard>> GetHotelBoardsByCodeAsync(string? code = null);
+        //Task<List<HotelBoard>> GetHotelBoardsFromRatesBySyncDateAsync(DateTime syncDate);
+
 
         Task<List<SyncSejourRate>> SearchRoomOldAsync(SearchRoomRequest searchRequest);
         //Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest);
@@ -67,6 +72,8 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         //Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
         Task<List<RoomSearchResponse>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
         Task<DateTime?> GetMaxSyncDateAsync();
+        Task<DateTime?> GetMaxSyncDateAsyncNew(MaratukDbContext dbContext);
+        
         DateTime? GetMaxSyncDate();
     }
 }

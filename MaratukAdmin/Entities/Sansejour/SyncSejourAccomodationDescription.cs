@@ -6,7 +6,7 @@
         public string? Name { get; set; }
         public double? ChMinAge { get; set; }
         public double? ChMaxAge { get; set; }
-        public int? ChildAge { get; set; }
+        //public int? ChildAge { get; set; }
         
     }
 }

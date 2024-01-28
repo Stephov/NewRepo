@@ -8,6 +8,7 @@
         public DateTime? ExportDate { get; set; }
         public DateTime? AccomodationDateFrom { get; set; }
         public DateTime? AccomodationDateTo { get; set; }
+        public string? Board { get; set; }
         public int AdultCount { get; set; }
         public int? ChildCount { get; set; }
         public int TotalCount { get { return AdultCount + (ChildCount ?? 0); } }

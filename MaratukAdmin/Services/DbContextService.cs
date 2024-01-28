@@ -8,8 +8,8 @@ namespace MaratukAdmin.Services
         public static IServiceCollection AddDbContexts(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<MaratukDbContext>(options => options
-            //.UseSqlServer(configuration.GetConnectionString("MaratukDb"),
-            .UseSqlServer(configuration.GetConnectionString("MaratukDbLocal"),
+            .UseSqlServer(configuration.GetConnectionString("MaratukDb"),
+            //.UseSqlServer(configuration.GetConnectionString("MaratukDbLocal"),
                 sqlServerOptionsAction: sqlOptions =>
                 {
                     sqlOptions.EnableRetryOnFailure(

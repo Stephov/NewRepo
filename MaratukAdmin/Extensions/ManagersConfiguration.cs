@@ -15,6 +15,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IFlightManager, FlightManager>()
 
             .AddScoped<IHotelManager, HotelManager>()
+            .AddScoped<IHotelBoardManager, HotelBoardManager>()
             .AddScoped<IBookedHotelManager, BookedHotelManager>()
             .AddScoped<IHotelImagesManager, HotelImagesManager>()
             .AddScoped<IContractExportManager, ContractExportManager>()
