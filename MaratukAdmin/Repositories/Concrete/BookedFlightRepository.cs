@@ -50,5 +50,26 @@ namespace MaratukAdmin.Repositories.Concrete
             return result;
         }
 
+        public async Task<BookedFlight> GetBookedFlightByIdAsync(int Id)
+        {
+            var result = await _dbContext.BookedFlights
+                                   .Where(c => c.Id == Id)
+                                   .FirstAsync();
+
+            return result;
+        }
+
+        public async Task<List<BookedFlight>> GetBookedFlightByMaratukAgentIdAsync(int maratukAgent)
+        {
+            
+            
+            var result = await _dbContext.BookedFlights
+                                   .Where(c => c.MaratukAgentId == maratukAgent)
+                                   .ToListAsync();
+
+            return result;
+        }
+
+
     }
 }

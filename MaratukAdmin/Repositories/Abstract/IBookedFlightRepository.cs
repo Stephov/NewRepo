@@ -8,6 +8,8 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<List<BookedFlight>> GetBookedFlightByAgentIdAsync(int agentId);
         Task<List<BookedFlight>> GetAllBookedFlightAsync(List<AgencyUser> agencyUsers);
         Task<BookedFlight> CreateBookedFlightAsync(BookedFlight bookedFlight);
+        Task<List<BookedFlight>> GetBookedFlightByMaratukAgentIdAsync(int maratukAgent);
+        Task<BookedFlight> GetBookedFlightByIdAsync(int Id);
 
     }
 }

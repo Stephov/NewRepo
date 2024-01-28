@@ -10,5 +10,7 @@ namespace MaratukAdmin.Managers.Abstract
         Task<BookedFlightResponseFinal> GetBookedFlightAsync(int Itn);
         Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlights);
         Task<BookedFlightResponseFinal> GetBookedFlightByAgentIdAsync(int id);
+        Task<BookedFlightResponseFinalForMaratukAgent> GetBookedFlightByMaratukAgentIdAsync(int maratukAgent, int pageNumber = 1, int pageSize = 10);
+        Task<BookedFlight> UpdateBookedUserInfoAsync(BookedUserInfoForMaratukRequest bookedUserInfoForMaratuk);
     }
 }

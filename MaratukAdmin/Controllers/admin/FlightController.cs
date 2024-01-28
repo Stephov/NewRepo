@@ -140,6 +140,14 @@ namespace MaratukAdmin.Controllers.admin
             return res;
         }
 
+        [HttpGet("GetBookFlightByMaratukAgentId/{maratukAgentId:int}")]
+        [AllowAnonymous]
+        public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookFlightForMaratukAgentAsync(int maratukAgentId, int pageNumber = 1, int pageSize = 10)
+        {
+            var res = await _bookedFlightManager.GetBookedFlightByMaratukAgentIdAsync(maratukAgentId, pageNumber, pageSize);
+            return res;
+        }
+
         [HttpGet("AllBookFlight/{Itn:int}")]
         [AllowAnonymous]
         public async Task<BookedFlightResponseFinal> GetAllBookFlightAsync(int Itn)
@@ -148,5 +156,13 @@ namespace MaratukAdmin.Controllers.admin
             return res;
         }
 
+
+        [HttpPut("UpdateBookFlightUserInfo")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateBookFlightUserInfoAsync([FromBody] BookedUserInfoForMaratukRequest bookedUserInfoForMaratuk)
+        {
+            var result = await _bookedFlightManager.UpdateBookedUserInfoAsync(bookedUserInfoForMaratuk);
+            return Ok(result);
+        }
     }
 }
