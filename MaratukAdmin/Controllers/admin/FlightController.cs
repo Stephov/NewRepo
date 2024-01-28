@@ -164,5 +164,13 @@ namespace MaratukAdmin.Controllers.admin
             var result = await _bookedFlightManager.UpdateBookedUserInfoAsync(bookedUserInfoForMaratuk);
             return Ok(result);
         }
+
+        [HttpPut("UpdateBookFlightStatus")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateBookFlightStatusAsync(string orderNumber,int statusId)
+        {
+            var result = await _bookedFlightManager.UpdateBookedStatusAsync(orderNumber, statusId);
+            return Ok(result);
+        }
     }
 }

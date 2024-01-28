@@ -473,5 +473,24 @@ namespace MaratukAdmin.Managers.Concrete
            return await _mainRepository.UpdateAsync(booked);
 
         }
+
+        public async Task<bool> UpdateBookedStatusAsync(string orderNumber,int status)
+        {
+            try
+            {
+                var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
+
+                foreach (var book in booked)
+                {
+                    book.OrderStatusId = status;
+                    await _mainRepository.UpdateAsync(book);
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
