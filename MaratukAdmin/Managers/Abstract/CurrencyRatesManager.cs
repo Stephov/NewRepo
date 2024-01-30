@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Bogus.DataSets;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Repositories.Abstract;
+using Currency = MaratukAdmin.Entities.Global.Currency;
 
 namespace MaratukAdmin.Managers.Abstract
 {
@@ -35,18 +38,33 @@ namespace MaratukAdmin.Managers.Abstract
             return await _mainRepository.GetAsync(id);
         }
 
-        public async Task<List<CurrencyRates>> GetCurrencyRatesAsync()
+        public async Task<List<CurrencyRatesResponse>> GetCurrencyRatesAsync()
         {
+            List<CurrencyRatesResponse> currencyRatesResponses = new List<CurrencyRatesResponse>();
+
+
             var result = await _mainRepository.GetAllAsync();
 
-
             List<CurrencyRates> lastCurrencies = result
-    .GroupBy(c => c.CurrencyId)
-    .Select(group => group.OrderByDescending(c => c.UpdateDate).FirstOrDefault())
-    .ToList();
+                                                .GroupBy(c => c.CurrencyId)
+                                                .Select(group => group.OrderByDescending(c => c.UpdateDate).FirstOrDefault())
+                                                .ToList();
 
+            foreach (var currencyRate in lastCurrencies)
+            {
+                CurrencyRatesResponse currencyRatesResponse = new CurrencyRatesResponse();
+                currencyRatesResponse.CurrencyId = currencyRate.CurrencyId;
+                currencyRatesResponse.Id = currencyRate.Id;
+                currencyRatesResponse.CodeIso = _currencyRepository.GetAsync(currencyRate.CurrencyId).Result.CodeIso;
+                currencyRatesResponse.OfficialRate = currencyRate.OfficialRate;
+                currencyRatesResponse.InternaRate = currencyRate.InternaRate;
+                currencyRatesResponse.UpdateDate = currencyRate.UpdateDate;
 
-            return lastCurrencies;
+                currencyRatesResponses.Add(currencyRatesResponse);
+            }
+            
+
+            return currencyRatesResponses;
         }
 
         public async Task<CurrencyRates> UpdateCurrencyRatesAsync(UpdateCurrencyRates currencyRates)
