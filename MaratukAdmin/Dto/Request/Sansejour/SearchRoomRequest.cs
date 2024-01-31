@@ -2,8 +2,8 @@
 {
     public class SearchRoomRequest
     {
-        private int _pageSize;
-        private int _pageNumber;
+        //private int _pageSize;
+        //private int _pageNumber;
         
         public DateTime? ExportDate { get; set; }
         public DateTime? AccomodationDateFrom { get; set; }
@@ -14,16 +14,23 @@
         public int TotalCount { get { return AdultCount + (ChildCount ?? 0); } }
         public List<string>? HotelCodes { get; set; }
         public List<float?>? ChildAges { get; set; }
-        public int PageNumber
-        {
-            get { return _pageNumber; }
-            set { _pageNumber = (value == 0) ? 1 : value; }
-        }
-        public int PageSize
-        {
-            get { return _pageSize; }
-            set { _pageSize = (value == 0) ? 10 : value; }
-        }
+
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+
+
+        // IN CASE OF PageNumber AND PageSize are NULL or 0 - their values will be set in SQL procedure
+        //public int PageNumber
+        //{
+        //    get { return _pageNumber; }
+        //    set { _pageNumber = (value == 0) ? 1 : value; }
+        //}
+        //public int PageSize
+        //{
+        //    get { return _pageSize; }
+        //    set { _pageSize = (value == 0) ? 10 : value; }
+        //}
+
         //public SearchRoomRequest()
         //{
         //    PageNumber = 1;

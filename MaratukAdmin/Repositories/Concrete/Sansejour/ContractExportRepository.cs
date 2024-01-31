@@ -19,6 +19,7 @@ using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
+using Org.BouncyCastle.Utilities;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -34,6 +35,35 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         }
 
 
+        public async Task<bool> DeleteSyncedDataByHotelCodeAsync(DateTime exportDate, string hotelCode)
+        {
+            bool deleteResult;
+
+            try
+            {
+                // Hotels
+                deleteResult = await DeleteSyncSejourHotelsByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // AppOrders
+                deleteResult = await DeleteSyncSejourSpoAppOrdersByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // Offers
+                deleteResult = await DeleteSyncSejourSpecialOffersByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                //// Rates
+                deleteResult = await DeleteSyncSejourRatesByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
         public async Task<bool> DeleteSyncedDataByDateAsync(DateTime exportDate)
         {
             bool deleteResult;
@@ -123,137 +153,101 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
 
         #region *** HotelBoard ***
-        //public async Task<List<HotelBoard>> GetHotelBoardsByCodeAsync(string? code = null)
-        //{
-        //    try
-        //    {
-        //        return await _dbContext.HotelBoard.Where(c => c.Board == ((code == null) ? c.Board : code)).ToListAsync();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
-        //public async Task<List<HotelBoard>> GetHotelBoardsFromRatesBySyncDateAsync(DateTime syncDate)
-        //{
-        //    try
-        //    {
-        //        return await _dbContext.SyncSejourRate
-        //                    .Where(r => r.SyncDate == syncDate)
-        //                    .OrderBy(r => r.Board)
-        //                    .Select(r => new HotelBoard()
-        //                    {
-        //                        Board= r.Board ?? "",
-        //                        BoardDesc = r.BoardDesc ?? ""
-        //                    })
-        //                    .Distinct()
-        //                    .ToListAsync();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
+        public async Task<List<HotelBoard>> GetHotelBoardsFromRatesBySyncDateAsync(DateTime syncDate)
+        {
+            try
+            {
+                return await _dbContext.SyncSejourRate
+                            .Where(r => r.SyncDate == syncDate)
+                            .OrderBy(r => r.Board)
+                            .Select(r => new HotelBoard()
+                            {
+                                Board = r.Board ?? "",
+                                BoardDesc = r.BoardDesc ?? ""
+                            })
+                            .Distinct()
+                            .ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
-        //public async Task AddNewHotelBoardsAsync(List<HotelBoard> hotelBoards)
-        //{
-        //    try
-        //    {
-        //        var existingRecords = await GetHashSyncSejourAccomodationTypeByCodeAsync();
+        public async Task AddNewHotelBoardsAsync(List<HotelBoard> hotelBoards)
+        {
+            try
+            {
+                var existingRecords = await GetHashHotelBoardByCodeAsync();
 
-        //        foreach (var accmdRow in hotelBoards)
-        //        {
-        //            string accmdMenTypeCode = accmdRow.Code;
-        //            string accmdMenTypeName = accmdRow.Name;
+                foreach (var board in hotelBoards)
+                {
+                    string boardCode = board.Board;
+                    string boardDesc = board.BoardDesc;
 
-        //            string combinedKey = $"{accmdMenTypeCode}-{accmdMenTypeName}";
+                    string combinedKey = $"{boardCode}-{boardDesc}";
 
-        //            // Check if record is unique
-        //            if (!existingRecords.Contains(combinedKey))
-        //            {
-        //                SyncSejourAccomodationType newRecord = new()
-        //                {
-        //                    Code = accmdMenTypeCode,
-        //                    Name = accmdMenTypeName,
-        //                    Description = "",
-        //                    IsDeleted = false,
-        //                    IsDescribed = false,
-        //                    UpdateDate = DateTime.Now
-        //                };
+                    // Check if record is unique
+                    if (!existingRecords.Contains(combinedKey))
+                    {
+                        HotelBoard newRecord = new()
+                        {
+                            Board = boardCode,
+                            BoardDesc = boardDesc
+                        };
 
-        //                await _dbContext.SyncSejourAccomodationType.AddAsync(newRecord);
-        //                existingRecords.Add(combinedKey);
-        //            }
-        //        }
+                        await _dbContext.HotelBoard.AddAsync(newRecord);
+                        existingRecords.Add(combinedKey);
+                    }
+                }
 
-        //        await _dbContext.SaveChangesAsync();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
-        //public async Task<List<SyncSejourHotel>> GetHotelBoardsAsync(DateTime syncDate, string? hotelCode = null)
-        //{
-        //    try
-        //    {
-        //        return await _dbContext.SyncSejourHotel.Where(c => c.SyncDate == syncDate && c.HotelCode == (hotelCode ?? c.HotelCode)).ToListAsync();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
-        //public async Task<bool> DeleteHotelBoardByCodeAsync(DateTime exportDate, string? hotelCode = null)
-        //{
-        //    var entity = await GetHotelBoardsAsync(exportDate, hotelCode);
-        //    if (entity != null && entity.Count > 0)
-        //    {
-        //        _dbContext.RemoveRange(entity);
-        //        await _dbContext.SaveChangesAsync();
-        //        return true;
-        //    }
+        public async Task<List<HotelBoard>> GetHotelBoardsAsync(string? code = null)
+        {
+            try
+            {
+                return await _dbContext.HotelBoard.Where(c => c.Board == (code ?? c.Board)).ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<bool> DeleteHotelBoardByCodeAsync(string? code = null)
+        {
+            var entity = await GetHotelBoardsAsync(code);
+            if (entity != null && entity.Count > 0)
+            {
+                _dbContext.RemoveRange(entity);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
 
-        //    return false;
-        //}
+            return false;
+        }
+        public async Task<HashSet<string>> GetHashHotelBoardByCodeAsync(string? code = null)
+        {
+            try
+            {
+                var existingRecords = await Task.FromResult(await _dbContext.HotelBoard
+                    .Where(c => c.Board == ((code == null) ? c.Board : code))
+                    .Select(r => $"{r.Board}-{r.BoardDesc}")
+                    .ToListAsync());
 
-        //public async Task<bool> DeleteSyncSejourHotelsByDateRAWAsync(DateTime exportDate, string? hotelCode = null)
-        //{
-        //    try
-        //    {
-        //        string sqlQuery = @$"DELETE FROM {nameof(SyncSejourHotel)} 
-        //                            WHERE {nameof(SyncSejourHotel.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
-        //                            AND {nameof(SyncSejourHotel.HotelCode)} = " + ((hotelCode == null)
-        //                                                                        ? nameof(SyncSejourHotel.HotelCode)
-        //                                                                        : "'" + hotelCode + "'");
-        //        await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
-
-        //        await _dbContext.SaveChangesAsync();
-        //        return true;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-        //}
-
-        //public async Task AddNewSejourHotelsAsync(SyncSejourHotel syncHotel)
-        //{
-        //    try
-        //    {
-        //        var hotel = _dbContext.SyncSejourHotel.Where(c => c.HotelCode == syncHotel.HotelCode).FirstOrDefault();
-        //        if (hotel == null)
-        //        {
-        //            await _dbContext.SyncSejourHotel.AddAsync(syncHotel);
-        //            await _dbContext.SaveChangesAsync();
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
+                return existingRecords.ToHashSet();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         #endregion
 
         #region *** SyncSejourHotel ***
@@ -773,6 +767,17 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         #endregion
 
         #region *** SEARCH ***
+        public DateTime? GetMaxSyncDate()
+        {
+            try
+            {
+                return _dbContext.SyncSejourContractExportView.Max(e => e.ExportDate);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<DateTime?> GetMaxSyncDateAsync()
         {
             DateTime? maxDate = DateTime.MinValue;
@@ -821,13 +826,11 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
             return await Task.FromResult(maxDate);
         }
-
-        public async Task<DateTime?> GetMaxSyncDateAsyncNew(MaratukDbContext dbContext)
+        public async Task<DateTime?> GetMaxSyncDateFromSejourRateAsync()
         {
             try
             {
-                //return await Task.FromResult(_dbContext.SyncSejourContractExportView.Max(e => e.ExportDate));
-                return await Task.FromResult(dbContext.SyncSejourContractExportView.Max(e => e.ExportDate));
+                return await Task.FromResult(_dbContext.SyncSejourRate.Max(e => e.SyncDate));
             }
             catch (Exception)
             {
@@ -835,17 +838,6 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
         }
 
-        public DateTime? GetMaxSyncDate()
-        {
-            try
-            {
-                return _dbContext.SyncSejourContractExportView.Max(e => e.ExportDate);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
 
         public async Task<List<SyncSejourRate>> SearchRoomOldAsync(SearchRoomRequest searchRequest)
         {
@@ -912,7 +904,6 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         //public async Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest)
         public async Task<List<RoomSearchResponse>> SearchRoomAsync(SearchRoomRequest searchRequest)
-
         {
             try
             {
@@ -1289,6 +1280,66 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             {
                 throw;
             }
+        }
+
+
+        public async Task<bool> UpdateSyncSejourRateSyncDateAsync(DateTime newSyncDate)
+        {
+            bool retValue;
+            try
+            {
+                var syncSejourRates = await _dbContext.SyncSejourRate.ToListAsync();
+                syncSejourRates.ForEach(rate => rate.SyncDate = newSyncDate);
+                _dbContext.SaveChanges();
+
+                retValue = true;
+            }
+            catch (Exception)
+            {
+                retValue = false;
+            }
+            return retValue;
+        }
+
+        public async Task<bool> UpdateSyncSejourRateSyncDateRAWAsync(DateTime newSyncDate)
+        {
+            bool retValue;
+            try
+            {
+                //string sqlQuery = @$"UPDATE {nameof(SyncSejourRate)} 
+                //                    SET {nameof(SyncSejourHotel.SyncDate)} = '{newSyncDate.ToString("yyyy-MM-dd")}'";
+                //await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+                //await _dbContext.SaveChangesAsync();
+
+                var result = await _dbContext.Database.ExecuteSqlRawAsync("EXEC dbo.Sp_UpdateSyncSejourRateSyncDate " +
+                                                                    "@syncDate",
+                                                                    new SqlParameter("syncDate", newSyncDate));
+                retValue = true;
+            }
+            catch (Exception)
+            {
+                retValue = false;
+            }
+            return retValue;
+        }
+
+        public async Task<bool> ArchiveSyncSejourRateData(DateTime newSyncDate)
+        {
+            bool retValue;
+
+            try
+            {
+                var result = await _dbContext.Database.ExecuteSqlRawAsync("EXEC dbo.Sp_ArchiveSyncSejourRate " +
+                                                                    "@syncDate",
+                                                                    new SqlParameter("syncDate", newSyncDate));
+                retValue = true;
+            }
+            catch (Exception)
+            {
+                retValue = false;
+            }
+
+            return retValue;
         }
 
         //public async Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)

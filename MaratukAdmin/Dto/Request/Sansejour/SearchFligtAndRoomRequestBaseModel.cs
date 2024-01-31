@@ -4,8 +4,8 @@ namespace MaratukAdmin.Dto.Request.Sansejour
 {
     public class SearchFligtAndRoomRequestBaseModel
     {
-        private int _pageSize;
-        private int _pageNumber;
+        //private int _pageSize;
+        //private int _pageNumber;
 
         public int FlightOneId { get; set; }
         public int? FlightTwoId { get; set; }
@@ -16,16 +16,21 @@ namespace MaratukAdmin.Dto.Request.Sansejour
         public int? RoomChildCount { get; set; }
         public List<float?>? RoomChildAges { get; set; }
 
-        public int PageNumber
-        {
-            get { return _pageNumber; }
-            set { _pageNumber = (value == 0) ? 1 : value; }
-        }
-        public int PageSize
-        {
-            get { return _pageSize; }
-            set { _pageSize = (value == 0) ? 10 : value; }
-        }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+
+        // IN CASE OF PageNumber AND PageSize are NULL or 0 - their values will be set in SQL procedure
+        //public int PageNumber
+        //{
+        //    get { return _pageNumber; }
+        //    set { _pageNumber = (value == 0) ? 1 : value; }
+        //}
+        //public int PageSize
+        //{
+        //    get { return _pageSize; }
+        //    set { _pageSize = (value == 0) ? 10 : value; }
+        //}
+
         //public SearchFligtAndRoomRequestBaseModel()
         //{
         //    PageNumber = 1;

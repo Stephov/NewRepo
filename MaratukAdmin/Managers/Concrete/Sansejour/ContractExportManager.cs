@@ -21,6 +21,8 @@ using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Infrastructure;
+using MaratukAdmin.Entities;
+using Org.BouncyCastle.Utilities;
 //using System.Transactions;
 //using MaratukAdmin.Infrastructure;
 
@@ -84,19 +86,19 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             bool retValue;
             bool contractExportViewRecorded = false;
             bool previousDataDeleted = false;
+            bool syncByChangedHotels = false;
             int skippedHotels = 0;
             int processedHotels = 0;
             string dateString = "";
             string syncDateFormat = "";
             string processingHotelCode = "";
             DateTime syncDate = DateTime.MinValue;
-            DateTime lastMaxSyncDate = DateTime.MinValue;
+            DateTime oldSyncDate = DateTime.MinValue;
 
             DateTime dateStartSession = DateTime.Now;
             DateTime dateStartLoop = DateTime.Now;
             TimeSpan elapsed;
             List<string> hotelsList = new();
-            List<string> lstHotelsList = new();
 
             try
             {
@@ -108,40 +110,41 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 if (hotelCode == null)
                 {
                     string beginDate = DateTime.Now.ToString("yyyy-MM-dd");
-                    beginDate = "2024-01-27";
+                    beginDate = "2024-01-31";
 
                     //hotelsList ??= await _httpRequestManager.GetAllHotelsSansejourAsync();
                     //hotelsList = hotelsList.Where(hotel => hotel != null).ToList();
 
-                    var hotels = await _httpRequestManager.GetAllHotelsSansejourAsync();
+                    //var hotels = await _httpRequestManager.GetAllHotelsSansejourAsync();
+                    //deletingByChangedHotels = false;
+                    //hotelsList = hotels.Select(h => h.Code).ToList();
+                    //hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
 
-                    hotelsList = hotels.Select(h => h.Code).ToList();
+                    hotelsList = await _httpRequestManager.GetChangedHotelListSansejourAsync(beginDate);
+                    syncByChangedHotels = true;
                     hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
 
-                    //lstHotelsList = await _httpRequestManager.GetChangedHotelListSansejourAsync(beginDate);
-                    //lstHotelsList = lstHotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                    //hotelsList = lstHotelsList;
                 }
                 else
                 { hotelsList.Add(hotelCode); }
 
                 dateStartLoop = DateTime.Now;
 
-                var strategy = _transactionRepository.CreateExecutionStrategy();
                 //await _transactionRepository.BeginTransAsync();                                             // Begin transaction
 
+                var strategy = _transactionRepository.CreateExecutionStrategy();
                 await strategy.ExecuteAsync(async () =>
                 {
                     await _transactionRepository.BeginTransAsync();                                             // Begin transaction
                     {
-                        var result = await _contractExportRepository.GetMaxSyncDateAsync();
+                        //var result = await _contractExportRepository.GetMaxSyncDateAsync();
+                        var result = await _contractExportRepository.GetMaxSyncDateFromSejourRateAsync();
                         if (result != null)
-                        { lastMaxSyncDate = result.Value; }
+                        { oldSyncDate = result.Value; }
 
 
                         // *** Loop for HOTELS ***
                         foreach (var hotel in hotelsList)
-                        //foreach (var hotel in lstHotelsList)
                         {
                             dateStartLoop = DateTime.Now;
                             //processingHotelCode = hotel.Code;
@@ -184,10 +187,26 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             syncDate = DateTime.ParseExact(dateString, syncDateFormat, CultureInfo.InvariantCulture);
 
 
-                            // Delete previous data on this Date
-                            if (!previousDataDeleted)
+
+                            System.Diagnostics.Debug.WriteLine($"--- DELETING PREVIOUS DATA ---");
+                            // Delete previous data by Hotel
+                            if (syncByChangedHotels == true)
                             {
-                                System.Diagnostics.Debug.WriteLine($"--- DELETING PREVIOUS DATA ---");
+                                // todo avtomat zapusk anel es funkcian
+                                // todo namaki texty dzel
+                                // CountryId ev CityId avelacnel LowesPrices searchi mej
+
+                                //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
+                                //var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeAsync(syncDate, hotel);
+                                var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeAsync(oldSyncDate, hotel);
+
+                                if (!deleteResult)
+                                { throw new Exception("Error deleting previous data"); }
+                                previousDataDeleted = true;
+                            }
+                            // Delete previous data by Sync Date
+                            else if (syncByChangedHotels == false && !previousDataDeleted)
+                            {
                                 //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync((DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date);
                                 var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
                                 if (!deleteResult)
@@ -364,12 +383,22 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
                         #region HotelBoards
                         // *** GET possible HotelBoards from Rates
-                        //List<HotelBoard> hotelBoards = await _contractExportRepository.GetHotelBoardsFromRatesBySyncDateAsync(syncDate);
+                        List<HotelBoard> hotelBoards = await _contractExportRepository.GetHotelBoardsFromRatesBySyncDateAsync(syncDate);
 
                         // ** Add gathered HotelBoards to DB
-                        //await _contractExportRepository.AddNewHotelBoardsAsync(hotelBoards);
+                        await _contractExportRepository.AddNewHotelBoardsAsync(hotelBoards);
                         #endregion
 
+                        // *** Update SyncSejour SyncDate
+                        //var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateAsync(syncDate);
+                        var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateRAWAsync(syncDate);
+                        if (!updateResult)
+                        { throw new Exception("Error updating SyncSejourRate's SyncDate"); }
+
+                        // *** Archive SyncSejourRate table data 
+                        var archiveResult = await _contractExportRepository.ArchiveSyncSejourRateData(syncDate);
+                        if (!archiveResult)
+                        { throw new Exception("Error archiving SyncSejourRate data"); }
 
                         elapsed = DateTime.Now - dateStartSession;
                         System.Diagnostics.Debug.WriteLine($"--- FINISHED --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, Elapsed: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
@@ -575,6 +604,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             {
                 AccomodationDateFrom = searchFlightAndRoomRequest.RoomAccomodationDateFrom,
                 AccomodationDateTo = searchFlightAndRoomRequest.RoomAccomodationDateTo,
+                Board = searchFlightAndRoomRequest.Board,
                 HotelCodes = searchFlightAndRoomRequest.RoomHotelCodes,
                 AdultCount = searchFlightAndRoomRequest.RoomAdultCount,
                 ChildCount = searchFlightAndRoomRequest.RoomChildCount,
@@ -586,6 +616,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             // Get ROOMS
             var resultRoomSearch = await _contractExportRepository.SearchRoomAsync(searchRoomRequest);
 
+            resultFlightSearch.ForEach(flight => flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice));
+            resultRoomSearch.ForEach(room => room.Price = Math.Ceiling((double)room.Price));
 
             // Combine results
             foreach (var flight in resultFlightSearch)
@@ -596,7 +628,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,
-                        flightAndRoomTotalPrice = flight.TotalPrice + room.Price
+                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.Price)
 
                         //// Flight part
                         //Airline = flight.Airline,
@@ -702,7 +734,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,
-                        flightAndRoomTotalPrice = flight.TotalPrice + room.Price
+                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.Price)
+
                     });
                 }
             }
@@ -761,17 +794,21 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             // Get ROOMS
             var resultRoomSearch = await _contractExportRepository.SearchRoomLowestPricesAsync(searchRoomRequest);
 
+            resultFlightSearch.ForEach(flight => flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice));
+            resultRoomSearch.ForEach(room => room.Price = Math.Ceiling((double)room.Price));
 
             // Combine results
             foreach (var flight in resultFlightSearch)
             {
+                //flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice);
                 foreach (var room in resultRoomSearch)
                 {
+                    //room.Price = Math.Ceiling((double)room.Price);
                     retValue.Add(new SearchFligtAndRoomLowestPricesResponse()
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,
-                        flightAndRoomTotalPrice = flight.TotalPrice + room.Price
+                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.Price)
                     });
                 }
             }

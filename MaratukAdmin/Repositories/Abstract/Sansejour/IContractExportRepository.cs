@@ -13,6 +13,8 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<List<SyncSejourContractExportView>> GetSyncSejourContractsByDateAsync(DateTime exportDate);
         Task<bool> DeleteSyncSejourContractsByDateAsync(DateTime exportDate);
         Task<bool> DeleteSyncedDataByDateAsync(DateTime exportDate);
+        Task<bool> DeleteSyncedDataByHotelCodeAsync(DateTime exportDate, string hotelCode);
+
         Task AddlNewSejourContractsAsync(SyncSejourContractExportView contract);
 
 
@@ -58,8 +60,12 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<List<SyncSejourAccomodationDescription>> GetSyncSejourAccomodationDescriptionAsync(string? code = null);
         List<SyncSejourAccomodationDescription> DescribeAccomodationType(string accmdCode);
 
-        //Task<List<HotelBoard>> GetHotelBoardsByCodeAsync(string? code = null);
-        //Task<List<HotelBoard>> GetHotelBoardsFromRatesBySyncDateAsync(DateTime syncDate);
+
+        Task<HashSet<string>> GetHashHotelBoardByCodeAsync(string? code = null);
+        Task<List<HotelBoard>> GetHotelBoardsFromRatesBySyncDateAsync(DateTime syncDate);
+        Task AddNewHotelBoardsAsync(List<HotelBoard> hotelBoards);
+        Task<List<HotelBoard>> GetHotelBoardsAsync(string? code = null);
+        Task<bool> DeleteHotelBoardByCodeAsync(string? code = null);
 
 
         Task<List<SyncSejourRate>> SearchRoomOldAsync(SearchRoomRequest searchRequest);
@@ -71,8 +77,11 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         //Task<List<SyncSejourRate>> SearchRoomLowestPricesAsync(SearchRoomRequest searchRequest);
         //Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
         Task<List<RoomSearchResponse>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest);
+        Task<bool> UpdateSyncSejourRateSyncDateAsync (DateTime newSyncDate);
+        Task<bool> UpdateSyncSejourRateSyncDateRAWAsync (DateTime newSyncDate);
+        Task<bool> ArchiveSyncSejourRateData (DateTime newSyncDate);
         Task<DateTime?> GetMaxSyncDateAsync();
-        Task<DateTime?> GetMaxSyncDateAsyncNew(MaratukDbContext dbContext);
+        Task<DateTime?> GetMaxSyncDateFromSejourRateAsync();
         
         DateTime? GetMaxSyncDate();
     }

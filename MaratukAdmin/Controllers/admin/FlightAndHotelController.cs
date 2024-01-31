@@ -36,7 +36,6 @@ namespace MaratukAdmin.Controllers.admin
             try
             {
                 var result = await _bookedFlightAndHotelManager.AddBookedFlightAndHotelAsync(bookedFlightAndHotel);
-                //var result1 = await _bookedHotelManager.AddBookedHotelAsync(addBookHotelRequest);
 
                 return Ok(result);
             }
