@@ -18,6 +18,8 @@ using Microsoft.EntityFrameworkCore.Query;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Managers.Abstract.Sansejour;
+using MaratukAdmin.Repositories.Abstract;
+using Org.BouncyCastle.Utilities;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -33,6 +35,35 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         }
 
 
+        public async Task<bool> DeleteSyncedDataByHotelCodeAsync(DateTime exportDate, string hotelCode)
+        {
+            bool deleteResult;
+
+            try
+            {
+                // Hotels
+                deleteResult = await DeleteSyncSejourHotelsByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // AppOrders
+                deleteResult = await DeleteSyncSejourSpoAppOrdersByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // Offers
+                deleteResult = await DeleteSyncSejourSpecialOffersByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                //// Rates
+                deleteResult = await DeleteSyncSejourRatesByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
         public async Task<bool> DeleteSyncedDataByDateAsync(DateTime exportDate)
         {
             bool deleteResult;
@@ -98,7 +129,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<bool> DeleteSyncSejourContractsByDateAsync(DateTime exportDate)
         {
             var entity = await GetSyncSejourContractsByDateAsync(exportDate);
-            if (entity != null)
+            if (entity != null && entity.Count > 0)
             {
                 _dbContext.RemoveRange(entity);
                 await _dbContext.SaveChangesAsync();
@@ -121,6 +152,103 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         }
 
 
+        #region *** HotelBoard ***
+        public async Task<List<HotelBoard>> GetHotelBoardsFromRatesBySyncDateAsync(DateTime syncDate)
+        {
+            try
+            {
+                return await _dbContext.SyncSejourRate
+                            .Where(r => r.SyncDate == syncDate)
+                            .OrderBy(r => r.Board)
+                            .Select(r => new HotelBoard()
+                            {
+                                Board = r.Board ?? "",
+                                BoardDesc = r.BoardDesc ?? ""
+                            })
+                            .Distinct()
+                            .ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task AddNewHotelBoardsAsync(List<HotelBoard> hotelBoards)
+        {
+            try
+            {
+                var existingRecords = await GetHashHotelBoardByCodeAsync();
+
+                foreach (var board in hotelBoards)
+                {
+                    string boardCode = board.Board;
+                    string boardDesc = board.BoardDesc;
+
+                    string combinedKey = $"{boardCode}-{boardDesc}";
+
+                    // Check if record is unique
+                    if (!existingRecords.Contains(combinedKey))
+                    {
+                        HotelBoard newRecord = new()
+                        {
+                            Board = boardCode,
+                            BoardDesc = boardDesc
+                        };
+
+                        await _dbContext.HotelBoard.AddAsync(newRecord);
+                        existingRecords.Add(combinedKey);
+                    }
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<HotelBoard>> GetHotelBoardsAsync(string? code = null)
+        {
+            try
+            {
+                return await _dbContext.HotelBoard.Where(c => c.Board == (code ?? c.Board)).ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<bool> DeleteHotelBoardByCodeAsync(string? code = null)
+        {
+            var entity = await GetHotelBoardsAsync(code);
+            if (entity != null && entity.Count > 0)
+            {
+                _dbContext.RemoveRange(entity);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+        public async Task<HashSet<string>> GetHashHotelBoardByCodeAsync(string? code = null)
+        {
+            try
+            {
+                var existingRecords = await Task.FromResult(await _dbContext.HotelBoard
+                    .Where(c => c.Board == ((code == null) ? c.Board : code))
+                    .Select(r => $"{r.Board}-{r.BoardDesc}")
+                    .ToListAsync());
+
+                return existingRecords.ToHashSet();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
 
         #region *** SyncSejourHotel ***
         public async Task<List<SyncSejourHotel>> GetSyncSejourHotelsByDateAsync(DateTime syncDate, string? hotelCode = null)
@@ -137,7 +265,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<bool> DeleteSyncSejourHotelsByDateAsync(DateTime exportDate, string? hotelCode = null)
         {
             var entity = await GetSyncSejourHotelsByDateAsync(exportDate, hotelCode);
-            if (entity != null)
+            if (entity != null && entity.Count > 0)
             {
                 _dbContext.RemoveRange(entity);
                 await _dbContext.SaveChangesAsync();
@@ -152,7 +280,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             try
             {
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourHotel)} 
-                                    WHERE {nameof(SyncSejourHotel.SyncDate)} = '{exportDate}'
+                                    WHERE {nameof(SyncSejourHotel.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
                                     AND {nameof(SyncSejourHotel.HotelCode)} = " + ((hotelCode == null)
                                                                                 ? nameof(SyncSejourHotel.HotelCode)
                                                                                 : "'" + hotelCode + "'");
@@ -171,8 +299,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             try
             {
-                await _dbContext.SyncSejourHotel.AddAsync(syncHotel);
-                await _dbContext.SaveChangesAsync();
+                var hotel = _dbContext.SyncSejourHotel.Where(c => c.HotelCode == syncHotel.HotelCode).FirstOrDefault();
+                if (hotel == null)
+                {
+                    await _dbContext.SyncSejourHotel.AddAsync(syncHotel);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
             catch (Exception)
             {
@@ -196,7 +328,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<bool> DeleteSyncSejourSpoAppOrdersByDateAsync(DateTime exportDate, string? hotelCode = null)
         {
             var entity = await GetSyncSejourSpoAppOrdersByDateAsync(exportDate, hotelCode);
-            if (entity != null)
+            if (entity != null && entity.Count > 0)
             {
                 _dbContext.RemoveRange(entity);
                 await _dbContext.SaveChangesAsync();
@@ -209,7 +341,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             try
             {
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpoAppOrder)} 
-                                    WHERE {nameof(SyncSejourSpoAppOrder.SyncDate)} = '{exportDate}'
+                                    WHERE {nameof(SyncSejourSpoAppOrder.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
                                     AND {nameof(SyncSejourSpoAppOrder.HotelCode)} = " + ((hotelCode == null)
                                                                                 ? nameof(SyncSejourSpoAppOrder.HotelCode)
                                                                                 : "'" + hotelCode + "'");
@@ -252,7 +384,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<bool> DeleteSyncSejourSpecialOffersByDateAsync(DateTime exportDate, string? hotelCode = null)
         {
             var entity = await GetSyncSejourSpecialOffersByDateAsync(exportDate, hotelCode);
-            if (entity != null)
+            if (entity != null && entity.Count > 0)
             {
                 _dbContext.RemoveRange(entity);
                 await _dbContext.SaveChangesAsync();
@@ -266,7 +398,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             try
             {
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpecialOffer)} 
-                                    WHERE {nameof(SyncSejourSpecialOffer.SyncDate)} = '{exportDate}'
+                                    WHERE {nameof(SyncSejourSpecialOffer.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
                                     AND {nameof(SyncSejourSpecialOffer.HotelCode)} = " + ((hotelCode == null)
                                                                                 ? nameof(SyncSejourSpecialOffer.HotelCode)
                                                                                 : "'" + hotelCode + "'");
@@ -309,7 +441,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<bool> DeleteSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null)
         {
             var entity = await GetSyncSejourRatesByDateAsync(exportDate, hotelCode);
-            if (entity != null)
+            if (entity != null && entity.Count > 0)
             {
                 _dbContext.RemoveRange(entity);
                 await _dbContext.SaveChangesAsync();
@@ -322,7 +454,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             try
             {
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourRate)} 
-                                    WHERE {nameof(SyncSejourRate.SyncDate)} = '{exportDate}'
+                                    WHERE {nameof(SyncSejourRate.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
                                     AND {nameof(SyncSejourRate.HotelCode)} = " + ((hotelCode == null)
                                                                                 ? nameof(SyncSejourRate.HotelCode)
                                                                                 : "'" + hotelCode + "'");
@@ -469,7 +601,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             try
             {
                 //string sqlQuery = @$"DELETE FROM {nameof(SyncSejourAccomodationTypes)} 
-                //                    WHERE {nameof(SyncSejourAccomodationTypes.SyncDate)} = '{exportDate}'
+                //                    WHERE {nameof(SyncSejourAccomodationTypes.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
                 //                    AND {nameof(SyncSejourAccomodationTypes.HotelCode)} = " + ((hotelCode == null)
                 //                                                                ? nameof(SyncSejourAccomodationTypes.HotelCode)
                 //                                                                : "'" + hotelCode + "'");
@@ -523,7 +655,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 //                .Where(c => c.Code == ((code == null) ? c.Code : code))
                 //                .ToListAsync();
 
-                IQueryable<SyncSejourAccomodationDescription> query = _dbContext.SyncSejourAccomodationDescription;
+                IQueryable<SyncSejourAccomodationDescription> query = _dbContext.SyncSejourAccomodationDescription1;
 
                 if (code != null)
                 {
@@ -541,7 +673,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             try
             {
-                await _dbContext.SyncSejourAccomodationDescription.AddRangeAsync(accmdList);
+                await _dbContext.SyncSejourAccomodationDescription1.AddRangeAsync(accmdList);
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception)
@@ -635,18 +767,6 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         #endregion
 
         #region *** SEARCH ***
-        public async Task<DateTime?> GetMaxSyncDateAsync()
-        {
-            try
-            {
-                return await Task.FromResult(_dbContext.SyncSejourContractExportView.Max(e => e.ExportDate));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
         public DateTime? GetMaxSyncDate()
         {
             try
@@ -658,6 +778,66 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 throw;
             }
         }
+        public async Task<DateTime?> GetMaxSyncDateAsync()
+        {
+            DateTime? maxDate = DateTime.MinValue;
+            try
+            {
+                //return await Task.FromResult(_dbContext.SyncSejourContractExportView.Max(e => e.ExportDate));
+                maxDate = _dbContext.SyncSejourContractExportView.Max(e => e.ExportDate);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return await Task.FromResult(maxDate);
+        }
+        public async Task<DateTime?> GetMaxSyncDateAsyncNew()
+        {
+            DateTime? maxDate = DateTime.MinValue;
+            try
+            {
+                var strategy = _dbContext.Database.CreateExecutionStrategy();
+
+                await strategy.ExecuteAsync(async () =>
+                {
+                    using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+                    {
+                        try
+                        {
+                            //return await Task.FromResult(_dbContext.SyncSejourContractExportView.Max(e => e.ExportDate));
+                            maxDate = _dbContext.SyncSejourContractExportView.Max(e => e.ExportDate);
+
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                });
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return await Task.FromResult(maxDate);
+        }
+        public async Task<DateTime?> GetMaxSyncDateFromSejourRateAsync()
+        {
+            try
+            {
+                return await Task.FromResult(_dbContext.SyncSejourRate.Max(e => e.SyncDate));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
         public async Task<List<SyncSejourRate>> SearchRoomOldAsync(SearchRoomRequest searchRequest)
         {
@@ -681,7 +861,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 int pageSize = searchRequest.PageSize;
 
 
-                var distinctAccomodationDescriptions = _dbContext.SyncSejourAccomodationDescription
+                var distinctAccomodationDescriptions = _dbContext.SyncSejourAccomodationDescription1
                     .Where(accomodationDescription =>
                         (childAge1 == null || (childAge1 >= accomodationDescription.ChMinAge && childAge1 <= accomodationDescription.ChMaxAge)) &&
                         (childAge2 == null || (childAge2 >= accomodationDescription.ChMinAge && childAge2 <= accomodationDescription.ChMaxAge)) &&
@@ -724,7 +904,6 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         //public async Task<List<SyncSejourRate>> SearchRoomAsync(SearchRoomRequest searchRequest)
         public async Task<List<RoomSearchResponse>> SearchRoomAsync(SearchRoomRequest searchRequest)
-
         {
             try
             {
@@ -734,6 +913,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 DateTime? exportDate = (searchRequest.ExportDate == null) ? await GetMaxSyncDateAsync() : searchRequest.ExportDate;
                 DateTime? accomodationDateFrom = searchRequest.AccomodationDateFrom;
                 DateTime? accomodationDateTo = searchRequest.AccomodationDateTo;
+                string? board = searchRequest.Board;
                 int roomPax = searchRequest.TotalCount;
                 int adultPax = searchRequest.AdultCount;
                 int? childPax = searchRequest.ChildCount;
@@ -756,13 +936,14 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
                 //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
                 var result = await _dbContext.RoomSearchResponse.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
-                                                                    "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
+                                                                    "@exportDate, @accomodationDateFrom, @accomodationDateTo, @board, " +
                                                                     "@roomPax, @adultPax, @childPax, " +
                                                                     "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
                                                                     "@hotelCodes, @pageNumber, @pageSize",
                                                                     new SqlParameter("exportDate", exportDate),
                                                                     new SqlParameter("accomodationDateFrom", accomodationDateFrom),
                                                                     new SqlParameter("accomodationDateTo", accomodationDateTo),
+                                                                    new SqlParameter("board", board),
                                                                     new SqlParameter("roomPax", roomPax),
                                                                     new SqlParameter("adultPax", adultPax),
                                                                     new SqlParameter("childPax", childPax),
@@ -1047,6 +1228,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 DateTime? exportDate = (searchRequest.ExportDate == null) ? await GetMaxSyncDateAsync() : searchRequest.ExportDate;
                 DateTime? accomodationDateFrom = searchRequest.AccomodationDateFrom;
                 DateTime? accomodationDateTo = searchRequest.AccomodationDateTo;
+                string? board = searchRequest.Board;
                 int roomPax = searchRequest.TotalCount;
                 int adultPax = searchRequest.AdultCount;
                 int? childPax = searchRequest.ChildCount;
@@ -1061,13 +1243,14 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
                 //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
                 var result = await _dbContext.RoomSearchResponseLowestPrices.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
-                                                                        "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
+                                                                        "@exportDate, @accomodationDateFrom, @accomodationDateTo, @board, " +
                                                                         "@roomPax, @adultPax, @childPax, " +
                                                                         "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
                                                                         "@hotelCodes, @pageNumber, @pageSize",
                                                                         new SqlParameter("exportDate", exportDate),
                                                                         new SqlParameter("accomodationDateFrom", accomodationDateFrom),
                                                                         new SqlParameter("accomodationDateTo", accomodationDateTo),
+                                                                        new SqlParameter("@board", board),
                                                                         new SqlParameter("roomPax", roomPax),
                                                                         new SqlParameter("adultPax", adultPax),
                                                                         new SqlParameter("childPax", childPax),
@@ -1097,6 +1280,66 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             {
                 throw;
             }
+        }
+
+
+        public async Task<bool> UpdateSyncSejourRateSyncDateAsync(DateTime newSyncDate)
+        {
+            bool retValue;
+            try
+            {
+                var syncSejourRates = await _dbContext.SyncSejourRate.ToListAsync();
+                syncSejourRates.ForEach(rate => rate.SyncDate = newSyncDate);
+                _dbContext.SaveChanges();
+
+                retValue = true;
+            }
+            catch (Exception)
+            {
+                retValue = false;
+            }
+            return retValue;
+        }
+
+        public async Task<bool> UpdateSyncSejourRateSyncDateRAWAsync(DateTime newSyncDate)
+        {
+            bool retValue;
+            try
+            {
+                //string sqlQuery = @$"UPDATE {nameof(SyncSejourRate)} 
+                //                    SET {nameof(SyncSejourHotel.SyncDate)} = '{newSyncDate.ToString("yyyy-MM-dd")}'";
+                //await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+                //await _dbContext.SaveChangesAsync();
+
+                var result = await _dbContext.Database.ExecuteSqlRawAsync("EXEC dbo.Sp_UpdateSyncSejourRateSyncDate " +
+                                                                    "@syncDate",
+                                                                    new SqlParameter("syncDate", newSyncDate));
+                retValue = true;
+            }
+            catch (Exception)
+            {
+                retValue = false;
+            }
+            return retValue;
+        }
+
+        public async Task<bool> ArchiveSyncSejourRateData(DateTime newSyncDate)
+        {
+            bool retValue;
+
+            try
+            {
+                var result = await _dbContext.Database.ExecuteSqlRawAsync("EXEC dbo.Sp_ArchiveSyncSejourRate " +
+                                                                    "@syncDate",
+                                                                    new SqlParameter("syncDate", newSyncDate));
+                retValue = true;
+            }
+            catch (Exception)
+            {
+                retValue = false;
+            }
+
+            return retValue;
         }
 
         //public async Task<List<SyncSejourRate>> SearchRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFligtAndRoomRequest)

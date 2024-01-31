@@ -43,6 +43,8 @@ namespace MaratukAdmin.Infrastructure
 
         public DbSet<Flight> Flight { get; set; }
         public DbSet<Hotel> Hotel { get; set; }
+        public DbSet<HotelCategory> HotelCategory { get; set; }
+        public DbSet<HotelBoard> HotelBoard { get; set; }
         public DbSet<Room> Room { get; set; }
         public DbSet<RoomType> RoomType { get; set; }
         public DbSet<HotelImage> HotelImage { get; set; }
@@ -53,7 +55,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<SyncSejourSpecialOffer> SyncSejourSpecialOffer { get; set; }
         public DbSet<SyncSejourRate> SyncSejourRate { get; set; }
         public DbSet<SyncSejourAccomodationType> SyncSejourAccomodationType { get; set; }
-        public DbSet<SyncSejourAccomodationDescription> SyncSejourAccomodationDescription { get; set; }
+        public DbSet<SyncSejourAccomodationDescription> SyncSejourAccomodationDescription1 { get; set; }
 
 
 
@@ -138,8 +140,14 @@ namespace MaratukAdmin.Infrastructure
 
             modelBuilder.Entity<Hotel>()
                 .HasKey(r => r.Id);
-            
-            modelBuilder.Entity<Room>()
+
+            modelBuilder.Entity<HotelCategory>()
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<HotelBoard>()
+                .HasKey(r => r.Id);
+
+        modelBuilder.Entity<Room>()
                 .HasKey(r => r.Id);
             
             modelBuilder.Entity<RoomType>()

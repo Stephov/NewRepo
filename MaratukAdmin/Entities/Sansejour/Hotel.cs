@@ -24,4 +24,17 @@ namespace MaratukAdmin.Entities.Sansejour
 
         //public HotelCategory HotelCategory { get; set; }
     }
+
+    public class HotelComparer : IEqualityComparer<Hotel>
+    {
+        public bool Equals(Hotel x, Hotel y)
+        {
+            return string.Equals(x.Code, y.Code, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public int GetHashCode(Hotel obj)
+        {
+            return obj.Code?.GetHashCode() ?? 0;
+        }
+    }
 }

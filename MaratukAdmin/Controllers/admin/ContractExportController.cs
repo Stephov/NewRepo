@@ -1,11 +1,13 @@
 ﻿using AutoMapper.Configuration.Conventions;
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete.Sansejour;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MaratukAdmin.Controllers.admin
 {
@@ -23,9 +25,10 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetSejourContractExportView/")]
-        public async Task<IActionResult> GetSejourContractExportView()
+        //public async Task<IActionResult> GetSejourContractExportView()
+        public async Task<IActionResult> GetSejourContractExportView([FromQuery] string? hotelCode)
         {
-            var result = await _contractExportManager.GetSejourContractExportView();
+            var result = await _contractExportManager.GetSejourContractExportView(hotelCode);
 
             return Ok(result);
         }

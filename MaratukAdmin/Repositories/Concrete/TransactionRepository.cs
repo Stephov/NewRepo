@@ -30,7 +30,7 @@ namespace MaratukAdmin.Repositories.Concrete
 
         public IExecutionStrategy CreateExecutionStrategy()
         {
-            return _dbContext.Database.CreateExecutionStrategy ();
+            return _dbContext.Database.CreateExecutionStrategy();
         }
     }
 }

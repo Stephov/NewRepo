@@ -286,8 +286,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 #region *** Delete existing data and insert new ***
                 if (hotelsSansejourList != null)
                 {
-                    await _transactionRepository.BeginTransAsync();                                             // Begin transaction
-                    await _hotelRepository.EraseHotelListAsync();
+                    //await _transactionRepository.BeginTransAsync();                                             // Begin transaction
+                    //await _hotelRepository.EraseHotelListAsync();                         // commented on 23.01.24 to avoid Hotel dictionary data deletion
 
                     List<Hotel> hotelsToInsert = hotelsSansejourList.Select(hotelSansejour => new Hotel
                     {
@@ -297,8 +297,17 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         //City = hotelSansejour.City
                     }).ToList();
 
+                    // Get existing Hotels list
+                    var existingEntities = await _hotelRepository.GetAllHotelsAsync();
+
+                    if (existingEntities != null)
+                    {
+                        hotelsToInsert = hotelsToInsert.Except(existingEntities, new HotelComparer()).ToList();
+                    }
+
+
                     await _hotelRepository.FillNewHotelsListAsync(hotelsToInsert);
-                    await _transactionRepository.CommitTransAsync();                                            // Commit transaction
+                    //await _transactionRepository.CommitTransAsync();                                            // Commit transaction
 
                     //Hotel hotel = new Hotel();
 
@@ -359,7 +368,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             //return await _hotelRepository.AddHotelAsync(hotelRequest);
             var entity = _mapper.Map<Hotel>(hotelRequest);
             await _mainRepository.AddAsync(entity);
-            
+
             return entity;
         }
 

@@ -10,6 +10,8 @@ namespace MaratukAdmin.Dto.Request.Sansejour
         private int _flightChildCount;
         private int _flightInfantCount;
         private int _roomTotalCount;
+        //private int _pageNumber;
+        //private int _pageSize;
 
 
         // Flight part
@@ -18,13 +20,14 @@ namespace MaratukAdmin.Dto.Request.Sansejour
         public int FlightInfant { get { return _flightInfantCount; } }
 
         // Room part
-        public int RoomPageNumber { get; set; } = 1;
-        public int RoomPageSize { get; set; } = 10;
         public DateTime? RoomExportDate { get; set; }
         public DateTime? RoomAccomodationDateFrom { get; set; }
         public DateTime? RoomAccomodationDateTo { get; set; }
+        public string? Board { get; set; }
         //public int RoomTotalCount { get { return RoomAdultCount + (RoomChildCount ?? 0); } }
         public int RoomTotalCount { get { return _roomTotalCount; } }
+        //public int PageNumber { get { return _pageNumber; } }
+        //public int PageSize { get { return _pageSize; } }
         public List<string>? RoomHotelCodes { get; set; }
 
         public SearchFligtAndRoomRequest(SearchFligtAndRoomRequestBaseModel baseModel)
@@ -37,9 +40,13 @@ namespace MaratukAdmin.Dto.Request.Sansejour
             FlightTwoId = baseModel.FlightTwoId;
             FlightStartDate = baseModel.FlightStartDate;
             FlightReturnedDate = baseModel.FlightReturnedDate;
+            Board = baseModel.Board;
             RoomAdultCount = baseModel.RoomAdultCount;
             RoomChildCount = baseModel.RoomChildCount;
             RoomChildAges = baseModel.RoomChildAges;
+            PageNumber= baseModel.PageNumber;
+            PageSize= baseModel.PageSize;
+            
 
             // Define child counts and ages for Flight seach
             if (baseModel.RoomChildAges != null)
@@ -57,6 +64,8 @@ namespace MaratukAdmin.Dto.Request.Sansejour
             }
 
             _roomTotalCount = baseModel.RoomAdultCount + (baseModel.RoomChildCount ?? 0);
+            //_pageNumber = baseModel.PageNumber;
+            //_pageSize = baseModel.PageSize;
 
         }
 
