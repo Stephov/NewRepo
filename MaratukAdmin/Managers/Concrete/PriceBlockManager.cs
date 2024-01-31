@@ -528,6 +528,7 @@ namespace MaratukAdmin.Managers.Concrete
                 DurationHours = group.First().DurationHours,
                 DurationMinutes = group.First().DurationMinutes,
                 CurrencyId = group.First().CurrencyId,
+                CurrencyName = _currencyManager.GetCurrencyNameByIdAsync(group.First().CurrencyId).Result.Name,
                 IsTwoWay = true,
                 ReturnedFlight = new FlightSearchResponse()
                 {
