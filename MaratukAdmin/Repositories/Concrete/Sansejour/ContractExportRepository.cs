@@ -828,14 +828,24 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         }
         public async Task<DateTime?> GetMaxSyncDateFromSejourRateAsync()
         {
+            DateTime? retValue;
             try
             {
-                return await Task.FromResult(_dbContext.SyncSejourRate.Max(e => e.SyncDate));
+                var anyRecords = await _dbContext.SyncSejourRate.AnyAsync();
+                if (anyRecords)
+                {
+                    //return await Task.FromResult(_dbContext.SyncSejourRate.Max(e => e.SyncDate));
+                    retValue = await _dbContext.SyncSejourRate.MaxAsync(e => e.SyncDate);
+                }
+                else
+                { retValue = null; }
             }
             catch (Exception)
             {
-                throw;
+                retValue = null;
+                //throw;
             }
+            return retValue;
         }
 
 

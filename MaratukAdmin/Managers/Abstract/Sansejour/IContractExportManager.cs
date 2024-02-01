@@ -11,7 +11,7 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
     public interface IContractExportManager
     {
         //Task<bool> GetSejourContractExportView(List<HotelSansejourResponse>? hotelsList = null);
-        Task<bool> GetSejourContractExportView(string? hotelCode);
+        Task<bool> GetSejourContractExportView(int? syncByChangedHotels, string? hotelCode);
         //Task<IActionResult> FillSejourContractExportView();
 
         Task<(int, int)> DescribeAccomodationTypes(List<SyncSejourAccomodationType> accmdType);

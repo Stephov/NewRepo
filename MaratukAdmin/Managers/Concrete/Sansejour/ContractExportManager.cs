@@ -81,12 +81,12 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         }
 
         //public async Task<bool> GetSejourContractExportView(List<HotelSansejourResponse>? hotelsList = null)
-        public async Task<bool> GetSejourContractExportView(string? hotelCode)
+        public async Task<bool> GetSejourContractExportView(int? syncByChangedHotels, string? hotelCode)
         {
             bool retValue;
             bool contractExportViewRecorded = false;
             bool previousDataDeleted = false;
-            bool syncByChangedHotels = false;
+            //bool syncByChangedHotels = false;
             int skippedHotels = 0;
             int processedHotels = 0;
             string dateString = "";
@@ -99,6 +99,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             DateTime dateStartLoop = DateTime.Now;
             TimeSpan elapsed;
             List<string> hotelsList = new();
+            bool dataWasArchived = false;
 
             try
             {
@@ -110,20 +111,21 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 if (hotelCode == null)
                 {
                     string beginDate = DateTime.Now.ToString("yyyy-MM-dd");
-                    beginDate = "2024-01-31";
+                    //beginDate = "2024-01-31";
 
-                    //hotelsList ??= await _httpRequestManager.GetAllHotelsSansejourAsync();
-                    //hotelsList = hotelsList.Where(hotel => hotel != null).ToList();
-
-                    //var hotels = await _httpRequestManager.GetAllHotelsSansejourAsync();
-                    //deletingByChangedHotels = false;
-                    //hotelsList = hotels.Select(h => h.Code).ToList();
-                    //hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
-
-                    hotelsList = await _httpRequestManager.GetChangedHotelListSansejourAsync(beginDate);
-                    syncByChangedHotels = true;
-                    hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
-
+                    // *** Sync data only by Changed Hotels list
+                    if (syncByChangedHotels == 1)
+                    {
+                        hotelsList = await _httpRequestManager.GetChangedHotelListSansejourAsync(beginDate);
+                        hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
+                    }
+                    // *** Sync data by Full list of Hotels
+                    else
+                    {
+                        var hotels = await _httpRequestManager.GetAllHotelsSansejourAsync();
+                        hotelsList = hotels.Select(h => h.Code).ToList();
+                        hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
+                    }
                 }
                 else
                 { hotelsList.Add(hotelCode); }
@@ -142,6 +144,14 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         if (result != null)
                         { oldSyncDate = result.Value; }
 
+                        // *** ARCHIVE SyncSejourRate table old data ***
+                        //if (string.IsNullOrWhiteSpace(hotelCode))
+                        //{
+                        //    var archiveResult = await _contractExportRepository.ArchiveSyncSejourRateData(oldSyncDate);
+                        //    if (!archiveResult)
+                        //    { throw new Exception("Error archiving SyncSejourRate data"); }
+                        //    dataWasArchived = true;
+                        //}
 
                         // *** Loop for HOTELS ***
                         foreach (var hotel in hotelsList)
@@ -190,7 +200,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
                             System.Diagnostics.Debug.WriteLine($"--- DELETING PREVIOUS DATA ---");
                             // Delete previous data by Hotel
-                            if (syncByChangedHotels == true)
+                            if (syncByChangedHotels == 1 || !string.IsNullOrWhiteSpace(hotelCode))
                             {
                                 // todo avtomat zapusk anel es funkcian
                                 // todo namaki texty dzel
@@ -205,7 +215,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                                 previousDataDeleted = true;
                             }
                             // Delete previous data by Sync Date
-                            else if (syncByChangedHotels == false && !previousDataDeleted)
+                            else if ((syncByChangedHotels == null || syncByChangedHotels == 0) && !previousDataDeleted)
                             {
                                 //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync((DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date);
                                 var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
@@ -220,7 +230,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             {
                                 Version = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Version,
                                 //ExportDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date,
-                                ExportDate = syncDate,
+                                ExportDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncDate : oldSyncDate,
                                 //DateFormat = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.DateFormat,
                                 DateFormat = syncDateFormat,
                                 SanBeginDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.SanBeginDate,
@@ -230,7 +240,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             SyncSejourHotel syncSejourHotel = new()
                             {
                                 //SyncDate = (DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date,
-                                SyncDate = syncDate,
+                                SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncDate : oldSyncDate,
                                 HotelCode = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelCode,
                                 HotelName = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelName,
                                 HotelCategory = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelCategory,
@@ -252,7 +262,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             List<SyncSejourSpoAppOrder> sejourSpoAppOrders = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
                                                         .Data.Export.Hotel.SpecialOffers.SpoAppOrders.SpoAppOrder.Select(appOrder => new SyncSejourSpoAppOrder
                                                         {
-                                                            SyncDate = syncSejourHotel.SyncDate,
+                                                            SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
                                                             HotelCode = syncSejourHotel.HotelCode,
                                                             HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
                                                             HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
@@ -263,7 +273,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             List<SyncSejourSpecialOffer> syncSejourSpecialOffers = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
                                                         .Data.Export.Hotel.SpecialOffers.SpecialOffers.Select(specOffer => new SyncSejourSpecialOffer
                                                         {
-                                                            SyncDate = syncSejourHotel.SyncDate,
+                                                            SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
                                                             HotelCode = syncSejourHotel.HotelCode,
                                                             HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
                                                             HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
@@ -279,7 +289,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                                                         .Data.Export.Hotel.SpecialOffers.SpecialOffers.SelectMany(offer => offer.Rates)
                                                         .Select(sejRate => new SyncSejourRate
                                                         {
-                                                            SyncDate = syncSejourHotel.SyncDate,
+                                                            SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
                                                             HotelCode = syncSejourHotel.HotelCode,
                                                             HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
                                                             HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
@@ -389,16 +399,14 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         await _contractExportRepository.AddNewHotelBoardsAsync(hotelBoards);
                         #endregion
 
-                        // *** Update SyncSejour SyncDate
-                        //var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateAsync(syncDate);
-                        var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateRAWAsync(syncDate);
-                        if (!updateResult)
-                        { throw new Exception("Error updating SyncSejourRate's SyncDate"); }
-
-                        // *** Archive SyncSejourRate table data 
-                        var archiveResult = await _contractExportRepository.ArchiveSyncSejourRateData(syncDate);
-                        if (!archiveResult)
-                        { throw new Exception("Error archiving SyncSejourRate data"); }
+                        if (string.IsNullOrWhiteSpace(hotelCode))
+                        {
+                            // *** Update SyncSejour SyncDate
+                            //var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateAsync(syncDate);
+                            var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateRAWAsync(syncDate);
+                            if (!updateResult)
+                            { throw new Exception("Error updating SyncSejourRate's SyncDate"); }
+                        }
 
                         elapsed = DateTime.Now - dateStartSession;
                         System.Diagnostics.Debug.WriteLine($"--- FINISHED --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, Elapsed: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
