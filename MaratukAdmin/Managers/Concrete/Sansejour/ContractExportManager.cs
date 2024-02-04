@@ -23,6 +23,7 @@ using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Entities;
 using Org.BouncyCastle.Utilities;
+using System.Collections;
 //using System.Transactions;
 //using MaratukAdmin.Infrastructure;
 
@@ -33,6 +34,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         private readonly IMainRepository<SyncSejourContractExportView> _mainRepository;
         //private readonly IMapper _mapper;
         private readonly IContractExportRepository _contractExportRepository;
+        private readonly IHotelRepository _hotelRepository;
         private readonly IHttpRequestManager _httpRequestManager;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IDistributedCache _cache;
@@ -43,6 +45,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         public ContractExportManager(IMainRepository<SyncSejourContractExportView> mainRepository,
                             //IMapper mapper,
                             IContractExportRepository contractExportRepository,
+                            IHotelRepository hotelRepository,
                             IHttpRequestManager httpRequestManager,
                             ITransactionRepository transactionRepository,
                             IDistributedCache cache,
@@ -54,6 +57,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             _mainRepository = mainRepository;
             //_mapper = mapper;
             _contractExportRepository = contractExportRepository;
+            _hotelRepository = hotelRepository;
             _httpRequestManager = httpRequestManager;
             _transactionRepository = transactionRepository;
             _cache = cache;
@@ -80,347 +84,478 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             }
         }
 
+        public async Task<bool> GetSejourContractExportViewWorker(int? syncByChangedHotels, string? hotelCode, int currentTry = 0)
+        {
+            int retryCount = 5;
+            bool retValue = false;
+            try
+            {
+                retValue = await GetSejourContractExportView(syncByChangedHotels, hotelCode);
+                if (retValue == false)
+                {
+                    currentTry++;
+                    if (currentTry == retryCount)
+                    { retValue = false; }
+                    else
+                    { await GetSejourContractExportViewWorker(syncByChangedHotels, hotelCode, currentTry); }
+                }
+            }
+            catch (Exception)
+            {
+                currentTry++;
+                if (currentTry == retryCount)
+                { retValue = false; }
+                else
+                { await GetSejourContractExportViewWorker(syncByChangedHotels, hotelCode, currentTry); }
+            }
+            return retValue;
+        }
+
         //public async Task<bool> GetSejourContractExportView(List<HotelSansejourResponse>? hotelsList = null)
         public async Task<bool> GetSejourContractExportView(int? syncByChangedHotels, string? hotelCode)
         {
             bool retValue;
             bool contractExportViewRecorded = false;
-            bool previousDataDeleted = false;
+            //bool previousDataDeleted = false;
             //bool syncByChangedHotels = false;
             int skippedHotels = 0;
             int processedHotels = 0;
+            int existedHotels = 0;
             string dateString = "";
             string syncDateFormat = "";
             string processingHotelCode = "";
             DateTime syncDate = DateTime.MinValue;
+            DateTime dt;
+            bool syncDateIsKnown = false;
             DateTime oldSyncDate = DateTime.MinValue;
 
             DateTime dateStartSession = DateTime.Now;
             DateTime dateStartLoop = DateTime.Now;
+
+            DateTime dateStartHtmlQuery = DateTime.Now;
+            TimeSpan elapsedHtmlQuery;
+            DateTime dateStartOtherOperations = DateTime.Now;
+            TimeSpan elapsedOtherOperations;
+
+            TimeSpan elapsedHtmlQueryTotal = new TimeSpan();
+            TimeSpan elapsedOtherOperationsTotal = new TimeSpan();
+
             TimeSpan elapsed;
             List<string> hotelsList = new();
             bool dataWasArchived = false;
+            List<int> neededCountryCodes = new List<int> { 6226 };
+            List<int> neededCityCodes = new List<int> { 26, 85 };
+
 
             try
             {
                 await _httpRequestManager.LoginAsync();
                 string token = await _cache.GetStringAsync("token");
 
-
+                //throw new Exception("test exception");
 
                 if (hotelCode == null)
                 {
                     string beginDate = DateTime.Now.ToString("yyyy-MM-dd");
-                    //beginDate = "2024-01-31";
 
-                    // *** Sync data only by Changed Hotels list
                     if (syncByChangedHotels == 1)
-                    {
+                    {                                                                                           // *** Sync data only by Changed Hotels list
                         hotelsList = await _httpRequestManager.GetChangedHotelListSansejourAsync(beginDate);
-                        hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
+
+                        while (hotelsList.Count == 0)
+                        {
+                            if (DateTime.TryParseExact(beginDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                            {
+                                dt = dt.AddDays(-1);
+                                beginDate = dt.ToString("yyyy-MM-dd");
+
+                                hotelsList = await _httpRequestManager.GetChangedHotelListSansejourAsync(beginDate);
+                            }
+                        }
                     }
-                    // *** Sync data by Full list of Hotels
                     else
-                    {
+                    {                                                                                           // *** Sync data by Full list of Hotels
                         var hotels = await _httpRequestManager.GetAllHotelsSansejourAsync();
                         hotelsList = hotels.Select(h => h.Code).ToList();
-                        hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).ToList();
+
+                        while (hotelsList.Count == 0)
+                        {
+                            if (DateTime.TryParseExact(beginDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                            {
+                                dt.AddDays(-1);
+                                beginDate = dt.ToString("yyyy-MM-dd");
+
+                                hotels = await _httpRequestManager.GetAllHotelsSansejourAsync();
+                                hotelsList = hotels.Select(h => h.Code).ToList();
+                            }
+                        }
                     }
                 }
                 else
                 { hotelsList.Add(hotelCode); }
 
+                hotelsList = hotelsList.Where(x => !string.IsNullOrEmpty(x)).OrderBy(x => x).ToList();
+
+                if (hotelsList == null || hotelsList.Count == 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Hotels list is EMPTY");
+                    return false;
+                }
+
+                // *** Get only necessary Hotels
+                var neededHotelsList = await _hotelRepository.GetHotelsByCountryIdAndCityIdAsync(neededCountryCodes, neededCityCodes);
+
+                if (neededHotelsList != null)
+                { hotelsList = hotelsList.Where(h => neededHotelsList.Any(hotel => hotel.Code == h)).ToList(); }
+
                 dateStartLoop = DateTime.Now;
 
-                //await _transactionRepository.BeginTransAsync();                                             // Begin transaction
+                //var strategy = _transactionRepository.CreateExecutionStrategy();
+                //await strategy.ExecuteAsync(async () =>
+                //{
+                //    await _transactionRepository.BeginTransAsync();                                             // Begin transaction
+                //    {
 
-                var strategy = _transactionRepository.CreateExecutionStrategy();
-                await strategy.ExecuteAsync(async () =>
+                //var result = await _contractExportRepository.GetMaxSyncDateFromSejourRateAsync();
+                //if (result != null)
+                //{ oldSyncDate = result.Value; }
+
+                // *** ARCHIVE SyncSejourRate table old data ***
+                if (string.IsNullOrWhiteSpace(hotelCode))
                 {
-                    await _transactionRepository.BeginTransAsync();                                             // Begin transaction
+                    // todo NAEL
+                    //var archiveResult = await _contractExportRepository.ArchiveSyncSejourRateData(oldSyncDate);
+                    //if (!archiveResult)
+                    //{ throw new Exception("Error archiving SyncSejourRate data"); }
+                    dataWasArchived = true;
+                }
+
+                // *** Loop for HOTELS ***
+                foreach (var hotel in hotelsList)
+                {
+                    dateStartLoop = DateTime.Now;
+                    //processingHotelCode = hotel.Code;
+                    processingHotelCode = hotel;
+                    System.Diagnostics.Debug.WriteLine($"--- PROCESSING --- Hotel Code: {processingHotelCode}");
+
+                    GetSejourContractExportViewRequestModel reqModel = new()
                     {
-                        //var result = await _contractExportRepository.GetMaxSyncDateAsync();
-                        var result = await _contractExportRepository.GetMaxSyncDateFromSejourRateAsync();
-                        if (result != null)
-                        { oldSyncDate = result.Value; }
+                        Token = token,
+                        //Season = "W23",
+                        //HotelCode = hotel.Code
+                        HotelCode = hotel
+                    };
 
-                        // *** ARCHIVE SyncSejourRate table old data ***
-                        //if (string.IsNullOrWhiteSpace(hotelCode))
-                        //{
-                        //    var archiveResult = await _contractExportRepository.ArchiveSyncSejourRateData(oldSyncDate);
-                        //    if (!archiveResult)
-                        //    { throw new Exception("Error archiving SyncSejourRate data"); }
-                        //    dataWasArchived = true;
-                        //}
-
-                        // *** Loop for HOTELS ***
-                        foreach (var hotel in hotelsList)
-                        {
-                            dateStartLoop = DateTime.Now;
-                            //processingHotelCode = hotel.Code;
-                            processingHotelCode = hotel;
-                            System.Diagnostics.Debug.WriteLine($"--- PROCESSING --- Hotel Code: {processingHotelCode}");
-
-                            GetSejourContractExportViewRequestModel reqModel = new()
-                            {
-                                Token = token,
-                                //Season = "W23",
-                                //HotelCode = hotel.Code
-                                HotelCode = hotel
-                            };
-
-                            SyncSejourContractExportViewResponse sejourContracts = await _httpRequestManager.GetSejourContractExportViewAsync(reqModel);
-
-                            if (sejourContracts == null || sejourContracts.Body == null || sejourContracts.Body.GetSejourContractExportViewResponse == null
-                                || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult == null
-                                || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data == null
-                                || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export == null
-                                || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel == null
-                                || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers == null
-                                || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers.SpecialOffers == null
-                                || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers.SpecialOffers == null
-                                )
-                            {
-                                //throw new Exception("Could not get contracts");
-                                skippedHotels++;
-                                //System.Diagnostics.Debug.WriteLine($"--- SKIP --- Hotel Code: {hotel.Code}");
-                                System.Diagnostics.Debug.WriteLine($"--- SKIP --- Hotel Code: {hotel}");
-                                continue;
-                            }
-
-                            dateString = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date;
-                            syncDateFormat = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.DateFormat
-                                            .Replace("mm", "MM");
-
-                            //dateString = "28/09/2023";
-                            syncDateFormat = "dd/MM/yyyy";
-                            syncDate = DateTime.ParseExact(dateString, syncDateFormat, CultureInfo.InvariantCulture);
-
-
-
-                            System.Diagnostics.Debug.WriteLine($"--- DELETING PREVIOUS DATA ---");
-                            // Delete previous data by Hotel
-                            if (syncByChangedHotels == 1 || !string.IsNullOrWhiteSpace(hotelCode))
-                            {
-                                // todo avtomat zapusk anel es funkcian
-                                // todo namaki texty dzel
-                                // CountryId ev CityId avelacnel LowesPrices searchi mej
-
-                                //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
-                                //var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeAsync(syncDate, hotel);
-                                var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeAsync(oldSyncDate, hotel);
-
-                                if (!deleteResult)
-                                { throw new Exception("Error deleting previous data"); }
-                                previousDataDeleted = true;
-                            }
-                            // Delete previous data by Sync Date
-                            else if ((syncByChangedHotels == null || syncByChangedHotels == 0) && !previousDataDeleted)
-                            {
-                                //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync((DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date);
-                                var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
-                                if (!deleteResult)
-                                { throw new Exception("Error deleting previous data"); }
-                                previousDataDeleted = true;
-                            }
-
-                            string jsonSejourContracts = JsonConvert.SerializeObject(sejourContracts);
-
-                            SyncSejourContractExportView contract = new()
-                            {
-                                Version = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Version,
-                                //ExportDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date,
-                                ExportDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncDate : oldSyncDate,
-                                //DateFormat = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.DateFormat,
-                                DateFormat = syncDateFormat,
-                                SanBeginDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.SanBeginDate,
-                                SanEndDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.SanEndDate,
-                            };
-
-                            SyncSejourHotel syncSejourHotel = new()
-                            {
-                                //SyncDate = (DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date,
-                                SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncDate : oldSyncDate,
-                                HotelCode = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelCode,
-                                HotelName = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelName,
-                                HotelCategory = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelCategory,
-                                //HotelAddress = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelAddress,
-                                HotelRegionCode = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelRegionCode,
-                                HotelRegion = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelRegion,
-                                HotelTrfRegionCode = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelTrfRegionCode,
-                                HotelTrfRegion = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelTrfRegion,
-                                AllotmentType = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.AllotmentType,
-                                Currency = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.Currency,
-                                HotelSeason = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelSeason,
-                                HotelSeasonBegin = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelSeasonBegin,
-                                HotelSeasonEnd = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelSeasonEnd,
-                                HotelType = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelType,
-                                ChildAgeCalculationOrder = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.ChildAgeCalculationOrder
-                            };
-
-
-                            List<SyncSejourSpoAppOrder> sejourSpoAppOrders = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
-                                                        .Data.Export.Hotel.SpecialOffers.SpoAppOrders.SpoAppOrder.Select(appOrder => new SyncSejourSpoAppOrder
-                                                        {
-                                                            SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
-                                                            HotelCode = syncSejourHotel.HotelCode,
-                                                            HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
-                                                            HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
-                                                            SpoCode = appOrder.SpoCode,
-                                                            SpoOrder = appOrder.SpoOrder
-                                                        }).ToList();
-
-                            List<SyncSejourSpecialOffer> syncSejourSpecialOffers = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
-                                                        .Data.Export.Hotel.SpecialOffers.SpecialOffers.Select(specOffer => new SyncSejourSpecialOffer
-                                                        {
-                                                            SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
-                                                            HotelCode = syncSejourHotel.HotelCode,
-                                                            HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
-                                                            HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
-                                                            SpoCode = specOffer.SpoCode,
-                                                            SpoNo = specOffer.SpoNo,
-                                                            SalePeriodBegin = specOffer.SalePeriodBegin,
-                                                            SalePeriodEnd = specOffer.SalePeriodEnd,
-                                                            //SpecialCode = specOffer.SpecialCode
-                                                        }).ToList();
-
-
-                            List<SyncSejourRate> syncSejourRates = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
-                                                        .Data.Export.Hotel.SpecialOffers.SpecialOffers.SelectMany(offer => offer.Rates)
-                                                        .Select(sejRate => new SyncSejourRate
-                                                        {
-                                                            SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
-                                                            HotelCode = syncSejourHotel.HotelCode,
-                                                            HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
-                                                            HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
-                                                            RecID = sejRate.RecID,
-                                                            CreateDate = sejRate.CreateDate,
-                                                            ChangeDate = sejRate.ChangeDate,
-                                                            AccomodationPeriodBegin = sejRate.AccomodationPeriodBegin,
-                                                            AccomodationPeriodEnd = sejRate.AccomodationPeriodEnd,
-                                                            Room = sejRate.Room,
-                                                            RoomDesc = sejRate.RoomDesc,
-                                                            RoomType = sejRate.RoomType,
-                                                            RoomTypeDesc = sejRate.RoomTypeDesc,
-                                                            Board = sejRate.Board,
-                                                            BoardDesc = sejRate.BoardDesc,
-                                                            RoomPax = sejRate.RoomPax,
-                                                            RoomAdlPax = sejRate.RoomAdlPax,
-                                                            RoomChdPax = sejRate.RoomChdPax,
-                                                            // Adults and Child count & Ages
-                                                            AccmdMenTypeCode = FormatAccmdMenTypeCode(sejRate.RoomAdlPax, sejRate.RoomChdPax, sejRate.ChildAges),
-                                                            AccmdMenTypeName = FormatAccmdMenTypeName(sejRate.RoomAdlPax, sejRate.RoomChdPax, sejRate.ChildAges),
-                                                            ReleaseDay = sejRate.ReleaseDay,
-                                                            PriceType = sejRate.PriceType,
-                                                            Price = Math.Ceiling((double)sejRate.Price),
-                                                            ////Percent = sejRate.Percent,
-                                                            ////WeekendPrice = sejRate.WeekendPrice,
-                                                            WeekendPercent = (double)sejRate.WeekendPercent,
-                                                            AccomLengthDay = sejRate.AccomLengthDay,
-                                                            Option = sejRate.Option,
-                                                            ////SpoNoApply = sejRate.SpoNoApply,
-                                                            SPOPrices = (double)sejRate.SPOPrices,
-                                                            SPODefinit = sejRate.SPODefinit,
-                                                            NotCountExcludingAccomDate = sejRate.NotCountExcludingAccomDate
-                                                        }).ToList();
-
-                            //List<SyncSejourChildAges> syncRateChildAges = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
-                            //                            .Data.Export.Hotel.SpecialOffers.SpecialOffers
-                            //                                .SelectMany(offer => offer.Rates)
-                            //                                //.Select(rates => new SyncSejourChildAges()
-                            //                                .SelectMany(rates => rates.ChildAges, (rates, childAges) => new SyncSejourChildAges
-                            //                                //.SelectMany(rates => new SyncSejourChildAges()
-                            //                                //.SelectMany(offer => offer.Rates)
-                            //                                //.SelectMany(rate => rate.subRates, (rate, subRate) => new SubRateModel
-                            //                                {
-                            //                                    SyncDate = syncSejourHotel.SyncDate,
-                            //                                    HotelCode = syncSejourHotel.HotelCode,
-                            //                                    HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
-                            //                                    HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
-                            //                                    RateRecID = rates.RecID,
-                            //                                    C1Age1 = (double)childAges.C1Age1,
-                            //                                    C1Age2 = (double)childAges.C1Age2,
-                            //                                    C2Age1 = (double)childAges.C2Age1,
-                            //                                    C2Age2 = (double)childAges.C2Age2,
-                            //                                    C3Age1 = (double)childAges.C3Age1,
-                            //                                    C3Age2 = (double)childAges.C3Age2,
-                            //                                    C4Age1 = (double)childAges.C4Age1,
-                            //                                    C4Age2 = (double)childAges.C4Age2 
-                            //                                }).ToList();
-
-
-                            if (!contractExportViewRecorded)
-                            {
-                                await _contractExportRepository.DeleteSyncSejourContractsByDateAsync(syncSejourHotel.SyncDate);
-                                await _contractExportRepository.AddlNewSejourContractsAsync(contract);
-                                contractExportViewRecorded = true;
-                            }
-
-                            //await _contractExportRepository.DeleteSyncSejourHotelsByDateAsync(syncSejourHotel.SyncDate, hotel.Code);
-                            await _contractExportRepository.AddNewSejourHotelsAsync(syncSejourHotel);
-
-                            //await _contractExportRepository.DeleteSyncSejourSpoAppOrdersByDateAsync(syncSejourHotel.SyncDate, hotel.Code);
-                            await _contractExportRepository.AddNewSejourSpoAppOrdersAsync(sejourSpoAppOrders);
-
-                            //await _contractExportRepository.DeleteSyncSejourSpecialOffersByDateAsync(syncSejourHotel.SyncDate, hotel.Code);
-                            await _contractExportRepository.AddNewSejourSpecialOffersAsync(syncSejourSpecialOffers);
-
-                            //await _contractExportRepository.DeleteSyncSejourRatesByDateAsync(syncSejourHotel.SyncDate, hotel.Code);
-                            await _contractExportRepository.AddNewSejourRatesAsync(syncSejourRates);
-
-                            //await _contractExportRepository.DeleteSyncSejourChildAgesByDateAsync(syncSejourHotel.SyncDate, hotel.Code);
-                            //await _contractExportRepository.FillNewSejourChildAgesAsync(syncRateChildAges);
-
-                            processedHotels++;
-                            elapsed = DateTime.Now - dateStartLoop;
-                            //System.Diagnostics.Debug.WriteLine($"--- DONE --- Hotel Code: {hotel.Code}, elapsed: {elapsed.Seconds} seconds");
-                            System.Diagnostics.Debug.WriteLine($"--- DONE --- Hotel Code: {hotel}, elapsed: {elapsed.Seconds} seconds");
-
-                            elapsed = DateTime.Now - dateStartSession;
-                            System.Diagnostics.Debug.WriteLine($"--- TOTAL --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, Elapsed: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
-                        }
-
-                        #region AccomodationTypes
-                        // *** GET possible AccomodationTypes from Rates 
-                        List<SyncSejourAccomodationType> accmdTypes = await _contractExportRepository.GetSyncSejourAccomodationTypesFromRatesBySyncDateAsync(syncDate);
-
-                        // ** Add gathered AccomodationTypes to DB
-                        await _contractExportRepository.AddNewSyncSejourAccomodationTypesAsync(accmdTypes);
-
-                        //(int, int) counts = await _contractExportRepository.DescribeListOfAccomodationTypesAsync(accmdTypes);
-                        (int, int) counts = await DescribeAccomodationTypes(accmdTypes);
-                        #endregion
-
-                        #region HotelBoards
-                        // *** GET possible HotelBoards from Rates
-                        List<HotelBoard> hotelBoards = await _contractExportRepository.GetHotelBoardsFromRatesBySyncDateAsync(syncDate);
-
-                        // ** Add gathered HotelBoards to DB
-                        await _contractExportRepository.AddNewHotelBoardsAsync(hotelBoards);
-                        #endregion
-
-                        if (string.IsNullOrWhiteSpace(hotelCode))
-                        {
-                            // *** Update SyncSejour SyncDate
-                            //var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateAsync(syncDate);
-                            var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateRAWAsync(syncDate);
-                            if (!updateResult)
-                            { throw new Exception("Error updating SyncSejourRate's SyncDate"); }
-                        }
-
-                        elapsed = DateTime.Now - dateStartSession;
-                        System.Diagnostics.Debug.WriteLine($"--- FINISHED --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, Elapsed: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
-                        System.Diagnostics.Debug.WriteLine($"--- AVERAGE : {Math.Round((elapsed.TotalSeconds / (processedHotels + skippedHotels)), 2)} seconds");
-                        System.Diagnostics.Debug.WriteLine($"--- Total Accomodations: {counts.Item1}, Described: {counts.Item2}");
-
-                        await _transactionRepository.CommitTransAsync();                                            // Commit transaction
-                        //await transaction.CommitAsync();
+                    if (!syncDateIsKnown)
+                    {
+                        // Firts Hotel always fills because of not knowing sync date
                     }
-                });
+                    if (syncDateIsKnown)
+                    {
+                        // *** Check Rates existence for this Hotel and SyncDate
+                        bool isHotelExists = await _contractExportRepository.GetSyncSejourRateExistenceByDateAndHotelAsync(hotel, syncDate);
 
-                //        }
-                //    });
+                        if (isHotelExists)
+                        {
+                            //previousDataDeleted = true;
+                            existedHotels++;
+                            continue;
+                        }
+                    }
+
+                    dateStartHtmlQuery = DateTime.Now;
+                    SyncSejourContractExportViewResponse sejourContracts = await _httpRequestManager.GetSejourContractExportViewAsync(reqModel);
+                    elapsedHtmlQuery = DateTime.Now - dateStartHtmlQuery;
+                    elapsedHtmlQueryTotal += elapsedHtmlQuery;
+
+                    if (sejourContracts == null || sejourContracts.Body == null || sejourContracts.Body.GetSejourContractExportViewResponse == null
+                        || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult == null
+                        || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data == null
+                        || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export == null
+                        || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel == null
+                        || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers == null
+                        || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers.SpecialOffers == null
+                        || sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers.SpecialOffers == null
+                        )
+                    {
+                        //throw new Exception("Could not get contracts");
+                        skippedHotels++;
+                        //System.Diagnostics.Debug.WriteLine($"--- SKIP --- Hotel Code: {hotel.Code}");
+                        System.Diagnostics.Debug.WriteLine($"--- SKIP --- Hotel Code: {hotel}");
+                        continue;
+                    }
+
+                    //DateTime? periodBegin = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers.SpecialOffers[0].Rates[0].AccomodationPeriodBegin;
+                    //DateTime? periodEnd = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers.SpecialOffers[0].Rates[0].AccomodationPeriodEnd;
+
+                    // *** Check for correct AccomodationPeriodBegin and AccomodationPeriodEnd values
+                    bool isError = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.SpecialOffers.SpecialOffers
+                                    .Any(offer => offer.Rates.Any(obj => (DateTime?)obj.AccomodationPeriodBegin > (DateTime?)obj.AccomodationPeriodEnd));
+                    if (isError)
+                    { throw new Exception("-- *** Wrong Date deserialization!!! *** --"); }
+
+                    dateString = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date;
+                    syncDateFormat = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.DateFormat
+                                    .Replace("mm", "MM");
+
+                    //dateString = "28/09/2023";
+                    syncDateFormat = "dd/MM/yyyy";
+                    syncDate = DateTime.ParseExact(dateString, syncDateFormat, CultureInfo.InvariantCulture);
+                    syncDateIsKnown = true;
+
+                    dateStartOtherOperations = DateTime.Now;
+                    System.Diagnostics.Debug.WriteLine($"--- DELETING PREVIOUS DATA ---");
+
+                    // Delete previous data by HotelCode (if we reach this line that means data was found for this Hotel)
+                    //if (syncByChangedHotels == 1 || !string.IsNullOrWhiteSpace(hotelCode))
+                    //{
+                    // todo avtomat zapusk anel es funkcian
+                    // todo namaki texty dzel
+                    // CountryId ev CityId avelacnel LowesPrices searchi mej
+
+                    // todo + ChangedHotelList cucakic vercnel miayn 6226 Country ev Sharm, Hurgada City-ner
+                    // todo + ChangedHotelList - ic price tarmacnelu jamanak ete tvyal chi gtnum, apa hin toghery petk chi heracnel. Heracvum en miayn en depqum, erb nor togher gtel enq.
+                    // todo + Price tarmacnogh funkcian kanchel ayl funkciayic, vortex stugel sxali haytnvely u 5 angam porcel sharunakel
+                    // todo + Price tarmacnelu yntacqum transaction petk el chi. Inchqany hascrec togh gri. Hetaga zapuskneri jamanak kareliya stugel, ete trvac SyncDate ev HotelCode-ov togher kan, apa dranq toghnel tenc ev ancnel myus Hotelin.
+                    // todo + Mek Hoteli tvyal kam ChangedHotelList-ov tarmacman ardyunqum petk chi SyncDate update anel, togh linen tarber.SyncSejourRate tablican khamarvi yntacik, ev poiski jamanak SyncDate kareli e hashvi charnel.
+                    // todo + Searchi jamanak SyncDate-in chnael, qani vor SyncSejourRate tablicayum arden karox en linel tarber amsatverov togher
+                    // todo - Schedule(worker) vor tvyalnery tarmacni.Sxali depqum eli porci, Log gri inch-vor tablicayi mej, u noric porci kardal, asenq 5 angam
+                    // todo - Amen or veronshyal Workeri ashxatanqi jamanak naev stugel AccomodationPeriodEnd-y ete ancel e, apa jnjel et Hoteli tvyalnery
+
+                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
+                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeAsync(syncDate, hotel);
+                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataBySyncDateAndHotelCodeAsync(oldSyncDate, hotel);
+
+                    // Delete all data for this Hotel
+                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataBySyncDateAndHotelCodeAsync(default, hotel);
+
+                    //if (syncDateIsKnown)
+                    //{
+                    //    // *** Check Rates existence for this Hotel and SyncDate
+                    //    bool isHotelExists = await _contractExportRepository.GetSyncSejourRateExistenceByDateAndHotelAsync(hotel, syncDate);
+
+                    //    if (isHotelExists)
+                    //    {
+                    //        //previousDataDeleted = true;
+                    //        existedHotels++;
+                    //        continue;
+                    //    }
+                    //}
+
+                    // Delete all data for this Hotel, EXCEPT EXISTING
+                    var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeExceptSyncDateAsync(syncDate, hotel);
+
+                    if (!deleteResult)
+                    { throw new Exception("Error deleting previous data"); }
+
+                    //}
+                    // Delete previous data by Sync Date
+                    //else if ((syncByChangedHotels == null || syncByChangedHotels == 0) && !previousDataDeleted)
+                    //{
+                    //    //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync((DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date);
+                    //    var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
+                    //    if (!deleteResult)
+                    //    { throw new Exception("Error deleting previous data"); }
+                    //    previousDataDeleted = true;
+                    //}
+
+                    string jsonSejourContracts = JsonConvert.SerializeObject(sejourContracts);
+
+                    SyncSejourContractExportView contract = new()
+                    {
+                        Version = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Version,
+                        //ExportDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date,
+                        //ExportDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncDate : oldSyncDate,
+                        ExportDate = syncDate,
+                        //DateFormat = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.DateFormat,
+                        DateFormat = syncDateFormat,
+                        SanBeginDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.SanBeginDate,
+                        SanEndDate = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.SanEndDate,
+                    };
+
+                    SyncSejourHotel syncSejourHotel = new()
+                    {
+                        //SyncDate = (DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date,
+                        //SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncDate : oldSyncDate,
+                        SyncDate = syncDate,
+                        HotelCode = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelCode,
+                        HotelName = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelName,
+                        HotelCategory = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelCategory,
+                        //HotelAddress = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelAddress,
+                        HotelRegionCode = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelRegionCode,
+                        HotelRegion = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelRegion,
+                        HotelTrfRegionCode = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelTrfRegionCode,
+                        HotelTrfRegion = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelTrfRegion,
+                        AllotmentType = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.AllotmentType,
+                        Currency = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.Currency,
+                        HotelSeason = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelSeason,
+                        HotelSeasonBegin = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelSeasonBegin,
+                        HotelSeasonEnd = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelSeasonEnd,
+                        HotelType = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.HotelType,
+                        ChildAgeCalculationOrder = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Hotel.General.ChildAgeCalculationOrder
+                    };
+
+                    List<SyncSejourSpoAppOrder> sejourSpoAppOrders = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
+                                                .Data.Export.Hotel.SpecialOffers.SpoAppOrders.SpoAppOrder.Select(appOrder => new SyncSejourSpoAppOrder
+                                                {
+                                                    //SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
+                                                    SyncDate = syncSejourHotel.SyncDate,
+                                                    HotelCode = syncSejourHotel.HotelCode,
+                                                    HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
+                                                    HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
+                                                    SpoCode = appOrder.SpoCode,
+                                                    SpoOrder = appOrder.SpoOrder
+                                                }).ToList();
+
+                    List<SyncSejourSpecialOffer> syncSejourSpecialOffers = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
+                                                .Data.Export.Hotel.SpecialOffers.SpecialOffers.Select(specOffer => new SyncSejourSpecialOffer
+                                                {
+                                                    //SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
+                                                    SyncDate = syncSejourHotel.SyncDate,
+                                                    HotelCode = syncSejourHotel.HotelCode,
+                                                    HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
+                                                    HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
+                                                    SpoCode = specOffer.SpoCode,
+                                                    SpoNo = specOffer.SpoNo,
+                                                    SalePeriodBegin = specOffer.SalePeriodBegin,
+                                                    SalePeriodEnd = specOffer.SalePeriodEnd,
+                                                    //SpecialCode = specOffer.SpecialCode
+                                                }).ToList();
+
+                    List<SyncSejourRate> syncSejourRates = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
+                                                .Data.Export.Hotel.SpecialOffers.SpecialOffers.SelectMany(offer => offer.Rates)
+                                                .Select(sejRate => new SyncSejourRate
+                                                {
+                                                    //SyncDate = (string.IsNullOrWhiteSpace(hotelCode)) ? syncSejourHotel.SyncDate : oldSyncDate,
+                                                    SyncDate = syncSejourHotel.SyncDate,
+                                                    HotelCode = syncSejourHotel.HotelCode,
+                                                    HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
+                                                    HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
+                                                    RecID = sejRate.RecID,
+                                                    CreateDate = sejRate.CreateDate,
+                                                    ChangeDate = sejRate.ChangeDate,
+                                                    AccomodationPeriodBegin = sejRate.AccomodationPeriodBegin,
+                                                    AccomodationPeriodEnd = sejRate.AccomodationPeriodEnd,
+                                                    Room = sejRate.Room,
+                                                    RoomDesc = sejRate.RoomDesc,
+                                                    RoomType = sejRate.RoomType,
+                                                    RoomTypeDesc = sejRate.RoomTypeDesc,
+                                                    Board = sejRate.Board,
+                                                    BoardDesc = sejRate.BoardDesc,
+                                                    RoomPax = sejRate.RoomPax,
+                                                    RoomAdlPax = sejRate.RoomAdlPax,
+                                                    RoomChdPax = sejRate.RoomChdPax,
+                                                    // Adults and Child count & Ages
+                                                    AccmdMenTypeCode = FormatAccmdMenTypeCode(sejRate.RoomAdlPax, sejRate.RoomChdPax, sejRate.ChildAges),
+                                                    AccmdMenTypeName = FormatAccmdMenTypeName(sejRate.RoomAdlPax, sejRate.RoomChdPax, sejRate.ChildAges),
+                                                    ReleaseDay = sejRate.ReleaseDay,
+                                                    PriceType = sejRate.PriceType,
+                                                    Price = Math.Ceiling((double)sejRate.Price),
+                                                    ////Percent = sejRate.Percent,
+                                                    ////WeekendPrice = sejRate.WeekendPrice,
+                                                    WeekendPercent = (double)sejRate.WeekendPercent,
+                                                    AccomLengthDay = sejRate.AccomLengthDay,
+                                                    Option = sejRate.Option,
+                                                    ////SpoNoApply = sejRate.SpoNoApply,
+                                                    SPOPrices = (double)sejRate.SPOPrices,
+                                                    SPODefinit = sejRate.SPODefinit,
+                                                    NotCountExcludingAccomDate = sejRate.NotCountExcludingAccomDate
+                                                }).ToList();
+
+                    //List<SyncSejourChildAges> syncRateChildAges = sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult
+                    //                            .Data.Export.Hotel.SpecialOffers.SpecialOffers
+                    //                                .SelectMany(offer => offer.Rates)
+                    //                                //.Select(rates => new SyncSejourChildAges()
+                    //                                .SelectMany(rates => rates.ChildAges, (rates, childAges) => new SyncSejourChildAges
+                    //                                //.SelectMany(rates => new SyncSejourChildAges()
+                    //                                //.SelectMany(offer => offer.Rates)
+                    //                                //.SelectMany(rate => rate.subRates, (rate, subRate) => new SubRateModel
+                    //                                {
+                    //                                    SyncDate = syncSejourHotel.SyncDate,
+                    //                                    HotelCode = syncSejourHotel.HotelCode,
+                    //                                    HotelSeasonBegin = syncSejourHotel.HotelSeasonBegin,
+                    //                                    HotelSeasonEnd = syncSejourHotel.HotelSeasonEnd,
+                    //                                    RateRecID = rates.RecID,
+                    //                                    C1Age1 = (double)childAges.C1Age1,
+                    //                                    C1Age2 = (double)childAges.C1Age2,
+                    //                                    C2Age1 = (double)childAges.C2Age1,
+                    //                                    C2Age2 = (double)childAges.C2Age2,
+                    //                                    C3Age1 = (double)childAges.C3Age1,
+                    //                                    C3Age2 = (double)childAges.C3Age2,
+                    //                                    C4Age1 = (double)childAges.C4Age1,
+                    //                                    C4Age2 = (double)childAges.C4Age2 
+                    //                                }).ToList();
+
+
+                    if (!contractExportViewRecorded)
+                    {
+                        await _contractExportRepository.DeleteSyncSejourContractsByDateAsync(syncSejourHotel.SyncDate);
+                        await _contractExportRepository.AddlNewSejourContractsAsync(contract);
+                        contractExportViewRecorded = true;
+                    }
+
+                    await _contractExportRepository.AddNewSejourHotelsAsync(syncSejourHotel);
+
+                    sejourSpoAppOrders = sejourSpoAppOrders.Where(item => item != null && item.SyncDate == syncDate).ToList();
+                    await _contractExportRepository.AddNewSejourSpoAppOrdersAsync(sejourSpoAppOrders);
+
+                    syncSejourSpecialOffers = syncSejourSpecialOffers.Where(item => item != null && item.SyncDate == syncDate).ToList();
+                    await _contractExportRepository.AddNewSejourSpecialOffersAsync(syncSejourSpecialOffers);
+
+                    syncSejourRates = syncSejourRates.Where(item => item != null && item.SyncDate == syncDate).ToList();
+                    await _contractExportRepository.AddNewSejourRatesAsync(syncSejourRates);
+
+                    elapsedOtherOperations = DateTime.Now - dateStartOtherOperations;
+                    elapsedOtherOperationsTotal += elapsedOtherOperations;
+
+                    processedHotels++;
+                    elapsed = DateTime.Now - dateStartLoop;
+                    System.Diagnostics.Debug.WriteLine($"--- DONE --- Hotel Code: {hotel}, elapsed: {elapsed.Seconds} seconds");
+                    System.Diagnostics.Debug.WriteLine($"--- Elapsed -- Html query: {elapsedHtmlQuery.Seconds} seconds, Other operations: {elapsedOtherOperations.Seconds} seconds");
+                    elapsed = DateTime.Now - dateStartSession;
+                    System.Diagnostics.Debug.WriteLine($"--- TOTAL --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, Elapsed: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
+                }
+
+                #region AccomodationTypes
+                // *** GET possible AccomodationTypes from Rates 
+                List<SyncSejourAccomodationType> accmdTypes = await _contractExportRepository.GetSyncSejourAccomodationTypesFromRatesBySyncDateAsync(syncDate);
+
+                // ** Add gathered AccomodationTypes to DB
+                await _contractExportRepository.AddNewSyncSejourAccomodationTypesAsync(accmdTypes);
+
+                //(int, int) counts = await _contractExportRepository.DescribeListOfAccomodationTypesAsync(accmdTypes);
+                (int, int) counts = await DescribeAccomodationTypes(accmdTypes);
+                #endregion
+
+                #region HotelBoards
+                // *** GET possible HotelBoards from Rates
+                List<HotelBoard> hotelBoards = await _contractExportRepository.GetHotelBoardsFromRatesBySyncDateAsync(syncDate);
+
+                // ** Add gathered HotelBoards to DB
+                await _contractExportRepository.AddNewHotelBoardsAsync(hotelBoards);
+                #endregion
+
+                //if (string.IsNullOrWhiteSpace(hotelCode))
+                //{
+                //    // *** Update SyncSejour SyncDate
+                //    //var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateAsync(syncDate);
+                //    var updateResult = await _contractExportRepository.UpdateSyncSejourRateSyncDateRAWAsync(syncDate);
+                //    if (!updateResult)
+                //    { throw new Exception("Error updating SyncSejourRate's SyncDate"); }
                 //}
+
+                elapsed = DateTime.Now - dateStartSession;
+                System.Diagnostics.Debug.WriteLine($"--- FINISHED --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, EXISTED: {existedHotels}");
+                System.Diagnostics.Debug.WriteLine($"--- ELAPSED on Html queries: {elapsedHtmlQueryTotal.Minutes} minutes, {elapsedHtmlQueryTotal.Seconds} seconds");
+                System.Diagnostics.Debug.WriteLine($"--- ELAPSED on Other operations: {elapsedOtherOperationsTotal.Minutes} minutes, {elapsedOtherOperationsTotal.Seconds} seconds");
+                System.Diagnostics.Debug.WriteLine($"--- ELAPSED TOTAL: {elapsed.Hours} hour(s), {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
+                System.Diagnostics.Debug.WriteLine($"--- AVERAGE TOTAL: {Math.Round((elapsed.TotalSeconds / (processedHotels + skippedHotels)), 2)} seconds");
+                System.Diagnostics.Debug.WriteLine($"--- Total Accomodations: {counts.Item1}, Described: {counts.Item2}");
+
+                //await _transactionRepository.CommitTransAsync();                                            // Commit transaction
+                //    }
+                //});
+
 
                 retValue = true;
             }

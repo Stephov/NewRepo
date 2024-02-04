@@ -20,6 +20,7 @@ using MaratukAdmin.Entities;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using Org.BouncyCastle.Utilities;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -27,13 +28,77 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
     {
         protected readonly MaratukDbContext _dbContext;
         protected readonly IFakeDataGenerationManager _fakeDataGenerationManager;
+        protected readonly ITransactionRepository _transactionRepository;
 
-        public ContractExportRepository(MaratukDbContext dbContext, IFakeDataGenerationManager fakeDataGenerationManager)
+        public ContractExportRepository(MaratukDbContext dbContext
+                                        , IFakeDataGenerationManager fakeDataGenerationManager
+                                        , ITransactionRepository transactionRepository)
         {
             _dbContext = dbContext;
             _fakeDataGenerationManager = fakeDataGenerationManager;
+            _transactionRepository = transactionRepository;
         }
 
+
+        public async Task<bool> DeleteSyncedDataBySyncDateAndHotelCodeAsync(DateTime? exportDate, string hotelCode)
+        {
+            bool deleteResult;
+
+            try
+            {
+                // Hotels
+                deleteResult = await DeleteSyncSejourHotelsByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // AppOrders
+                deleteResult = await DeleteSyncSejourSpoAppOrdersByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // Offers
+                deleteResult = await DeleteSyncSejourSpecialOffersByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // Rates
+                deleteResult = await DeleteSyncSejourRatesByDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> DeleteSyncedDataByHotelCodeExceptSyncDateAsync(DateTime exportDate, string hotelCode)
+        {
+            bool deleteResult;
+
+            try
+            {
+                // Hotels
+                deleteResult = await DeleteSyncSejourHotelsExceptSyncDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // AppOrders
+                deleteResult = await DeleteSyncSejourSpoAppOrdersExceptSyncDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // Offers
+                deleteResult = await DeleteSyncSejourSpecialOffersExceptSyncDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+                // Rates
+                deleteResult = await DeleteSyncSejourRatesExceptSyncDateRAWAsync(exportDate, hotelCode);
+                if (!deleteResult)
+                { return false; }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
 
         public async Task<bool> DeleteSyncedDataByHotelCodeAsync(DateTime exportDate, string hotelCode)
         {
@@ -64,6 +129,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
             return true;
         }
+
         public async Task<bool> DeleteSyncedDataByDateAsync(DateTime exportDate)
         {
             bool deleteResult;
@@ -275,15 +341,45 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return false;
         }
 
-        public async Task<bool> DeleteSyncSejourHotelsByDateRAWAsync(DateTime exportDate, string? hotelCode = null)
+        public async Task<bool> DeleteSyncSejourHotelsByDateRAWAsync(DateTime? exportDate = null, string? hotelCode = null)
         {
             try
             {
+                //string sqlQuery = @$"DELETE FROM {nameof(SyncSejourHotel)} 
+                //                    WHERE {nameof(SyncSejourHotel.SyncDate)} = '{((DateTime)exportDate).ToString("yyyy-MM-dd")}'
+                //                    AND {nameof(SyncSejourHotel.HotelCode)} = " + ((hotelCode == null)
+                //                                                                ? nameof(SyncSejourHotel.HotelCode)
+                //                                                                : "'" + hotelCode + "'");
+
+                string expDatePart = (exportDate == null) ? nameof(SyncSejourHotel.SyncDate) : "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart = (hotelCode == null) ? nameof(SyncSejourHotel.HotelCode) : "'" + hotelCode + "'";
+
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourHotel)} 
-                                    WHERE {nameof(SyncSejourHotel.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
-                                    AND {nameof(SyncSejourHotel.HotelCode)} = " + ((hotelCode == null)
-                                                                                ? nameof(SyncSejourHotel.HotelCode)
-                                                                                : "'" + hotelCode + "'");
+                                    WHERE {nameof(SyncSejourHotel.SyncDate)} = {expDatePart} 
+                                    AND {nameof(SyncSejourHotel.HotelCode)} = " + hotelCodePart;
+
+                await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteSyncSejourHotelsExceptSyncDateRAWAsync(DateTime exportDate, string hotelCode)
+        {
+            try
+            {
+                string expDatePart = "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart = "'" + hotelCode + "'";
+
+                string sqlQuery = @$"DELETE FROM {nameof(SyncSejourHotel)} 
+                                    WHERE {nameof(SyncSejourHotel.SyncDate)} != {expDatePart} 
+                                    AND {nameof(SyncSejourHotel.HotelCode)} = " + hotelCodePart;
+
                 await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
 
                 await _dbContext.SaveChangesAsync();
@@ -336,15 +432,45 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
             return false;
         }
-        public async Task<bool> DeleteSyncSejourSpoAppOrdersByDateRAWAsync(DateTime exportDate, string? hotelCode = null)
+        public async Task<bool> DeleteSyncSejourSpoAppOrdersByDateRAWAsync(DateTime? exportDate, string? hotelCode = null)
         {
             try
             {
+                //string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpoAppOrder)} 
+                //                    WHERE {nameof(SyncSejourSpoAppOrder.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
+                //                    AND {nameof(SyncSejourSpoAppOrder.HotelCode)} = " + ((hotelCode == null)
+                //                                                                ? nameof(SyncSejourSpoAppOrder.HotelCode)
+                //                                                                : "'" + hotelCode + "'");
+
+                string expDatePart = (exportDate == null) ? nameof(SyncSejourSpoAppOrder.SyncDate) : "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart = (hotelCode == null) ? nameof(SyncSejourSpoAppOrder.HotelCode) : "'" + hotelCode + "'";
+
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpoAppOrder)} 
-                                    WHERE {nameof(SyncSejourSpoAppOrder.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
-                                    AND {nameof(SyncSejourSpoAppOrder.HotelCode)} = " + ((hotelCode == null)
-                                                                                ? nameof(SyncSejourSpoAppOrder.HotelCode)
-                                                                                : "'" + hotelCode + "'");
+                                    WHERE {nameof(SyncSejourSpoAppOrder.SyncDate)} = {expDatePart} 
+                                    AND {nameof(SyncSejourSpoAppOrder.HotelCode)} = " + hotelCodePart;
+
+                await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteSyncSejourSpoAppOrdersExceptSyncDateRAWAsync(DateTime exportDate, string? hotelCode = null)
+        {
+            try
+            {
+                string expDatePart = "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart = "'" + hotelCode + "'";
+
+                string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpoAppOrder)} 
+                                    WHERE {nameof(SyncSejourSpoAppOrder.SyncDate)} != {expDatePart} 
+                                    AND {nameof(SyncSejourSpoAppOrder.HotelCode)} = " + hotelCodePart;
+
                 await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
 
                 await _dbContext.SaveChangesAsync();
@@ -393,15 +519,44 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return false;
         }
 
-        public async Task<bool> DeleteSyncSejourSpecialOffersByDateRAWAsync(DateTime exportDate, string? hotelCode = null)
+        public async Task<bool> DeleteSyncSejourSpecialOffersByDateRAWAsync(DateTime? exportDate, string? hotelCode = null)
         {
             try
             {
+                //string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpecialOffer)} 
+                //                    WHERE {nameof(SyncSejourSpecialOffer.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
+                //                    AND {nameof(SyncSejourSpecialOffer.HotelCode)} = " + ((hotelCode == null)
+                //                                                                ? nameof(SyncSejourSpecialOffer.HotelCode)
+                //                                                                : "'" + hotelCode + "'");
+
+                string expDatePart = (exportDate == null) ? nameof(SyncSejourSpecialOffer.SyncDate) : "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart = (hotelCode == null) ? nameof(SyncSejourSpecialOffer.HotelCode) : "'" + hotelCode + "'";
+
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpecialOffer)} 
-                                    WHERE {nameof(SyncSejourSpecialOffer.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
-                                    AND {nameof(SyncSejourSpecialOffer.HotelCode)} = " + ((hotelCode == null)
-                                                                                ? nameof(SyncSejourSpecialOffer.HotelCode)
-                                                                                : "'" + hotelCode + "'");
+                                    WHERE {nameof(SyncSejourSpecialOffer.SyncDate)} = {expDatePart} 
+                                    AND {nameof(SyncSejourSpecialOffer.HotelCode)} = " + hotelCodePart;
+
+                await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public async Task<bool> DeleteSyncSejourSpecialOffersExceptSyncDateRAWAsync(DateTime exportDate, string? hotelCode = null)
+        {
+            try
+            {
+                string expDatePart = "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart = "'" + hotelCode + "'";
+
+                string sqlQuery = @$"DELETE FROM {nameof(SyncSejourSpecialOffer)} 
+                                    WHERE {nameof(SyncSejourSpecialOffer.SyncDate)} != {expDatePart} 
+                                    AND {nameof(SyncSejourSpecialOffer.HotelCode)} = " + hotelCodePart;
+
                 await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
 
                 await _dbContext.SaveChangesAsync();
@@ -438,6 +593,21 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 throw;
             }
         }
+        public async Task<bool> GetSyncSejourRateExistenceByDateAndHotelAsync(string hotelCode, DateTime? exportDate = null)
+        {
+            try
+            {
+                var exs = await _dbContext.SyncSejourRate.Where(c => c.SyncDate == (exportDate ?? c.SyncDate) && c.HotelCode == hotelCode).FirstOrDefaultAsync();
+
+                return (exs != null);
+                //return await _dbContext.SyncSejourRate.Where(c => c.SyncDate == (exportDate ?? c.SyncDate) && c.HotelCode == hotelCode).AnyAsync();
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<bool> DeleteSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null)
         {
             var entity = await GetSyncSejourRatesByDateAsync(exportDate, hotelCode);
@@ -449,15 +619,44 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             }
             return false;
         }
-        public async Task<bool> DeleteSyncSejourRatesByDateRAWAsync(DateTime exportDate, string? hotelCode = null)
+        public async Task<bool> DeleteSyncSejourRatesByDateRAWAsync(DateTime? exportDate = null, string? hotelCode = null)
         {
             try
             {
+                //string sqlQuery = @$"DELETE FROM {nameof(SyncSejourRate)} 
+                //                    WHERE {nameof(SyncSejourRate.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
+                //                    AND {nameof(SyncSejourRate.HotelCode)} = " + ((hotelCode == null)
+                //                                                                ? nameof(SyncSejourRate.HotelCode)
+                //                                                                : "'" + hotelCode + "'");
+
+                string expDatePart = (exportDate == null) ? nameof(SyncSejourRate.SyncDate) : "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart = (hotelCode == null) ? nameof(SyncSejourRate.HotelCode) : "'" + hotelCode + "'";
+
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourRate)} 
-                                    WHERE {nameof(SyncSejourRate.SyncDate)} = '{exportDate.ToString("yyyy-MM-dd")}'
-                                    AND {nameof(SyncSejourRate.HotelCode)} = " + ((hotelCode == null)
-                                                                                ? nameof(SyncSejourRate.HotelCode)
-                                                                                : "'" + hotelCode + "'");
+                                    WHERE {nameof(SyncSejourRate.SyncDate)} = {expDatePart} 
+                                    AND {nameof(SyncSejourRate.HotelCode)} = " + hotelCodePart;
+
+                await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public async Task<bool> DeleteSyncSejourRatesExceptSyncDateRAWAsync(DateTime exportDate, string? hotelCode = null)
+        {
+            try
+            {
+                string expDatePart = "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                string hotelCodePart =  "'" + hotelCode + "'";
+
+                string sqlQuery = @$"DELETE FROM {nameof(SyncSejourRate)} 
+                                    WHERE {nameof(SyncSejourRate.SyncDate)} != {expDatePart} 
+                                    AND {nameof(SyncSejourRate.HotelCode)} = " + hotelCodePart;
+
                 await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
 
                 await _dbContext.SaveChangesAsync();
@@ -527,16 +726,28 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 //    })
                 //    .ToListAsync();
 
+                //return await _dbContext.SyncSejourRate
+                //            .Where(r => r.SyncDate == syncDate && r.RoomChdPax > 0)
+                //            .OrderBy(r => r.AccmdMenTypeCode)
+                //            .Select(r => new SyncSejourAccomodationType()
+                //            {
+                //                Code = r.AccmdMenTypeCode ?? "",
+                //                Name = r.AccmdMenTypeName ?? ""
+                //            })
+                //            .Distinct()
+                //            .ToListAsync();
+
                 return await _dbContext.SyncSejourRate
                             .Where(r => r.SyncDate == syncDate && r.RoomChdPax > 0)
-                            .OrderBy(r => r.AccmdMenTypeCode)
                             .Select(r => new SyncSejourAccomodationType()
                             {
-                                Code = r.AccmdMenTypeCode ?? "",
-                                Name = r.AccmdMenTypeName ?? ""
+                                Code = r.AccmdMenTypeCode,
+                                Name = r.AccmdMenTypeName
                             })
+                            .OrderBy(r => r.Code)
                             .Distinct()
                             .ToListAsync();
+
             }
             catch (Exception)
             {
@@ -920,7 +1131,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 int pageNumber = searchRequest.PageNumber;
                 int pageSize = searchRequest.PageSize;
 
-                DateTime? exportDate = (searchRequest.ExportDate == null) ? await GetMaxSyncDateAsync() : searchRequest.ExportDate;
+                //DateTime? exportDate = (searchRequest.ExportDate == null) ? await GetMaxSyncDateAsync() : searchRequest.ExportDate;
+                DateTime? exportDate = null;
                 DateTime? accomodationDateFrom = searchRequest.AccomodationDateFrom;
                 DateTime? accomodationDateTo = searchRequest.AccomodationDateTo;
                 string? board = searchRequest.Board;
@@ -950,7 +1162,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                                                                     "@roomPax, @adultPax, @childPax, " +
                                                                     "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
                                                                     "@hotelCodes, @pageNumber, @pageSize",
-                                                                    new SqlParameter("exportDate", exportDate),
+                                                                    new SqlParameter("exportDate", exportDate ?? (object)DBNull.Value),
                                                                     new SqlParameter("accomodationDateFrom", accomodationDateFrom),
                                                                     new SqlParameter("accomodationDateTo", accomodationDateTo),
                                                                     new SqlParameter("board", board),
@@ -1235,7 +1447,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 int pageNumber = searchRequest.PageNumber;
                 int pageSize = searchRequest.PageSize;
 
-                DateTime? exportDate = (searchRequest.ExportDate == null) ? await GetMaxSyncDateAsync() : searchRequest.ExportDate;
+                //DateTime? exportDate = (searchRequest.ExportDate == null) ? await GetMaxSyncDateAsync() : searchRequest.ExportDate;
+                DateTime? exportDate = null;
                 DateTime? accomodationDateFrom = searchRequest.AccomodationDateFrom;
                 DateTime? accomodationDateTo = searchRequest.AccomodationDateTo;
                 string? board = searchRequest.Board;
@@ -1257,7 +1470,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                                                                         "@roomPax, @adultPax, @childPax, " +
                                                                         "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
                                                                         "@hotelCodes, @pageNumber, @pageSize",
-                                                                        new SqlParameter("exportDate", exportDate),
+                                                                        new SqlParameter("exportDate", exportDate ?? (object)DBNull.Value),
                                                                         new SqlParameter("accomodationDateFrom", accomodationDateFrom),
                                                                         new SqlParameter("accomodationDateTo", accomodationDateTo),
                                                                         new SqlParameter("@board", board),
@@ -1339,13 +1552,16 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
             try
             {
+                await _transactionRepository.BeginTransAsync();
                 var result = await _dbContext.Database.ExecuteSqlRawAsync("EXEC dbo.Sp_ArchiveSyncSejourRate " +
-                                                                    "@syncDate",
-                                                                    new SqlParameter("syncDate", newSyncDate));
+                                                                          "@syncDate",
+                                                                          new SqlParameter("syncDate", newSyncDate));
+                await _transactionRepository.CommitTransAsync();
                 retValue = true;
             }
             catch (Exception)
             {
+                await _transactionRepository.RollbackTransAsync();
                 retValue = false;
             }
 

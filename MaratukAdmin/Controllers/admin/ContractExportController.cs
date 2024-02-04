@@ -29,7 +29,9 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<IActionResult> GetSejourContractExportView([FromQuery] int? syncByChangedHotels, string? hotelCode)
         {
             // syncByChangedHotels 1 - Yes, 0 - No (Sync by full Hotels list)
-            var result = await _contractExportManager.GetSejourContractExportView(syncByChangedHotels, hotelCode);
+
+            //var result = await _contractExportManager.GetSejourContractExportView(syncByChangedHotels, hotelCode);
+            var result = await _contractExportManager.GetSejourContractExportViewWorker(syncByChangedHotels, hotelCode);
 
             return Ok(result);
         }
