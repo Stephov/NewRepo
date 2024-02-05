@@ -1140,11 +1140,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 int adultPax = searchRequest.AdultCount;
                 int? childPax = searchRequest.ChildCount;
 
-                float? childAge1 = searchRequest.ChildAges.Count > 0 ? searchRequest.ChildAges[0] : null;
-                float? childAge2 = searchRequest.ChildAges.Count > 1 ? searchRequest.ChildAges[1] : null;
-                float? childAge3 = searchRequest.ChildAges.Count > 2 ? searchRequest.ChildAges[2] : null;
-                float? childAge4 = searchRequest.ChildAges.Count > 3 ? searchRequest.ChildAges[3] : null;
-                float? childAge5 = searchRequest.ChildAges.Count > 4 ? searchRequest.ChildAges[4] : null;
+
+                float? childAge1 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 0 ? searchRequest.ChildAges[0] : null;
+                float? childAge2 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 1 ? searchRequest.ChildAges[1] : null;
+                float? childAge3 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 2 ? searchRequest.ChildAges[2] : null;
+                float? childAge4 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 3 ? searchRequest.ChildAges[3] : null;
+                float? childAge5 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 4 ? searchRequest.ChildAges[4] : null;
 
                 string hotelCodes = searchRequest.HotelCodes != null ? string.Join(",", searchRequest.HotelCodes) : string.Empty;
 
