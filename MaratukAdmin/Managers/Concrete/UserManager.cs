@@ -420,6 +420,34 @@ namespace MaratukAdmin.Managers.Concrete
             return ras;
         }
 
+        public async Task<List<AgencyAgentResponseForAcc>> GetAgencyAgentsForAccAsync()
+        {
+            List<AgencyAgentResponseForAcc> agents = new List<AgencyAgentResponseForAcc>();
+            var res = await _userRepository.GetAllAgencyUserAsync();
+            foreach(var agent in res)
+            {
+                AgencyAgentResponseForAcc user = new AgencyAgentResponseForAcc();
+
+
+
+
+                user.Id = agent.Id;
+                user.AgencyName = agent.AgencyName;
+                user.FullCompanyName = agent.FullCompanyName;
+                user.CompanyLocation = agent.CompanyLocation;
+                user.CompanyLegalAddress = agent.CompanyLegalAddress;
+                user.Itn = agent.Itn;
+                user.PhoneNumber1 = agent.PhoneNumber1;
+                user.PhoneNumber2 = agent.PhoneNumber2;
+                user.FullName = agent.FullName;
+                user.email = agent.Email;
+                user.IsApproved = agent.IsAproved;
+                 agents.Add(user);   
+            }
+
+            return agents.OrderBy(x=> x.IsApproved).ToList();
+        }
+
         public async Task<AgencyAuthenticationResponse> AgencyUserLoginAsync(string email, string password)
         {
 

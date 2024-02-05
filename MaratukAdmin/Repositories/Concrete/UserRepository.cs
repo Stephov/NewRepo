@@ -50,7 +50,7 @@ namespace MaratukAdmin.Repositories.Concrete
         {
             return await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Email == email);
         }
-        
+
         public async Task<List<AgencyUser>> GetAgencyUsersAsync(int itn)
         {
             return await _dbContext.AgencyUser.Where(u => u.Itn == itn).ToListAsync();
@@ -130,7 +130,7 @@ namespace MaratukAdmin.Repositories.Concrete
                 user.FullName = agencyAgentUpdateCredentialsRequest.FullName;
                 user.PhoneNumber1 = agencyAgentUpdateCredentialsRequest.PhoneNumber;
                 user.Email = agencyAgentUpdateCredentialsRequest.Email;
-                if(passwordSalt != null)
+                if (passwordSalt != null)
                 {
                     user.PasswordSalt = passwordSalt;
                     user.Password = passwordHash;
@@ -175,11 +175,19 @@ namespace MaratukAdmin.Repositories.Concrete
                     return true;
                 }
                 return false;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 string s = ex.Message;
             }
             return false;
+        }
+
+        public async Task<List<AgencyUser>> GetAllAgencyUserAsync()
+        {
+            return await _dbContext.AgencyUser
+                            .Where(u => u.IsActivated && u.Role == "Admin")  
+                            .ToListAsync();
         }
     }
 }

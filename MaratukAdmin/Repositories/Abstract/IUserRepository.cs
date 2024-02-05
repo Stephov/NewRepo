@@ -10,6 +10,7 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<bool> DeleteAgentAsync(int agentId);
         Task<List<User>> GetManagersAsync(string role);
         Task<AgencyUser> GetAgencyUserAsync(string email);
+        Task<List<AgencyUser>> GetAllAgencyUserAsync();
         Task CreateUserAsync(User user);
         Task CreateAgencyUserAsync(AgencyUser agencyUser);
         Task<bool> ActivateUserAgency(int Id,string HashId);

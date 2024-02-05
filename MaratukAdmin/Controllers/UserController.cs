@@ -60,7 +60,6 @@ namespace MaratukAdmin.Controllers
         }
 
         [HttpGet("approve")]
-        [AllowAnonymous]
         public async Task<bool> Approve(int Id)
         {
             var res = await _userManager.ApproveUserAgency(Id);
@@ -68,6 +67,13 @@ namespace MaratukAdmin.Controllers
         }
 
 
+        [HttpGet("GetAgencyUserForAcc")]
+        public async Task<ActionResult> GetAgencyUsersForAcc()
+        {
+            var result =  await _userManager.GetAgencyAgentsForAccAsync();
+
+            return Ok(result);
+        }
 
         [HttpGet("auth/profile")]
         [AllowAnonymous]
