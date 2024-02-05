@@ -40,6 +40,7 @@
         public DateTime DateOfOrder { get; set; }
         public string ToureTypeId { get; set; }
         public int? HotelId { get; set; }
+        public string HotelName { get; set; } = string.Empty;
         public string? TicketNumber { get; set; }
         public int OrderStatusId { get; set; } = 1;
         public double TotalPrice { get; set; }

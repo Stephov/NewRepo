@@ -53,5 +53,12 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
             return new List<BookedHotelResponse>();
         }
+
+        public async Task<BookedHotel> GetAllBookedHotelsAsync(string orderID)
+        {
+            return await _dbContext.BookedHotel
+                .Where(o => o.OrderNumber == orderID)
+                .FirstOrDefaultAsync();
+        }
     }
 }

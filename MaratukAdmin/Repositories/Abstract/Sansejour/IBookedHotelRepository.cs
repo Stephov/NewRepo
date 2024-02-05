@@ -7,7 +7,9 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
     public interface IBookedHotelRepository
     {
         //Task<List<BookedFlight>> GetBookedFlightByAgentIdAsync(int agentId);
-        Task<List<BookedHotelResponse >> GetAllBookedHotelsAsync(List<AgencyUser> agencyUsers);
+        Task<List<BookedHotelResponse>> GetAllBookedHotelsAsync(List<AgencyUser> agencyUsers);
+
+        Task<BookedHotel> GetAllBookedHotelsAsync(string orderID);
         //Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel, List<BookedHotelGuest> bookedHotelGuests);
         Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel);
     }
