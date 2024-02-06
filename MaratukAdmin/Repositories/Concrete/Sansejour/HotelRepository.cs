@@ -4,6 +4,7 @@ using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
+using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Managers.Abstract;
@@ -17,6 +18,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Hosting;
 using System.Drawing;
+using System.Linq;
 using static MaratukAdmin.Repositories.Concrete.Sansejour.HotelRepository;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
@@ -30,7 +32,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         private readonly IFakeDataGenerationManager _fakeDataGenerationManager;
 
         //private List<Hotel> Hotels = null;
-        
+
 
         public HotelRepository(MaratukDbContext dbContext
                     , ICountryRepository countryRepository
@@ -94,6 +96,23 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
 
         //public async Task<HotelResponseModel?> GetHoteByCodeAsync(string code)
+        public async Task<List<Hotel>?> GetHotelsByCountryIdAndCityIdAsync(List<int>? countryIds = null, List<int>? cityIds = null)
+        {
+            //return await _dbContext.Hotel.Where(h => h.Country == 
+            //                                    ((countryIds == null) ? h.Country : countryIds) 
+            //                                    && h.City == ((cityIds == null) ? h.City : cityIds)
+            //                                    ).ToListAsync();
+
+            return await _dbContext.Hotel.Where(h => 
+                                                (countryIds == null || !countryIds.Any() || countryIds.Contains((int)h.Country))
+                                                &&
+                                                (cityIds == null || !cityIds.Any() || cityIds.Contains((int)h.City))
+                                                ).ToListAsync();
+
+
+            //var hotels = dbContext.Hotel
+            //    .Where(hotel => hotel.Country == 6226 && cityIds.Contains(hotel.City));
+        }
         public async Task<HotelResponseModel?> GetHotelByCodeAsync(string code)
         {
             HotelResponseModel? retValue = new();
@@ -106,10 +125,10 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
                 var hotCountry = await _dbContext.Country.FirstOrDefaultAsync(c => c.Id == hot.Country);
 
-                if(hotCountry != null)
+                if (hotCountry != null)
                 {
-                    retValue.hotelCountryName= hotCountry.Name;
-                    retValue.hotelCountryNameEng= hotCountry.NameENG;
+                    retValue.hotelCountryName = hotCountry.Name;
+                    retValue.hotelCountryNameEng = hotCountry.NameENG;
                 }
 
                 var hotCity = await _dbContext.City.FirstOrDefaultAsync(c => c.Id == hot.City);

@@ -29,6 +29,8 @@ namespace MaratukAdmin.Dto.Response.Sansejour
         public int? ReleaseDay { get; set; }
         public string? PriceType { get; set; }
         public double? Price { get; set; }
+        public double? PriceTotal { get; set; }
+        public int DaysCount { get; set; }
         public string? WeekendPrice { get; set; }
         public double? WeekendPercent { get; set; }
         public string? AccomLengthDay { get; set; }

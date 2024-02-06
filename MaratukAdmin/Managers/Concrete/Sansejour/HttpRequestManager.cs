@@ -836,8 +836,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                                         <RecID>12481049</RecID>
                                         <CreateDate>2023-09-16 15:54:03</CreateDate>
                                         <ChangeDate>2023-09-16 15:55:49</ChangeDate>
-                                        <Accomodation_period_Begin>17/09/2023</Accomodation_period_Begin>
-                                        <Accomodation_period_End>30/09/2023</Accomodation_period_End>
+                                        <Accomodation_period_Begin>11/03/2024</Accomodation_period_Begin>
+                                        <Accomodation_period_End>30/03/2024</Accomodation_period_End>
                                         <Room>DBL</Room>
                                         <RoomDesc>DOUBLE</RoomDesc>
                                         <RoomType>FAMGV</RoomType>
@@ -906,7 +906,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         </GetSejourContractExportViewResponse>
     </soap:Body>
 </soap:Envelope>";
-                    
+
                     // Load XML string into an XDocument
                     //XDocument xdoc = XDocument.Parse(xmlString);
 
@@ -1214,7 +1214,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     if (!string.IsNullOrEmpty(responseContent))
                     {
                         SyncSejourContractExportViewResponse sansResp = DeserializeXML<SyncSejourContractExportViewResponse>(responseContent);
-                        
+
                         response = sansResp;
 
                         // Deserialize XML to object
@@ -1453,18 +1453,27 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             {
                 string dateString = reader.ReadElementContentAsString();
 
-                if (!DateTime.TryParse(dateString, out dateTime))
+                if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                 {
-                    // Try parsing as "dd/MM/yyyy hh:mm:ss tt"
-                    if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                    if (!DateTime.TryParse(dateString, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                     {
-                        // If it fails, try parsing as "dd/MM/yyyy hh:mm:ss"
-                        if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+
+                        // Try parsing as "dd/MM/yyyy hh:mm:ss tt"
+                        if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                         {
-                            // If it fails also, try parsing as "dd/MM/yyyy"
-                            if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                            // If it fails, try parsing as "dd/MM/yyyy hh:mm:ss"
+                            if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                             {
-                                throw new FormatException($"String '{dateString}' was not recognized as a valid DateTime.");
+                                // If it fails also, try parsing as "dd/MM/yyyy"
+                                if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                                {
+                                    dateTime = DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None);
+                                    if (dateTime == null)
+                                    {
+                                        throw new FormatException($"String '{dateString}' was not recognized as a valid DateTime.");
+                                    }
+                                }
+
                             }
                         }
                     }

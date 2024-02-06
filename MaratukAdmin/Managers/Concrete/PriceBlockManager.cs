@@ -334,7 +334,7 @@ namespace MaratukAdmin.Managers.Concrete
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
             int identity = 0;
 
-            
+
 
             var groupedFlights = result
      .GroupBy(f => new
@@ -419,10 +419,10 @@ namespace MaratukAdmin.Managers.Concrete
         {
 
 
-           // var returned = await _functionRepository.GetFlightReturnDateAsync(PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId);
+            // var returned = await _functionRepository.GetFlightReturnDateAsync(PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId);
             var manual = await _functionRepository.GetFlightReturnDateForManualAsync(FromDate, FlightId);
             DateResponse result = new DateResponse();
-           // List<RoundTripResponse> roundTrips = new List<RoundTripResponse>();
+            // List<RoundTripResponse> roundTrips = new List<RoundTripResponse>();
             List<ManualTripResponse> manualTrips = new List<ManualTripResponse>();
 
             /*if (returned != null)
@@ -564,44 +564,10 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<List<FinalFlightSearchResponse>> GetFligthSearchResultMockAsync(SearchFlightResult searchFlightResult)
         {
-            FinalFlightSearchResponse finalResponse = new FinalFlightSearchResponse();
-            FlightSearchResponse TwoWay = new FlightSearchResponse();
+            var groupedFlights = await _functionRepository.GetFligthInfoFunctionMockAsync(searchFlightResult);
 
-            if (searchFlightResult.FlightTwoId == null)
-            {
-                var resOneWay = await _functionRepository.GetFligthOneWayInfoFunctionAsync(searchFlightResult.FlightOneId, searchFlightResult.StartDate);
-                var groupedFlights = resOneWay.GroupBy(result => result.FlightId)
-            .Select(group => new FinalFlightSearchResponse
-            {
-                FlightId = group.Key,
-                CostPerTickets = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
-                TotalPrice = CalacTotalPrice(resOneWay.Where(result => result.FlightId == group.Key).ToList(), searchFlightResult.Adult, searchFlightResult.Child, searchFlightResult.Infant),
-                NumberOfTravelers = searchFlightResult.Adult + searchFlightResult.Child + searchFlightResult.Infant,
-                DepartureAirportCode = group.First().DepartureAirportCode,
-                DestinationAirportCode = group.First().DestinationAirportCode,
-                DepartureTime = group.First().DepartureTime,
-                ArrivalTime = group.First().ArrivalTime,
-                AdultPrice = group.FirstOrDefault(res => res.AgeFrom == 12).Bruto,
-                ChildPrice = group.FirstOrDefault(res => res.AgeFrom == 2).Bruto,
-                InfantPrice = group.FirstOrDefault(res => res.AgeFrom == 0).Bruto,
-                Airline = group.First().Airline,
-                FlightNumber = group.First().FlightNumber,
-                DurationHours = group.First().DurationHours,
-                DurationMinutes = group.First().DurationMinutes,
-                CurrencyId = group.First().CurrencyId,
+            return groupedFlights;
 
-            }).ToList();
-
-                return groupedFlights;
-
-            }
-            else
-            {
-                var groupedFlights = await _functionRepository.GetFligthInfoFunctionMockAsync(searchFlightResult);
-
-                return groupedFlights;
-
-            }
         }
 
         private double CalacTotalPrice(List<SearchResultFunction> searchResultFunctions, int adult, int child, int infant)

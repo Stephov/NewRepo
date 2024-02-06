@@ -223,6 +223,7 @@ namespace MaratukAdmin.Dto.Response.Sansejour
         public CustomDateTime ChangeDate { get; set; }
 
         [XmlElement(ElementName = "Accomodation_period_Begin")]
+        
         public CustomDateTime AccomodationPeriodBegin { get; set; }
 
         [XmlElement(ElementName = "Accomodation_period_End")]
