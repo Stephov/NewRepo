@@ -8,11 +8,17 @@
         public DateTime? ExportDate { get; set; }
         public DateTime? AccomodationDateFrom { get; set; }
         public DateTime? AccomodationDateTo { get; set; }
-        public string? Board { get; set; }
+        public List<string>? Board { get; set; }
+        public bool LateCheckout { get; set; }
+        public List<string>? HotelCodes { get; set; }
+        public List<int>? HotelCategoryIds { get; set; }
+        public List<int>? HotelCountryIds { get; set; }
+        public List<int>? HotelCityIds { get; set; }
+        public double? TotalPriceMin { get; set; }
+        public double? TotalPriceMax { get; set; }
         public int AdultCount { get; set; }
         public int? ChildCount { get; set; }
         public int TotalCount { get { return AdultCount + (ChildCount ?? 0); } }
-        public List<string>? HotelCodes { get; set; }
         public List<float?>? ChildAges { get; set; }
 
         public int PageNumber { get; set; }

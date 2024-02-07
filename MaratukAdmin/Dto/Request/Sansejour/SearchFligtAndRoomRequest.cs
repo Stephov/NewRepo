@@ -23,7 +23,15 @@ namespace MaratukAdmin.Dto.Request.Sansejour
         public DateTime? RoomExportDate { get; set; }
         public DateTime? RoomAccomodationDateFrom { get; set; }
         public DateTime? RoomAccomodationDateTo { get; set; }
-        public string? Board { get; set; }
+        public List<string>? Board { get; set; }
+        public bool LateCheckout { get; set; }
+        public List<string>? HotelCodes { get; set; }
+        public List<int>? HotelCategoryIds { get; set; }
+        public List<int>? HotelCountryIds { get; set; }
+        public List<int>? HotelCityIds { get; set; }
+        public double? TotalPriceMin { get; set; }
+        public double? TotalPriceMax { get; set; }
+
         //public int RoomTotalCount { get { return RoomAdultCount + (RoomChildCount ?? 0); } }
         public int RoomTotalCount { get { return _roomTotalCount; } }
         //public int PageNumber { get { return _pageNumber; } }
@@ -41,6 +49,13 @@ namespace MaratukAdmin.Dto.Request.Sansejour
             FlightStartDate = baseModel.FlightStartDate;
             FlightReturnedDate = baseModel.FlightReturnedDate;
             Board = baseModel.Board;
+            LateCheckout = baseModel.LateCheckout;
+            HotelCategoryIds = baseModel.HotelCategoryIds;
+            HotelCodes = baseModel.HotelCodes;
+            HotelCountryIds = baseModel.HotelCountryIds;
+            HotelCityIds = baseModel.HotelCityIds;
+            TotalPriceMin = baseModel.TotalPriceMin;
+            TotalPriceMax = baseModel.TotalPriceMax;
             RoomAdultCount = baseModel.RoomAdultCount;
             RoomChildCount = baseModel.RoomChildCount;
             RoomChildAges = baseModel.RoomChildAges;

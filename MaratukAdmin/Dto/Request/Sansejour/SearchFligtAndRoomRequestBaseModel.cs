@@ -11,7 +11,15 @@ namespace MaratukAdmin.Dto.Request.Sansejour
         public int? FlightTwoId { get; set; }
         public DateTime FlightStartDate { get; set; }
         public DateTime? FlightReturnedDate { get; set; }
-        public string? Board { get; set; }
+        public List<string>? Board { get; set; }
+        public bool LateCheckout { get; set; }
+        public List<string>? HotelCodes { get; set; }
+        public List<int>? HotelCategoryIds { get; set; }
+        public List<int>? HotelCountryIds { get; set; }
+        public List<int>? HotelCityIds { get; set; }
+        public double? TotalPriceMin { get; set; }
+        public double? TotalPriceMax { get; set; }
+
         public int RoomAdultCount { get; set; }
         public int? RoomChildCount { get; set; }
         public List<float?>? RoomChildAges { get; set; }

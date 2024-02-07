@@ -921,7 +921,6 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultAsync(searchFlightRequest);
             //List<FinalFlightSearchResponse> resultFlightSearch = await _priceBlockManager.GetFligthSearchResultMockAsync(searchFlightRequest);      // MOCK
 
-
             SearchRoomRequest searchRoomRequest = new()
             {
                 AccomodationDateFrom = searchFlightAndRoomRequest.RoomAccomodationDateFrom,
@@ -931,7 +930,14 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 ChildCount = searchFlightAndRoomRequest.RoomChildCount,
                 ChildAges = searchFlightAndRoomRequest.RoomChildAges,
                 PageNumber = searchFlightAndRoomRequest.PageNumber,
-                PageSize = searchFlightAndRoomRequest.PageSize
+                PageSize = searchFlightAndRoomRequest.PageSize,
+                LateCheckout = searchFlightAndRoomRequest.LateCheckout,
+                HotelCodes = searchFlightAndRoomRequest.HotelCodes,
+                HotelCategoryIds = searchFlightAndRoomRequest.HotelCategoryIds,
+                HotelCountryIds = searchFlightAndRoomRequest.HotelCountryIds,
+                HotelCityIds = searchFlightAndRoomRequest.HotelCityIds,
+                TotalPriceMin = searchFlightAndRoomRequest.TotalPriceMin,
+                TotalPriceMax = searchFlightAndRoomRequest.TotalPriceMax
             };
 
             // Get ROOMS
