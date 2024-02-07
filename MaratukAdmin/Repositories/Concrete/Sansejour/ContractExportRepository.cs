@@ -651,7 +651,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             try
             {
                 string expDatePart = "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
-                string hotelCodePart =  "'" + hotelCode + "'";
+                string hotelCodePart = "'" + hotelCode + "'";
 
                 string sqlQuery = @$"DELETE FROM {nameof(SyncSejourRate)} 
                                     WHERE {nameof(SyncSejourRate.SyncDate)} != {expDatePart} 
@@ -1135,7 +1135,6 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 DateTime? exportDate = null;
                 DateTime? accomodationDateFrom = searchRequest.AccomodationDateFrom;
                 DateTime? accomodationDateTo = searchRequest.AccomodationDateTo;
-                string? board = searchRequest.Board;
                 int roomPax = searchRequest.TotalCount;
                 int adultPax = searchRequest.AdultCount;
                 int? childPax = searchRequest.ChildCount;
@@ -1147,6 +1146,8 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 float? childAge4 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 3 ? searchRequest.ChildAges[3] : null;
                 float? childAge5 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 4 ? searchRequest.ChildAges[4] : null;
 
+                //string? board = searchRequest.Board;
+                string board = searchRequest.Board != null ? string.Join(",", searchRequest.Board) : string.Empty; 
                 string hotelCodes = searchRequest.HotelCodes != null ? string.Join(",", searchRequest.HotelCodes) : string.Empty;
 
                 //var results = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
@@ -1452,7 +1453,6 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 DateTime? exportDate = null;
                 DateTime? accomodationDateFrom = searchRequest.AccomodationDateFrom;
                 DateTime? accomodationDateTo = searchRequest.AccomodationDateTo;
-                string? board = searchRequest.Board;
                 int roomPax = searchRequest.TotalCount;
                 int adultPax = searchRequest.AdultCount;
                 int? childPax = searchRequest.ChildCount;
@@ -1463,14 +1463,22 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 float? childAge4 = searchRequest.ChildAges.Count > 3 ? searchRequest.ChildAges[3] : null;
                 float? childAge5 = searchRequest.ChildAges.Count > 4 ? searchRequest.ChildAges[4] : null;
 
+                string board = searchRequest.Board != null ? string.Join(",", searchRequest.Board) : string.Empty;
+                int lateCheckout = searchRequest.LateCheckout ? 1 : 0;
                 string hotelCodes = searchRequest.HotelCodes != null ? string.Join(",", searchRequest.HotelCodes) : string.Empty;
+                string hotelCategoryIds = searchRequest.HotelCategoryIds != null ? string.Join(",", searchRequest.HotelCategoryIds) : string.Empty;
+                string hotelCountryIds = searchRequest.HotelCountryIds != null ? string.Join(",", searchRequest.HotelCountryIds) : string.Empty;
+                string hotelCityIds = searchRequest.HotelCityIds != null ? string.Join(",", searchRequest.HotelCityIds) : string.Empty;
 
                 //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
                 var result = await _dbContext.RoomSearchResponseLowestPrices.FromSqlRaw("EXEC dbo.Sp_Search_Room_LowestPrices " +
                                                                         "@exportDate, @accomodationDateFrom, @accomodationDateTo, @board, " +
                                                                         "@roomPax, @adultPax, @childPax, " +
                                                                         "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
-                                                                        "@hotelCodes, @pageNumber, @pageSize",
+                                                                        //"@hotelCodes, @pageNumber, @pageSize",
+                                                                        //"@hotelCodes, @totalPriceMin, @totalPriceMax, @pageNumber, @pageSize",
+                                                                        "@lateCheckout, @hotelCodes, @hotelCategoryIds, @hotelCountryIds, @hotelCityIds, @totalPriceMin, @totalPriceMax, @pageNumber, @pageSize",
+
                                                                         new SqlParameter("exportDate", exportDate ?? (object)DBNull.Value),
                                                                         new SqlParameter("accomodationDateFrom", accomodationDateFrom),
                                                                         new SqlParameter("accomodationDateTo", accomodationDateTo),
@@ -1484,6 +1492,14 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                                                                         new SqlParameter("childAge4", childAge4 ?? (object)DBNull.Value),
                                                                         new SqlParameter("childAge5", childAge5 ?? (object)DBNull.Value),
                                                                         new SqlParameter("hotelCodes", hotelCodes),
+
+                                                                        new SqlParameter("lateCheckout", lateCheckout),
+                                                                        new SqlParameter("hotelCategoryIds", hotelCodes),
+                                                                        new SqlParameter("hotelCountryIds", hotelCodes),
+                                                                        new SqlParameter("hotelCityIds", hotelCodes),
+
+                                                                        new SqlParameter("totalPriceMin", searchRequest.TotalPriceMin ?? (object)DBNull.Value),
+                                                                        new SqlParameter("totalPriceMax", searchRequest.TotalPriceMax ?? (object)DBNull.Value),
                                                                         new SqlParameter("pageNumber", pageNumber),
                                                                         new SqlParameter("pageSize", pageSize))
                                                                         .ToListAsync();

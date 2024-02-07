@@ -59,15 +59,6 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<IActionResult> SearchFlightAndRoom([FromBody] SearchFligtAndRoomRequestBaseModel requestModel)
         {
             SearchFligtAndRoomRequest searchFlightAndRoomRequest = new(requestModel);
-            //{
-            //    FlightOneId = requestModel.FlightOneId,
-            //    FlightTwoId = requestModel.FlightTwoId,
-            //    FlightStartDate = requestModel.FlightStartDate,
-            //    FlightReturnedDate = requestModel.FlightReturnedDate,
-            //    RoomAdultCount = requestModel.RoomAdultCount,
-            //    RoomChildCount = requestModel.RoomChildCount,
-            //    RoomChildAges = requestModel.RoomChildAges
-            //};
 
             var result = await _contractExportManager.SearchFlightAndRoomAsync(searchFlightAndRoomRequest);
 
@@ -86,7 +77,6 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpPost("SearchFlightAndRoomLowestPrices/")]
-        //public async Task<IActionResult> SearchFlightAndRoomLowestPrices([FromBody] SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         public async Task<IActionResult> SearchFlightAndRoomLowestPrices([FromBody] SearchFligtAndRoomRequestBaseModel requestModel)
         {
             SearchFligtAndRoomRequest searchFlightAndRoomRequest = new(requestModel);
