@@ -748,12 +748,18 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 AccomodationDateFrom = searchFlightAndRoomRequest.RoomAccomodationDateFrom,
                 AccomodationDateTo = searchFlightAndRoomRequest.RoomAccomodationDateTo,
                 Board = searchFlightAndRoomRequest.Board,
-                HotelCodes = searchFlightAndRoomRequest.RoomHotelCodes,
                 AdultCount = searchFlightAndRoomRequest.RoomAdultCount,
                 ChildCount = searchFlightAndRoomRequest.RoomChildCount,
                 ChildAges = searchFlightAndRoomRequest.RoomChildAges,
                 PageNumber = searchFlightAndRoomRequest.PageNumber,
-                PageSize = searchFlightAndRoomRequest.PageSize
+                PageSize = searchFlightAndRoomRequest.PageSize,
+                LateCheckout = searchFlightAndRoomRequest.LateCheckout,
+                HotelCodes = searchFlightAndRoomRequest.HotelCodes,
+                HotelCategoryIds = searchFlightAndRoomRequest.HotelCategoryIds,
+                HotelCountryIds = searchFlightAndRoomRequest.HotelCountryIds,
+                HotelCityIds = searchFlightAndRoomRequest.HotelCityIds,
+                TotalPriceMin = searchFlightAndRoomRequest.TotalPriceMin,
+                TotalPriceMax = searchFlightAndRoomRequest.TotalPriceMax
             };
 
             // Get ROOMS
