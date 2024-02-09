@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bogus.DataSets;
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using MimeKit;
 using MimeKit.Tnef;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -265,7 +267,7 @@ namespace MaratukAdmin.Managers.Concrete
             int distinctOrderNumbersCount = groupedBookedFlights.Count;
 
 
-      
+
 
             var listBookedFlights = groupedBookedFlights
     .Skip((pageNumber - 1) * pageSize)
@@ -288,10 +290,10 @@ namespace MaratukAdmin.Managers.Concrete
             var groupedFlights = listBookedFlightsAll
                                 .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
                                 .Select(group => new
-                                 {
-                                   Currency = group.Key.Rate,
-                                   TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
-                                 });
+                                {
+                                    Currency = group.Key.Rate,
+                                    TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+                                });
 
 
             foreach (var result in groupedFlights)
@@ -386,6 +388,172 @@ namespace MaratukAdmin.Managers.Concrete
             return responseFinal;
         }
 
+
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightByMaratukAgentIdAsync(int maratukAgent, string? searchText,int pageNumber, int pageSize, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
+
+            var listBookedFlightsAll = await _bookedFlightRepository.GetBookedFlightByMaratukAgentIdAsync(maratukAgent);
+
+
+            List<BookedFlight?> filtred = new List<BookedFlight?>();
+
+            if (startDate == null && endDate == null && searchText != null)
+            {
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            }
+            if (searchText == null && endDate == null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+            }
+            if (searchText == null && endDate != null && startDate == null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date).ToList();
+            }
+            if (searchText == null && endDate != null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+            }
+            if (searchText != null && endDate == null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date >= startDate.Value.Date).ToList();
+            }
+            if (searchText != null && endDate != null && startDate == null)
+            {
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date <= endDate.Value.Date).ToList();
+            }
+
+            if (searchText != null && endDate != null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            }
+
+            var groupedBookedFlights = listBookedFlightsAll.GroupBy(flight => flight.OrderNumber).ToList();
+
+
+            int distinctOrderNumbersCount = groupedBookedFlights.Count;
+
+
+
+
+            var listBookedFlights = groupedBookedFlights
+    .Skip((pageNumber - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
+
+
+
+            int totalPages = (int)Math.Ceiling((double)distinctOrderNumbersCount / pageSize);
+
+            ///todo  add last actual currency
+
+
+            var bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
+            double totalDeptUsd = 0;
+            double totalDeptEur = 0;
+
+
+
+            var groupedFlights = filtred
+                                .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+                                .Select(group => new
+                                {
+                                    Currency = group.Key.Rate,
+                                    TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+                                });
+
+
+            foreach (var result in groupedFlights)
+            {
+
+                if (result.Currency == "USD")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptUsd += result.TotalDept;
+                }
+
+                if (result.Currency == "EUR")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptEur += result.TotalDept;
+                }
+            }
+
+            foreach (var group in listBookedFlights)
+            {
+                var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
+                {
+                    Id = flight.Id,
+                    Name = flight.Name,
+                    Surname = flight.Surname,
+                    PhoneNumber = flight.PhoneNumber,
+                    BirthDay = flight.BirthDay,
+                    Email = flight.Email,
+                    Passport = flight.Passport,
+                    PasportExpiryDate = flight.PasportExpiryDate,
+                    GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                }).ToList();
+
+                var firstFlightInGroup = group.First();
+                // You can take any flight from the group to extract common properties
+                var bookedFlightResponse = new BookedFlightResponseForMaratuk
+                {
+                    bookedUsers = bookedUsers,
+                    Id = firstFlightInGroup.Id,
+                    OrderNumber = firstFlightInGroup.OrderNumber,
+                    DateOfOrder = firstFlightInGroup.DateOfOrder,
+                    ToureTypeId = firstFlightInGroup.ToureTypeId,
+                    HotelId = firstFlightInGroup.HotelId,
+                    TicketNumber = firstFlightInGroup.TicketNumber,
+                    OrderStatusId = firstFlightInGroup.OrderStatusId,
+                    TotalPrice = firstFlightInGroup.TotalPrice,
+                    Rate = firstFlightInGroup.Rate,
+                    AgentId = firstFlightInGroup.AgentId,//add agentName
+                    AgentStatusId = firstFlightInGroup.AgentStatusId,
+                    AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                    TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
+                    PassengersCount = firstFlightInGroup.PassengersCount,
+                    TourStartDate = firstFlightInGroup.TourStartDate,
+                    TourEndDate = firstFlightInGroup.TourEndDate,
+                    DeadLine = firstFlightInGroup.DeadLine,
+                    Paid = firstFlightInGroup.Paid,
+                    MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                    MaratukAgentStatusId = firstFlightInGroup.MaratukAgentStatusId,
+                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                    CountryId = firstFlightInGroup.CountryId,
+                    CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                    Dept = firstFlightInGroup.Dept,
+                    StartFlightId = firstFlightInGroup.StartFlightId,
+                    EndFlightId = firstFlightInGroup.EndFlightId,
+                };
+
+                if (bookedFlightResponse.HotelId != null)
+                {
+                    var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
+
+                    if (hotel.Name != null)
+                    {
+                        bookedFlightResponse.HotelName = hotel.Name;
+
+                    }
+                    else
+                    {
+                        bookedFlightResponse.HotelName = string.Empty;
+
+                    }
+                }
+
+                bookedFlightResponses.Add(bookedFlightResponse);
+            }
+
+
+            responseFinal.bookedFlightResponses = bookedFlightResponses;
+            responseFinal.DeptUSD = (int)totalDeptUsd * -1;
+            responseFinal.DeptEUR = (int)totalDeptEur * -1;
+            responseFinal.TotalPages = totalPages;
+
+            return responseFinal;
+        }
 
         public async Task<BookedFlightResponseFinal> GetBookedFlightAsync(int Itn)
         {
@@ -488,20 +656,20 @@ namespace MaratukAdmin.Managers.Concrete
         {
             var booked = await _bookedFlightRepository.GetBookedFlightByIdAsync(bookedUserInfoForMaratuk.Id);
 
-            booked.Name =  String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Name) ? booked.Name : bookedUserInfoForMaratuk.Name;
-            booked.Surname =  String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Surname) ? booked.Surname : bookedUserInfoForMaratuk.Surname;
-            booked.PhoneNumber =  String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.PhoneNumber) ? booked.PhoneNumber : bookedUserInfoForMaratuk.PhoneNumber;
-            booked.Email =  String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Email) ? booked.Email : bookedUserInfoForMaratuk.Email;
-            booked.Passport =  String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Passport) ? booked.Passport : bookedUserInfoForMaratuk.Passport;         
+            booked.Name = String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Name) ? booked.Name : bookedUserInfoForMaratuk.Name;
+            booked.Surname = String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Surname) ? booked.Surname : bookedUserInfoForMaratuk.Surname;
+            booked.PhoneNumber = String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.PhoneNumber) ? booked.PhoneNumber : bookedUserInfoForMaratuk.PhoneNumber;
+            booked.Email = String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Email) ? booked.Email : bookedUserInfoForMaratuk.Email;
+            booked.Passport = String.IsNullOrWhiteSpace(bookedUserInfoForMaratuk.Passport) ? booked.Passport : bookedUserInfoForMaratuk.Passport;
             booked.PasportExpiryDate = bookedUserInfoForMaratuk.PasportExpiryDate;
             booked.BirthDay = bookedUserInfoForMaratuk.BirthDay;
             booked.GenderId = bookedUserInfoForMaratuk.GenderId;
-          
-           return await _mainRepository.UpdateAsync(booked);
+
+            return await _mainRepository.UpdateAsync(booked);
 
         }
 
-        public async Task<bool> UpdateBookedStatusAsync(string orderNumber,int status)
+        public async Task<bool> UpdateBookedStatusAsync(string orderNumber, int status)
         {
             try
             {
@@ -578,7 +746,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 var bookedHotels = _bookedHotelRepository.GetAllBookedHotelsAsync(group.Key);
 
-                if(bookedHotels.Result == null)
+                if (bookedHotels.Result == null)
                 {
                     var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                     {
@@ -630,7 +798,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else
                 {
-                    if(bookedHotels.Result.OrderStatusId == 2 || bookedHotels.Result.OrderStatusId == 4)
+                    if (bookedHotels.Result.OrderStatusId == 2 || bookedHotels.Result.OrderStatusId == 4)
                     {
                         var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                         {
@@ -678,11 +846,11 @@ namespace MaratukAdmin.Managers.Concrete
                             EndFlightId = firstFlightInGroup.EndFlightId,
                         };
 
-                        if(bookedFlightResponse.HotelId != null)
+                        if (bookedFlightResponse.HotelId != null)
                         {
                             var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
-                            if(hotel.Name != null)
+                            if (hotel.Name != null)
                             {
                                 bookedFlightResponse.HotelName = hotel.Name;
 
@@ -696,9 +864,229 @@ namespace MaratukAdmin.Managers.Concrete
 
                         bookedFlightResponses.Add(bookedFlightResponse);
                     }
-                  
+
                 }
-                
+
+            }
+
+
+            responseFinal.bookedFlightResponses = bookedFlightResponses;
+            responseFinal.DeptUSD = (int)totalDeptUsd * -1;
+            responseFinal.DeptEUR = (int)totalDeptEur * -1;
+            responseFinal.TotalPages = totalPages;
+
+            return responseFinal;
+        }
+
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightForAccAsync(int pageNumber, int pageSize, string? searchText, DateTime? startDate, DateTime? endDate)
+        {
+            BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
+
+            var listBookedFlightsAll = await _bookedFlightRepository.GetBookedFlightByMaratukAgentForAccAsync();
+
+
+            List<BookedFlight?> filtred = new List<BookedFlight?>();
+
+            if (startDate == null && endDate == null && searchText != null)
+            {
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            }
+            if (searchText == null && endDate == null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+            }
+            if (searchText == null && endDate != null && startDate == null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date).ToList();
+            }
+            if (searchText == null && endDate != null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+            }
+            if (searchText != null && endDate == null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date >= startDate.Value.Date).ToList();
+            }
+            if (searchText != null && endDate != null && startDate == null)
+            {
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date <= endDate.Value.Date).ToList();
+            }
+
+            if (searchText != null && endDate != null && startDate != null)
+            {
+                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            }
+
+
+            var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
+
+            int distinctOrderNumbersCount = groupedBookedFlights.Count;
+
+            var listBookedFlights = groupedBookedFlights
+    .Skip((pageNumber - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
+
+
+
+            int totalPages = (int)Math.Ceiling((double)distinctOrderNumbersCount / pageSize);
+
+            var bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
+            double totalDeptUsd = 0;
+            double totalDeptEur = 0;
+
+
+
+            var groupedFlights = filtred
+                                .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
+                                .Select(group => new
+                                {
+                                    Currency = group.Key.Rate,
+                                    TotalDept = group.Select(flight => flight.Dept ?? 0).Distinct().Sum()
+                                });
+
+
+            foreach (var result in groupedFlights)
+            {
+
+                if (result.Currency == "USD")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptUsd += result.TotalDept;
+                }
+
+                if (result.Currency == "EUR")
+                {
+                    // Assuming a specific USD rate, adjust the calculation as needed
+                    totalDeptEur += result.TotalDept;
+                }
+            }
+
+            foreach (var group in listBookedFlights)
+            {
+                var bookedHotels = _bookedHotelRepository.GetAllBookedHotelsAsync(group.Key);
+
+                if (bookedHotels.Result == null)
+                {
+                    var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
+                    {
+                        Id = flight.Id,
+                        Name = flight.Name,
+                        Surname = flight.Surname,
+                        PhoneNumber = flight.PhoneNumber,
+                        BirthDay = flight.BirthDay,
+                        Email = flight.Email,
+                        Passport = flight.Passport,
+                        PasportExpiryDate = flight.PasportExpiryDate,
+                        GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                    }).ToList();
+
+                    var firstFlightInGroup = group.First();
+
+                    var bookedFlightResponse = new BookedFlightResponseForMaratuk
+                    {
+                        bookedUsers = bookedUsers,
+                        Id = firstFlightInGroup.Id,
+                        OrderNumber = firstFlightInGroup.OrderNumber,
+                        DateOfOrder = firstFlightInGroup.DateOfOrder,
+                        ToureTypeId = firstFlightInGroup.ToureTypeId,
+                        HotelId = firstFlightInGroup.HotelId,
+                        TicketNumber = firstFlightInGroup.TicketNumber,
+                        OrderStatusId = firstFlightInGroup.OrderStatusId,
+                        TotalPrice = firstFlightInGroup.TotalPrice,
+                        Rate = firstFlightInGroup.Rate,
+                        AgentId = firstFlightInGroup.AgentId,//add agentName
+                        AgentStatusId = firstFlightInGroup.AgentStatusId,
+                        AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                        TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
+                        PassengersCount = firstFlightInGroup.PassengersCount,
+                        TourStartDate = firstFlightInGroup.TourStartDate,
+                        TourEndDate = firstFlightInGroup.TourEndDate,
+                        DeadLine = firstFlightInGroup.DeadLine,
+                        Paid = firstFlightInGroup.Paid,
+                        MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                        MaratukAgentStatusId = firstFlightInGroup.MaratukAgentStatusId,
+                        MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                        CountryId = firstFlightInGroup.CountryId,
+                        CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                        Dept = firstFlightInGroup.Dept,
+                        StartFlightId = firstFlightInGroup.StartFlightId,
+                        EndFlightId = firstFlightInGroup.EndFlightId,
+                    };
+
+                    bookedFlightResponses.Add(bookedFlightResponse);
+                }
+                else
+                {
+                    if (bookedHotels.Result.OrderStatusId == 2 || bookedHotels.Result.OrderStatusId == 4)
+                    {
+                        var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
+                        {
+                            Id = flight.Id,
+                            Name = flight.Name,
+                            Surname = flight.Surname,
+                            PhoneNumber = flight.PhoneNumber,
+                            BirthDay = flight.BirthDay,
+                            Email = flight.Email,
+                            Passport = flight.Passport,
+                            PasportExpiryDate = flight.PasportExpiryDate,
+                            GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                        }).ToList();
+
+                        var firstFlightInGroup = group.First();
+
+                        var bookedFlightResponse = new BookedFlightResponseForMaratuk
+                        {
+                            bookedUsers = bookedUsers,
+                            Id = firstFlightInGroup.Id,
+                            OrderNumber = firstFlightInGroup.OrderNumber,
+                            DateOfOrder = firstFlightInGroup.DateOfOrder,
+                            ToureTypeId = firstFlightInGroup.ToureTypeId,
+                            HotelId = firstFlightInGroup.HotelId,
+                            TicketNumber = firstFlightInGroup.TicketNumber,
+                            OrderStatusId = firstFlightInGroup.OrderStatusId,
+                            TotalPrice = firstFlightInGroup.TotalPrice,
+                            Rate = firstFlightInGroup.Rate,
+                            AgentId = firstFlightInGroup.AgentId,//add agentName
+                            AgentStatusId = firstFlightInGroup.AgentStatusId,
+                            AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                            TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
+                            PassengersCount = firstFlightInGroup.PassengersCount,
+                            TourStartDate = firstFlightInGroup.TourStartDate,
+                            TourEndDate = firstFlightInGroup.TourEndDate,
+                            DeadLine = firstFlightInGroup.DeadLine,
+                            Paid = firstFlightInGroup.Paid,
+                            MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                            MaratukAgentStatusId = firstFlightInGroup.MaratukAgentStatusId,
+                            MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                            CountryId = firstFlightInGroup.CountryId,
+                            CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                            Dept = firstFlightInGroup.Dept,
+                            StartFlightId = firstFlightInGroup.StartFlightId,
+                            EndFlightId = firstFlightInGroup.EndFlightId,
+                        };
+
+                        if (bookedFlightResponse.HotelId != null)
+                        {
+                            var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
+
+                            if (hotel.Name != null)
+                            {
+                                bookedFlightResponse.HotelName = hotel.Name;
+
+                            }
+                            else
+                            {
+                                bookedFlightResponse.HotelName = string.Empty;
+
+                            }
+                        }
+
+                        bookedFlightResponses.Add(bookedFlightResponse);
+                    }
+
+                }
+
             }
 
 

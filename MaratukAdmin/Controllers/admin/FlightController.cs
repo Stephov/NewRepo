@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Dto.Request;
+﻿using Bogus.DataSets;
+using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Services;
@@ -103,7 +104,6 @@ namespace MaratukAdmin.Controllers.admin
 
 
         [HttpGet("isFlightNameExist")]
-        [AllowAnonymous]
         public async Task<bool> isFlightNameExist(string name)
         {
             var res = await _flightManager.IsFlightNameExistAsync(name);
@@ -133,7 +133,6 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("BookFlight/{agentId:int}")]
-        [AllowAnonymous]
         public async Task<BookedFlightResponseFinal> GetBookFlightAsync(int agentId)
         {
             var res = await _bookedFlightManager.GetBookedFlightByAgentIdAsync(agentId);
@@ -141,23 +140,34 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetBookFlightByMaratukAgentId/{maratukAgentId:int}")]
-        [AllowAnonymous]
         public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookFlightForMaratukAgentAsync(int maratukAgentId, int pageNumber = 1, int pageSize = 10)
         {
             var res = await _bookedFlightManager.GetBookedFlightByMaratukAgentIdAsync(maratukAgentId, pageNumber, pageSize);
             return res;
         }
 
+        [HttpGet("SearchBookFlightByMaratukAgentId/{maratukAgentId:int}")]
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(int maratukAgentId,string? searchText, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
+        {
+            var res = await _bookedFlightManager.SearchBookedFlightByMaratukAgentIdAsync(maratukAgentId, searchText, pageNumber, pageSize, startDate,endDate);
+            return res;
+        }
+
         [HttpGet("GetBookFlightForAccountat")]
-        [AllowAnonymous]
         public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookFlightForMaratukAgentAsync(int pageNumber = 1, int pageSize = 10)
         {
             var res = await _bookedFlightManager.GetBookedFlightForAccAsync(pageNumber, pageSize);
             return res;
         }
 
+        [HttpGet("SearchBookFlightForAccountat")]
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(string? searchText , DateTime? startDate = null, DateTime? endDate = null,int pageNumber = 1, int pageSize = 10)
+        {
+            var res = await _bookedFlightManager.SearchBookedFlightForAccAsync(pageNumber, pageSize, searchText, startDate,endDate);
+            return res;
+        }
+        
         [HttpGet("AllBookFlight/{Itn:int}")]
-        [AllowAnonymous]
         public async Task<BookedFlightResponseFinal> GetAllBookFlightAsync(int Itn)
         {
             var res = await _bookedFlightManager.GetBookedFlightAsync(Itn);

@@ -13,7 +13,7 @@ namespace MaratukAdmin.Repositories.Concrete
     {
         protected readonly MaratukDbContext _dbContext;
 
-        public BookedFlightRepository(MaratukDbContext dbContext) 
+        public BookedFlightRepository(MaratukDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -70,8 +70,8 @@ namespace MaratukAdmin.Repositories.Concrete
 
         public async Task<List<BookedFlight>> GetBookedFlightByMaratukAgentIdAsync(int maratukAgent)
         {
-            
-            
+
+
             var result = await _dbContext.BookedFlights
                                    .Where(c => c.MaratukAgentId == maratukAgent)
                                    .ToListAsync();
