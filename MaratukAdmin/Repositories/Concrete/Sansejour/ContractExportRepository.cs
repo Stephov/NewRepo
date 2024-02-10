@@ -1146,55 +1146,67 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 float? childAge4 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 3 ? searchRequest.ChildAges[3] : null;
                 float? childAge5 = searchRequest.ChildAges != null && searchRequest.ChildAges.Count > 4 ? searchRequest.ChildAges[4] : null;
 
-                //string? board = searchRequest.Board;
-                string board = searchRequest.Board != null ? string.Join(",", searchRequest.Board) : string.Empty; 
-                int lateCheckout = searchRequest.LateCheckout ? 1 : 0;
                 string hotelCodes = searchRequest.HotelCodes != null ? string.Join(",", searchRequest.HotelCodes) : string.Empty;
-                string hotelCategoryIds = searchRequest.HotelCategoryIds != null ? string.Join(",", searchRequest.HotelCategoryIds) : string.Empty;
-                string hotelCountryIds = searchRequest.HotelCountryIds != null ? string.Join(",", searchRequest.HotelCountryIds) : string.Empty;
-                string hotelCityIds = searchRequest.HotelCityIds != null ? string.Join(",", searchRequest.HotelCityIds) : string.Empty;
+                //string board = searchRequest.Board != null ? string.Join(",", searchRequest.Board) : string.Empty; 
+                //int lateCheckout = searchRequest.LateCheckout ? 1 : 0;
+                //string hotelCategoryIds = searchRequest.HotelCategoryIds != null ? string.Join(",", searchRequest.HotelCategoryIds) : string.Empty;
+                //string hotelCountryIds = searchRequest.HotelCountryIds != null ? string.Join(",", searchRequest.HotelCountryIds) : string.Empty;
+                //string hotelCityIds = searchRequest.HotelCityIds != null ? string.Join(",", searchRequest.HotelCityIds) : string.Empty;
 
-                //var results = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
-                //                                                    "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
-                //                                                    "@roomPax, @adultPax, @childPax, " +
-                //                                                    "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5,"
-                //                                                    , exportDate, accomodationDateFrom, accomodationDateTo,
-                //                                                    roomPax, adultPax, childPax,
-                //                                                    childAge1, childAge2, childAge3, childAge4, childAge5).ToListAsync();
-
-                //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
                 var result = await _dbContext.RoomSearchResponse.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
-                                                                        "@exportDate, @accomodationDateFrom, @accomodationDateTo, @board, " +
-                                                                        "@roomPax, @adultPax, @childPax, " +
-                                                                        "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
-                                                                        //"@hotelCodes, @pageNumber, @pageSize",
-                                                                        //"@hotelCodes, @totalPriceMin, @totalPriceMax, @pageNumber, @pageSize",
-                                                                        "@lateCheckout, @hotelCodes, @hotelCategoryIds, @hotelCountryIds, @hotelCityIds, @totalPriceMin, @totalPriceMax, @pageNumber, @pageSize",
+                                                                                       "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
+                                                                                       "@roomPax, @adultPax, @childPax, " +
+                                                                                       "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
+                                                                                       "@hotelCodes, @pageNumber, @pageSize",
 
-                                                                        new SqlParameter("exportDate", exportDate ?? (object)DBNull.Value),
-                                                                        new SqlParameter("accomodationDateFrom", accomodationDateFrom),
-                                                                        new SqlParameter("accomodationDateTo", accomodationDateTo),
-                                                                        new SqlParameter("@board", board),
-                                                                        new SqlParameter("roomPax", roomPax),
-                                                                        new SqlParameter("adultPax", adultPax),
-                                                                        new SqlParameter("childPax", childPax),
-                                                                        new SqlParameter("childAge1", childAge1 ?? (object)DBNull.Value),
-                                                                        new SqlParameter("childAge2", childAge2 ?? (object)DBNull.Value),
-                                                                        new SqlParameter("childAge3", childAge3 ?? (object)DBNull.Value),
-                                                                        new SqlParameter("childAge4", childAge4 ?? (object)DBNull.Value),
-                                                                        new SqlParameter("childAge5", childAge5 ?? (object)DBNull.Value),
-                                                                        new SqlParameter("hotelCodes", hotelCodes),
+                                                                                       new SqlParameter("exportDate", exportDate ?? (object)DBNull.Value),
+                                                                                       new SqlParameter("accomodationDateFrom", accomodationDateFrom),
+                                                                                       new SqlParameter("accomodationDateTo", accomodationDateTo),
+                                                                                       new SqlParameter("roomPax", roomPax),
+                                                                                       new SqlParameter("adultPax", adultPax),
+                                                                                       new SqlParameter("childPax", childPax),
+                                                                                       new SqlParameter("childAge1", childAge1 ?? (object)DBNull.Value),
+                                                                                       new SqlParameter("childAge2", childAge2 ?? (object)DBNull.Value),
+                                                                                       new SqlParameter("childAge3", childAge3 ?? (object)DBNull.Value),
+                                                                                       new SqlParameter("childAge4", childAge4 ?? (object)DBNull.Value),
+                                                                                       new SqlParameter("childAge5", childAge5 ?? (object)DBNull.Value),
+                                                                                       new SqlParameter("hotelCodes", hotelCodes),
+                                                                                       new SqlParameter("pageNumber", pageNumber),
+                                                                                       new SqlParameter("pageSize", pageSize))
+                                                                                   .ToListAsync();
+                //var result = await _dbContext.SyncSejourRate.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
+                //var result = await _dbContext.RoomSearchResponse.FromSqlRaw("EXEC dbo.Sp_Search_Room " +
+                //                                                        "@exportDate, @accomodationDateFrom, @accomodationDateTo, @board, " +
+                //                                                        "@roomPax, @adultPax, @childPax, " +
+                //                                                        "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
+                //                                                        //"@hotelCodes, @pageNumber, @pageSize",
+                //                                                        //"@hotelCodes, @totalPriceMin, @totalPriceMax, @pageNumber, @pageSize",
+                //                                                        "@lateCheckout, @hotelCodes, @hotelCategoryIds, @hotelCountryIds, @hotelCityIds, @totalPriceMin, @totalPriceMax, @pageNumber, @pageSize",
 
-                                                                        new SqlParameter("lateCheckout", lateCheckout),
-                                                                        new SqlParameter("hotelCategoryIds", hotelCategoryIds),
-                                                                        new SqlParameter("hotelCountryIds", hotelCountryIds),
-                                                                        new SqlParameter("hotelCityIds", hotelCityIds),
+                //                                                        new SqlParameter("exportDate", exportDate ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("accomodationDateFrom", accomodationDateFrom),
+                //                                                        new SqlParameter("accomodationDateTo", accomodationDateTo),
+                //                                                        new SqlParameter("@board", board),
+                //                                                        new SqlParameter("roomPax", roomPax),
+                //                                                        new SqlParameter("adultPax", adultPax),
+                //                                                        new SqlParameter("childPax", childPax),
+                //                                                        new SqlParameter("childAge1", childAge1 ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("childAge2", childAge2 ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("childAge3", childAge3 ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("childAge4", childAge4 ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("childAge5", childAge5 ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("hotelCodes", hotelCodes),
 
-                                                                        new SqlParameter("totalPriceMin", searchRequest.TotalPriceMin ?? (object)DBNull.Value),
-                                                                        new SqlParameter("totalPriceMax", searchRequest.TotalPriceMax ?? (object)DBNull.Value),
-                                                                        new SqlParameter("pageNumber", pageNumber),
-                                                                        new SqlParameter("pageSize", pageSize))
-                                                                    .ToListAsync();
+                //                                                        new SqlParameter("lateCheckout", lateCheckout),
+                //                                                        new SqlParameter("hotelCategoryIds", hotelCategoryIds),
+                //                                                        new SqlParameter("hotelCountryIds", hotelCountryIds),
+                //                                                        new SqlParameter("hotelCityIds", hotelCityIds),
+
+                //                                                        new SqlParameter("totalPriceMin", searchRequest.TotalPriceMin ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("totalPriceMax", searchRequest.TotalPriceMax ?? (object)DBNull.Value),
+                //                                                        new SqlParameter("pageNumber", pageNumber),
+                //                                                        new SqlParameter("pageSize", pageSize))
+                //                                                    .ToListAsync();
                 //var result = query
                 //            .OrderBy(rate => rate.Id)
                 //            .Skip((pageNumber - 1) * pageSize)
