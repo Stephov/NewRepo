@@ -30,6 +30,7 @@
         public double? Dept { get; set; }
         public int StartFlightId { get; set; }
         public int? EndFlightId { get; set; }
+        public string? Comments { get; set; } = string.Empty;
     }
 
     public class BookedFlightResponseForMaratuk
@@ -63,6 +64,7 @@
         public double? Dept { get; set; }
         public int StartFlightId { get; set; }
         public int? EndFlightId { get; set; }
+        public string? Comments { get; set; } = string.Empty;
     }
     public class BookedFlightResponseFinal
     {

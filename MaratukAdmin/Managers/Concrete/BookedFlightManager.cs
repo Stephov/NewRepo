@@ -19,6 +19,7 @@ using MimeKit.Tnef;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MaratukAdmin.Managers.Concrete
@@ -241,6 +242,7 @@ namespace MaratukAdmin.Managers.Concrete
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    Comments = firstFlightInGroup.Comment,
                 };
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -358,6 +360,7 @@ namespace MaratukAdmin.Managers.Concrete
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    Comments = firstFlightInGroup.Comment,
                 };
 
                 if (bookedFlightResponse.HotelId != null)
@@ -525,6 +528,7 @@ namespace MaratukAdmin.Managers.Concrete
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    Comments = firstFlightInGroup.Comment
                 };
 
                 if (bookedFlightResponse.HotelId != null)
@@ -639,6 +643,7 @@ namespace MaratukAdmin.Managers.Concrete
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    Comments = firstFlightInGroup.Comment
                 };
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -669,7 +674,7 @@ namespace MaratukAdmin.Managers.Concrete
 
         }
 
-        public async Task<bool> UpdateBookedStatusAsync(string orderNumber, int status)
+        public async Task<bool> UpdateBookedStatusAsync(string orderNumber, int status,string comment)
         {
             try
             {
@@ -678,6 +683,7 @@ namespace MaratukAdmin.Managers.Concrete
                 foreach (var book in booked)
                 {
                     book.OrderStatusId = status;
+                    book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
                     await _mainRepository.UpdateAsync(book);
                 }
                 return true;
@@ -792,6 +798,7 @@ namespace MaratukAdmin.Managers.Concrete
                         Dept = firstFlightInGroup.Dept,
                         StartFlightId = firstFlightInGroup.StartFlightId,
                         EndFlightId = firstFlightInGroup.EndFlightId,
+                        Comments = firstFlightInGroup.Comment
                     };
 
                     bookedFlightResponses.Add(bookedFlightResponse);
@@ -844,6 +851,7 @@ namespace MaratukAdmin.Managers.Concrete
                             Dept = firstFlightInGroup.Dept,
                             StartFlightId = firstFlightInGroup.StartFlightId,
                             EndFlightId = firstFlightInGroup.EndFlightId,
+                            Comments = firstFlightInGroup.Comment
                         };
 
                         if (bookedFlightResponse.HotelId != null)
@@ -1012,6 +1020,7 @@ namespace MaratukAdmin.Managers.Concrete
                         Dept = firstFlightInGroup.Dept,
                         StartFlightId = firstFlightInGroup.StartFlightId,
                         EndFlightId = firstFlightInGroup.EndFlightId,
+                        Comments = firstFlightInGroup.Comment
                     };
 
                     bookedFlightResponses.Add(bookedFlightResponse);
@@ -1064,6 +1073,7 @@ namespace MaratukAdmin.Managers.Concrete
                             Dept = firstFlightInGroup.Dept,
                             StartFlightId = firstFlightInGroup.StartFlightId,
                             EndFlightId = firstFlightInGroup.EndFlightId,
+                            Comments = firstFlightInGroup.Comment
                         };
 
                         if (bookedFlightResponse.HotelId != null)

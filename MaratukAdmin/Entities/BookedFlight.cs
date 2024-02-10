@@ -33,5 +33,6 @@
 
         public int StartFlightId { get; set; }
         public int? EndFlightId { get; set; }
+        public string? Comment { get; set; } = string.Empty;
     }
 }

@@ -149,7 +149,7 @@ namespace MaratukAdmin.Controllers.admin
         [HttpGet("SearchBookFlightByMaratukAgentId/{maratukAgentId:int}")]
         public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(int maratukAgentId, string? searchText, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
         {
-            var res = await _bookedFlightManager.SearchBookedFlightByMaratukAgentIdAsync(maratukAgentId, searchText, pageNumber, pageSize, startDate,endDate);
+            var res = await _bookedFlightManager.SearchBookedFlightByMaratukAgentIdAsync(maratukAgentId, searchText, pageNumber, pageSize, startDate, endDate);
             return res;
         }
 
@@ -161,12 +161,12 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("SearchBookFlightForAccountat")]
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(string? searchText , DateTime? startDate = null, DateTime? endDate = null,int pageNumber = 1, int pageSize = 10)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(string? searchText, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
         {
-            var res = await _bookedFlightManager.SearchBookedFlightForAccAsync(pageNumber, pageSize, searchText, startDate,endDate);
+            var res = await _bookedFlightManager.SearchBookedFlightForAccAsync(pageNumber, pageSize, searchText, startDate, endDate);
             return res;
         }
-        
+
         [HttpGet("AllBookFlight/{Itn:int}")]
         public async Task<BookedFlightResponseFinal> GetAllBookFlightAsync(int Itn)
         {
@@ -185,9 +185,9 @@ namespace MaratukAdmin.Controllers.admin
 
         [HttpPut("UpdateBookFlightStatus")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateBookFlightStatusAsync(string orderNumber,int statusId)
+        public async Task<IActionResult> UpdateBookFlightStatusAsync(string orderNumber,int statusId,string comment)
         {
-            var result = await _bookedFlightManager.UpdateBookedStatusAsync(orderNumber, statusId);
+            var result = await _bookedFlightManager.UpdateBookedStatusAsync(orderNumber, statusId, comment);
             return Ok(result);
         }
     }
