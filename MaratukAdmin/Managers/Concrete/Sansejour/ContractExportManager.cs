@@ -777,7 +777,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,
-                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.Price)
+                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.PriceTotal)
 
                         //// Flight part
                         //Airline = flight.Airline,
@@ -883,7 +883,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,
-                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.Price)
+                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.PriceTotal)
 
                     });
                 }
@@ -963,7 +963,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,
-                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.Price)
+                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.PriceTotal)
                     });
                 }
             }
@@ -1019,7 +1019,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     {
                         flightSearchResponse = flight,
                         roomSearchResponse = room,
-                        flightAndRoomTotalPrice = flight.TotalPrice + room.Price
+                        flightAndRoomTotalPrice = Math.Ceiling((double)flight.TotalPrice + (double)room.PriceTotal)
                     });
                 }
             }
