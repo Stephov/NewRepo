@@ -398,6 +398,8 @@ namespace MaratukAdmin.Managers.Concrete
 
             var listBookedFlightsAll = await _bookedFlightRepository.GetBookedFlightByMaratukAgentIdAsync(maratukAgent);
 
+            var filtredEndDate = listBookedFlightsAll.Where(x=> x.TourEndDate != null).ToList();
+
 
             List<BookedFlight?> filtred = new List<BookedFlight?>();
 
@@ -407,28 +409,28 @@ namespace MaratukAdmin.Managers.Concrete
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date >= startDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date <= endDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
             var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
@@ -1007,28 +1009,28 @@ namespace MaratukAdmin.Managers.Concrete
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date >= startDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.DateOfOrder.Date <= endDate.Value.Date).ToList();
+                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
 
