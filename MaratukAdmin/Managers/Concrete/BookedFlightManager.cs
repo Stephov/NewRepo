@@ -431,7 +431,7 @@ namespace MaratukAdmin.Managers.Concrete
                 filtred = listBookedFlightsAll.Where(item => item.DateOfOrder.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
-            var groupedBookedFlights = listBookedFlightsAll.GroupBy(flight => flight.OrderNumber).ToList();
+            var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
 
 
             int distinctOrderNumbersCount = groupedBookedFlights.Count;
@@ -1214,5 +1214,33 @@ namespace MaratukAdmin.Managers.Concrete
             return responseFinal;
         }
 
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightAsync(int userId, int roleId, string? searchText, int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            if(roleId == 1 )
+            {
+                if (searchText == null && startDate == null && endDate == null)
+                {
+                    return await GetBookedFlightByMaratukAgentIdAsync(userId, pageNumber, pageSize);
+                }
+                else
+                {
+                    return await SearchBookedFlightByMaratukAgentIdAsync(userId, searchText, pageNumber, pageSize, startDate, endDate);
+
+                }
+
+            }
+            else
+            {
+                if (searchText == null && startDate == null && endDate == null)
+                {
+                    return await GetBookedFlightForAccAsync(pageNumber, pageSize);
+                }
+                else
+                {
+                    return await SearchBookedFlightForAccAsync(pageNumber, pageSize, searchText, startDate, endDate);
+
+                }
+            }
+        }
     }
 }
