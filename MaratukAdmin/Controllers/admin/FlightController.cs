@@ -185,7 +185,7 @@ namespace MaratukAdmin.Controllers.admin
 
         [HttpPut("UpdateBookFlightStatus")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateBookFlightStatusAsync(string orderNumber,int statusId,string comment)
+        public async Task<IActionResult> UpdateBookFlightStatusAsync(string orderNumber,int statusId,string? comment)
         {
             var result = await _bookedFlightManager.UpdateBookedStatusAsync(orderNumber, statusId, comment);
             return Ok(result);

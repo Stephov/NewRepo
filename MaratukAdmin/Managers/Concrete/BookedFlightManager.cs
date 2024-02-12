@@ -679,42 +679,118 @@ namespace MaratukAdmin.Managers.Concrete
             try
             {
                 var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
-
+                int managerId = 0;
+                int clientId = 0;
                 foreach (var book in booked)
                 {
+                    managerId= book.MaratukAgentId;
+                    clientId = book.AgentId;
                     book.OrderStatusId = status;
                     book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
                     await _mainRepository.UpdateAsync(book);
                 }
 
-      /*          if(booked != null)
+
+               if (booked.Count > 1 )
                 {
+                    string managerName = _userRepository.GetUserByIdAsync(managerId).Result.UserName;
+
                     var maratukAcc = await _userRepository.GetUserAccAsync();
 
                     if(status == 2)
                     {
-                        if (maratukAcc != null)
+                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                        if (maratukAcc.Count > 0)
                         {
                             foreach (var acc in maratukAcc)
                             {
                                 string email = acc.Email;
 
-                                string date = DateTime.Now.ToString();
+                                string Managerdate = DateTime.Now.ToString();
 
-                                string textBody = $@"
-                                    Agent: {orderNumber}
+                                string textBodyManager = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
                                     Status: Manager Approved
-                                    Date of sale: {date}";
+                                    Date: {Managerdate}";
 
-                                MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+                                MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBodyManager);
 
                             }
 
+                                string date = DateTime.Now.ToString();
+
+                                string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Approved
+                                    Date: {date}";
+
+                                MailService.SendEmail(clientEmail, $"New incaming Request {orderNumber}", textBody);
+
                         }
                     }
-                    
 
-                }*/
+                    if (status == 3)
+                    {
+
+                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                                string email = clientEmail;
+
+                                string date = DateTime.Now.ToString();
+
+                                string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Declined
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                                MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                    }
+
+                    if (status == 4)
+                    {
+
+                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                        string email = clientEmail;
+
+                        string date = DateTime.Now.ToString();
+
+                        string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Status: Accountant Approved
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                        MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                    }
+
+                    if (status == 5)
+                    {
+
+                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                        string email = clientEmail;
+
+                        string date = DateTime.Now.ToString();
+
+                        string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Status: Accountant Declined
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                        MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                    }
+
+                }
 
                 return true;
             }
