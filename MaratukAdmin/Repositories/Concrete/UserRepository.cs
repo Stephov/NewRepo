@@ -68,6 +68,11 @@ namespace MaratukAdmin.Repositories.Concrete
             return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<List<User>> GetUserAccAsync()
+        {
+            return await _dbContext.Users.Where(u => u.Role == "Admin").ToListAsync();
+        }
+
         public async Task<bool> IsUserExistsAsync(string email)
         {
             return await _dbContext.Users.AnyAsync(u => u.Email == email);

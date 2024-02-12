@@ -686,6 +686,36 @@ namespace MaratukAdmin.Managers.Concrete
                     book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
                     await _mainRepository.UpdateAsync(book);
                 }
+
+      /*          if(booked != null)
+                {
+                    var maratukAcc = await _userRepository.GetUserAccAsync();
+
+                    if(status == 2)
+                    {
+                        if (maratukAcc != null)
+                        {
+                            foreach (var acc in maratukAcc)
+                            {
+                                string email = acc.Email;
+
+                                string date = DateTime.Now.ToString();
+
+                                string textBody = $@"
+                                    Agent: {orderNumber}
+                                    Status: Manager Approved
+                                    Date of sale: {date}";
+
+                                MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                            }
+
+                        }
+                    }
+                    
+
+                }*/
+
                 return true;
             }
             catch
