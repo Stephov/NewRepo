@@ -245,6 +245,26 @@ namespace MaratukAdmin.Managers.Concrete
                     Comments = firstFlightInGroup.Comment,
                 };
 
+                if (bookedFlightResponse.OrderStatusId == 1)
+                {
+                    bookedFlightResponse.OrderName = "Created by Client";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 2)
+                {
+                    bookedFlightResponse.OrderName = "Manager Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 3)
+                {
+                    bookedFlightResponse.OrderName = "Manager Declined";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 4)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 5)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Declined";
+                }
                 bookedFlightResponses.Add(bookedFlightResponse);
             }
 
@@ -362,6 +382,27 @@ namespace MaratukAdmin.Managers.Concrete
                     EndFlightId = firstFlightInGroup.EndFlightId,
                     Comments = firstFlightInGroup.Comment,
                 };
+
+                if (bookedFlightResponse.OrderStatusId == 1)
+                {
+                    bookedFlightResponse.OrderName = "Created by Client";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 2)
+                {
+                    bookedFlightResponse.OrderName = "Manager Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 3)
+                {
+                    bookedFlightResponse.OrderName = "Manager Declined";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 4)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 5)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Declined";
+                }
 
                 if (bookedFlightResponse.HotelId != null)
                 {
@@ -532,6 +573,26 @@ namespace MaratukAdmin.Managers.Concrete
                     EndFlightId = firstFlightInGroup.EndFlightId,
                     Comments = firstFlightInGroup.Comment
                 };
+                if (bookedFlightResponse.OrderStatusId == 1)
+                {
+                    bookedFlightResponse.OrderName = "Created by Client";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 2)
+                {
+                    bookedFlightResponse.OrderName = "Manager Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 3)
+                {
+                    bookedFlightResponse.OrderName = "Manager Declined";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 4)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 5)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Declined";
+                }
 
                 if (bookedFlightResponse.HotelId != null)
                 {
@@ -647,6 +708,27 @@ namespace MaratukAdmin.Managers.Concrete
                     EndFlightId = firstFlightInGroup.EndFlightId,
                     Comments = firstFlightInGroup.Comment
                 };
+
+                if (bookedFlightResponse.OrderStatusId == 1)
+                {
+                    bookedFlightResponse.OrderName = "Created by Client";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 2)
+                {
+                    bookedFlightResponse.OrderName = "Manager Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 3)
+                {
+                    bookedFlightResponse.OrderName = "Manager Declined";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 4)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 5)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Declined";
+                }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
             }
@@ -909,6 +991,27 @@ namespace MaratukAdmin.Managers.Concrete
                         Comments = firstFlightInGroup.Comment
                     };
 
+                    if (bookedFlightResponse.OrderStatusId == 1)
+                    {
+                        bookedFlightResponse.OrderName = "Created by Client";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 2)
+                    {
+                        bookedFlightResponse.OrderName = "Manager Approved";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 3)
+                    {
+                        bookedFlightResponse.OrderName = "Manager Declined";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 4)
+                    {
+                        bookedFlightResponse.OrderName = "Accountant Approved";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 5)
+                    {
+                        bookedFlightResponse.OrderName = "Accountant Declined";
+                    }
+
                     bookedFlightResponses.Add(bookedFlightResponse);
                 }
                 else
@@ -961,6 +1064,27 @@ namespace MaratukAdmin.Managers.Concrete
                             EndFlightId = firstFlightInGroup.EndFlightId,
                             Comments = firstFlightInGroup.Comment
                         };
+
+                        if (bookedFlightResponse.OrderStatusId == 1)
+                        {
+                            bookedFlightResponse.OrderName = "Created by Client";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 2)
+                        {
+                            bookedFlightResponse.OrderName = "Manager Approved";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 3)
+                        {
+                            bookedFlightResponse.OrderName = "Manager Declined";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 4)
+                        {
+                            bookedFlightResponse.OrderName = "Accountant Approved";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 5)
+                        {
+                            bookedFlightResponse.OrderName = "Accountant Declined";
+                        }
 
                         if (bookedFlightResponse.HotelId != null)
                         {
@@ -1131,6 +1255,26 @@ namespace MaratukAdmin.Managers.Concrete
                         Comments = firstFlightInGroup.Comment
                     };
 
+                    if (bookedFlightResponse.OrderStatusId == 1)
+                    {
+                        bookedFlightResponse.OrderName = "Created by Client";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 2)
+                    {
+                        bookedFlightResponse.OrderName = "Manager Approved";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 3)
+                    {
+                        bookedFlightResponse.OrderName = "Manager Declined";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 4)
+                    {
+                        bookedFlightResponse.OrderName = "Accountant Approved";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 5)
+                    {
+                        bookedFlightResponse.OrderName = "Accountant Declined";
+                    }
                     bookedFlightResponses.Add(bookedFlightResponse);
                 }
                 else
@@ -1183,6 +1327,27 @@ namespace MaratukAdmin.Managers.Concrete
                             EndFlightId = firstFlightInGroup.EndFlightId,
                             Comments = firstFlightInGroup.Comment
                         };
+
+                        if (bookedFlightResponse.OrderStatusId == 1)
+                        {
+                            bookedFlightResponse.OrderName = "Created by Client";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 2)
+                        {
+                            bookedFlightResponse.OrderName = "Manager Approved";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 3)
+                        {
+                            bookedFlightResponse.OrderName = "Manager Declined";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 4)
+                        {
+                            bookedFlightResponse.OrderName = "Accountant Approved";
+                        }
+                        else if (bookedFlightResponse.OrderStatusId == 5)
+                        {
+                            bookedFlightResponse.OrderName = "Accountant Declined";
+                        }
 
                         if (bookedFlightResponse.HotelId != null)
                         {

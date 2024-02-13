@@ -10,6 +10,7 @@
         public int? HotelId { get; set; }
         public string? TicketNumber { get; set; }
         public int OrderStatusId { get; set; } = 1;
+        public string OrderName { get; set; } = string.Empty;
         public double TotalPrice { get; set; }
         public string Rate { get; set; }
         public int AgentId { get; set; }
@@ -44,6 +45,7 @@
         public string HotelName { get; set; } = string.Empty;
         public string? TicketNumber { get; set; }
         public int OrderStatusId { get; set; } = 1;
+        public string OrderName{ get; set; } = string.Empty;
         public double TotalPrice { get; set; }
         public string Rate { get; set; }
         public int AgentId { get; set; }
