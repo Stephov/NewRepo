@@ -406,6 +406,8 @@ namespace MaratukAdmin.Managers.Concrete
 
                 if (bookedFlightResponse.HotelId != null)
                 {
+                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+
                     var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
                     if (hotel.Name != null)
@@ -417,6 +419,45 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.HotelName = string.Empty;
 
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if(bookedHotel.Room != null)
+                        {
+                            bookedFlightResponse.RoomType = bookedHotel.Room;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.RoomType = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.BoardDesc != null)
+                        {
+                            bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.BoardDesc = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.RoomCode != null)
+                        {
+                            bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.RoomCode = string.Empty;
                     }
                 }
 
@@ -433,46 +474,62 @@ namespace MaratukAdmin.Managers.Concrete
         }
 
 
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightByMaratukAgentIdAsync(int maratukAgent, string? searchText,int pageNumber, int pageSize, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightByMaratukAgentIdAsync(int maratukAgent, string? searchText,int? status,int pageNumber, int pageSize, DateTime? startDate = null, DateTime? endDate = null)
         {
             BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
+            List<BookedFlight> filtredByStatus = new List<BookedFlight>();
 
             var listBookedFlightsAll = await _bookedFlightRepository.GetBookedFlightByMaratukAgentIdAsync(maratukAgent);
 
-            var filtredEndDate = listBookedFlightsAll.Where(x=> x.TourEndDate != null).ToList();
+            if (status != null)
+            {
+                filtredByStatus = listBookedFlightsAll.Where(x => x.OrderStatusId == status).ToList();
+            }
+            else
+            {
+                filtredByStatus = listBookedFlightsAll;
+            }
+
+            var filtredEndDate = listBookedFlightsAll.Where(x => x.TourEndDate != null).ToList();
 
 
             List<BookedFlight?> filtred = new List<BookedFlight?>();
 
             if (startDate == null && endDate == null && searchText != null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
+
+            if(filtred.Count<= 0)
+            {
+                filtred = filtredByStatus;
+            }
+
 
             var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
 
@@ -596,6 +653,8 @@ namespace MaratukAdmin.Managers.Concrete
 
                 if (bookedFlightResponse.HotelId != null)
                 {
+                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+
                     var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
                     if (hotel.Name != null)
@@ -607,6 +666,45 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.HotelName = string.Empty;
 
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.Room != null)
+                        {
+                            bookedFlightResponse.RoomType = bookedHotel.Room;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.RoomType = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.BoardDesc != null)
+                        {
+                            bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.BoardDesc = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.RoomCode != null)
+                        {
+                            bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.RoomCode = string.Empty;
                     }
                 }
 
@@ -709,6 +807,63 @@ namespace MaratukAdmin.Managers.Concrete
                     Comments = firstFlightInGroup.Comment
                 };
 
+                if (bookedFlightResponse.HotelId != null)
+                {
+                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+
+                    var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
+
+                    if (hotel.Name != null)
+                    {
+                        bookedFlightResponse.HotelName = hotel.Name;
+
+                    }
+                    else
+                    {
+                        bookedFlightResponse.HotelName = string.Empty;
+
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.Room != null)
+                        {
+                            bookedFlightResponse.Room = bookedHotel.Room;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.Room = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.RoomCode != null)
+                        {
+                            bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.RoomCode = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.BoardDesc != null)
+                        {
+                            bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.BoardDesc = string.Empty;
+                    }
+                }
+
                 if (bookedFlightResponse.OrderStatusId == 1)
                 {
                     bookedFlightResponse.OrderName = "Created by Client";
@@ -758,50 +913,58 @@ namespace MaratukAdmin.Managers.Concrete
 
         }
 
-        public async Task<bool> UpdateBookedStatusAsync(string orderNumber, int status,string comment)
+        public async Task<bool> UpdateBookedStatusAsync(string orderNumber, int status,int role,double? totalPrice, string comment)
         {
-            try
+            if(role == 1)
             {
-                var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
-                int managerId = 0;
-                int clientId = 0;
-                foreach (var book in booked)
+                try
                 {
-                    managerId= book.MaratukAgentId;
-                    clientId = book.AgentId;
-                    book.OrderStatusId = status;
-                    book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
-                    await _mainRepository.UpdateAsync(book);
-                }
-
-
-               if (booked.Count > 1 )
-                {
-                    string managerName = _userRepository.GetUserByIdAsync(managerId).Result.UserName;
-
-                    var maratukAcc = await _userRepository.GetUserAccAsync();
-
-                    if(status == 2)
+                    var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
+                    int managerId = 0;
+                    int clientId = 0;
+                    foreach (var book in booked)
                     {
-                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+                        managerId = book.MaratukAgentId;
+                        clientId = book.AgentId;
+                        book.OrderStatusId = status;
+                        book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
 
-                        if (maratukAcc.Count > 0)
+                        if(totalPrice != null)
                         {
-                            foreach (var acc in maratukAcc)
+                            book.TotalPrice = (double)totalPrice;
+                            book.Dept = (double)totalPrice;
+                        }
+                        await _mainRepository.UpdateAsync(book);
+                    }
+
+
+                    if (booked.Count > 1)
+                    {
+                        string managerName = _userRepository.GetUserByIdAsync(managerId).Result.UserName;
+
+                        var maratukAcc = await _userRepository.GetUserAccAsync();
+
+                        if (status == 2)
+                        {
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            if (maratukAcc.Count > 0)
                             {
-                                string email = acc.Email;
+                                foreach (var acc in maratukAcc)
+                                {
+                                    string email = acc.Email;
 
-                                string Managerdate = DateTime.Now.ToString();
+                                    string Managerdate = DateTime.Now.ToString();
 
-                                string textBodyManager = $@"
+                                    string textBodyManager = $@"
                                     Order Number: {orderNumber}
                                     Manager Name: {managerName}
                                     Status: Manager Approved
                                     Date: {Managerdate}";
 
-                                MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBodyManager);
+                                    MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBodyManager);
 
-                            }
+                                }
 
                                 string date = DateTime.Now.ToString();
 
@@ -813,75 +976,352 @@ namespace MaratukAdmin.Managers.Concrete
 
                                 MailService.SendEmail(clientEmail, $"New incaming Request {orderNumber}", textBody);
 
+                            }
                         }
-                    }
 
-                    if (status == 3)
-                    {
+                        if (status == 3)
+                        {
 
-                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
 
-                                string email = clientEmail;
+                            string email = clientEmail;
 
-                                string date = DateTime.Now.ToString();
+                            string date = DateTime.Now.ToString();
 
-                                string textBody = $@"
+                            string textBody = $@"
                                     Order Number: {orderNumber}
                                     Manager Name: {managerName}
                                     Status: Manager Declined
                                     Comment: {comment}
                                     Date: {date}";
 
-                                MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
-                    }
+                        }
 
-                    if (status == 4)
-                    {
+                        if (status == 4)
+                        {
 
-                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
 
-                        string email = clientEmail;
+                            string email = clientEmail;
 
-                        string date = DateTime.Now.ToString();
+                            string date = DateTime.Now.ToString();
 
-                        string textBody = $@"
+                            string textBody = $@"
                                     Order Number: {orderNumber}
                                     Status: Accountant Approved
                                     Comment: {comment}
                                     Date: {date}";
 
-                        MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
-                    }
+                        }
 
-                    if (status == 5)
-                    {
+                        if (status == 5)
+                        {
 
-                        string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
 
-                        string email = clientEmail;
+                            string email = clientEmail;
 
-                        string date = DateTime.Now.ToString();
+                            string date = DateTime.Now.ToString();
 
-                        string textBody = $@"
+                            string textBody = $@"
                                     Order Number: {orderNumber}
                                     Status: Accountant Declined
                                     Comment: {comment}
                                     Date: {date}";
 
-                        MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                        }
 
                     }
 
+                    return true;
                 }
-
-                return true;
+                catch
+                {
+                    return false;
+                }
             }
-            catch
+            else if(role == 2)
             {
-                return false;
+                try
+                {
+                    var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
+                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
+                    int managerId = 0;
+                    int clientId = 0;
+                    foreach (var book in booked)
+                    {
+                        managerId = book.MaratukAgentId;
+                        clientId = book.AgentId;
+                        book.OrderStatusId = status;
+                        book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
+                        await _mainRepository.UpdateAsync(book);
+                    }
+
+                    if(bookedHotel != null)
+                    {
+                        bookedHotel.OrderStatusId = status;
+
+                        await _bookedHotelRepository.UpdateBookedHotelAsync(bookedHotel);
+                    }
+
+
+                    if (booked.Count > 1)
+                    {
+                        string managerName = _userRepository.GetUserByIdAsync(managerId).Result.UserName;
+
+                        var maratukAcc = await _userRepository.GetUserAccAsync();
+
+                        if (status == 2)
+                        {
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            if (maratukAcc.Count > 0)
+                            {
+                                foreach (var acc in maratukAcc)
+                                {
+                                    string email = acc.Email;
+
+                                    string Managerdate = DateTime.Now.ToString();
+
+                                    string textBodyManager = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Approved
+                                    Date: {Managerdate}";
+
+                                    MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBodyManager);
+
+                                }
+
+                                string date = DateTime.Now.ToString();
+
+                                string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Approved
+                                    Date: {date}";
+
+                                MailService.SendEmail(clientEmail, $"New incaming Request {orderNumber}", textBody);
+
+                            }
+                        }
+
+                        if (status == 3)
+                        {
+
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            string email = clientEmail;
+
+                            string date = DateTime.Now.ToString();
+
+                            string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Declined
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                        }
+
+                        if (status == 4)
+                        {
+
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            string email = clientEmail;
+
+                            string date = DateTime.Now.ToString();
+
+                            string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Status: Accountant Approved
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                        }
+
+                        if (status == 5)
+                        {
+
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            string email = clientEmail;
+
+                            string date = DateTime.Now.ToString();
+
+                            string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Status: Accountant Declined
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                        }
+
+                    }
+
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
+            else
+            {
+                try
+                {
+                    var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
+                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
+                    int managerId = 0;
+                    int clientId = 0;
+                    foreach (var book in booked)
+                    {
+                        managerId = book.MaratukAgentId;
+                        clientId = book.AgentId;
+                        book.OrderStatusId = status;
+                        book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
+                        if (totalPrice != null)
+                        {
+                            book.TotalPrice = (double)totalPrice;
+                            book.Dept = (double)totalPrice;
+                        }
+                        //await _mainRepository.UpdateAsync(book);
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        bookedHotel.OrderStatusId = status;
+
+                        if (totalPrice != null)
+                        {
+                            bookedHotel.TotalPrice = (double)totalPrice;
+                        }
+                        await _bookedHotelRepository.UpdateBookedHotelAsync(bookedHotel);
+                    }
+
+
+                    if (booked.Count > 1)
+                    {
+                        string managerName = _userRepository.GetUserByIdAsync(managerId).Result.UserName;
+
+                        var maratukAcc = await _userRepository.GetUserAccAsync();
+
+                        if (status == 2)
+                        {
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            if (maratukAcc.Count > 0)
+                            {
+                                foreach (var acc in maratukAcc)
+                                {
+                                    string email = acc.Email;
+
+                                    string Managerdate = DateTime.Now.ToString();
+
+                                    string textBodyManager = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Approved
+                                    Date: {Managerdate}";
+
+                                    MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBodyManager);
+
+                                }
+
+                                string date = DateTime.Now.ToString();
+
+                                string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Approved
+                                    Date: {date}";
+
+                                MailService.SendEmail(clientEmail, $"New incaming Request {orderNumber}", textBody);
+
+                            }
+                        }
+
+                        if (status == 3)
+                        {
+
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            string email = clientEmail;
+
+                            string date = DateTime.Now.ToString();
+
+                            string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Manager Name: {managerName}
+                                    Status: Manager Declined
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                        }
+
+                        if (status == 4)
+                        {
+
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            string email = clientEmail;
+
+                            string date = DateTime.Now.ToString();
+
+                            string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Status: Accountant Approved
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                        }
+
+                        if (status == 5)
+                        {
+
+                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+
+                            string email = clientEmail;
+
+                            string date = DateTime.Now.ToString();
+
+                            string textBody = $@"
+                                    Order Number: {orderNumber}
+                                    Status: Accountant Declined
+                                    Comment: {comment}
+                                    Date: {date}";
+
+                            MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
+
+                        }
+
+                    }
+
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+           
         }
 
 
@@ -1088,6 +1528,8 @@ namespace MaratukAdmin.Managers.Concrete
 
                         if (bookedFlightResponse.HotelId != null)
                         {
+                            var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+
                             var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
                             if (hotel.Name != null)
@@ -1100,7 +1542,47 @@ namespace MaratukAdmin.Managers.Concrete
                                 bookedFlightResponse.HotelName = string.Empty;
 
                             }
+
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.Room != null)
+                                {
+                                    bookedFlightResponse.RoomType = bookedHotel.Room;
+
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.RoomType = string.Empty;
+                            }
+
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.BoardDesc != null)
+                                {
+                                    bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.BoardDesc = string.Empty;
+                            }
+
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.RoomCode != null)
+                                {
+                                    bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.RoomCode = string.Empty;
+                            }
                         }
+
 
                         bookedFlightResponses.Add(bookedFlightResponse);
                     }
@@ -1118,44 +1600,61 @@ namespace MaratukAdmin.Managers.Concrete
             return responseFinal;
         }
 
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightForAccAsync(int pageNumber, int pageSize, string? searchText, DateTime? startDate, DateTime? endDate)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightForAccAsync(int pageNumber, int pageSize, string? searchText,int? status, DateTime? startDate, DateTime? endDate)
         {
             BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
 
+            List<BookedFlight> filtredByStatus = new List<BookedFlight>();
+
             var listBookedFlightsAll = await _bookedFlightRepository.GetBookedFlightByMaratukAgentForAccAsync();
+
+            if (status != null)
+            {
+                filtredByStatus = listBookedFlightsAll.Where(x => x.OrderStatusId == status).ToList();
+            }
+            else
+            {
+                filtredByStatus = listBookedFlightsAll;
+            }
 
 
             List<BookedFlight?> filtred = new List<BookedFlight?>();
 
             if (startDate == null && endDate == null && searchText != null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = listBookedFlightsAll.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = listBookedFlightsAll.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
+
+            if (filtred.Count <= 0)
+            {
+                filtred = filtredByStatus;
+            }
+
 
 
             var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
@@ -1351,6 +1850,8 @@ namespace MaratukAdmin.Managers.Concrete
 
                         if (bookedFlightResponse.HotelId != null)
                         {
+                            var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+
                             var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
                             if (hotel.Name != null)
@@ -1362,6 +1863,46 @@ namespace MaratukAdmin.Managers.Concrete
                             {
                                 bookedFlightResponse.HotelName = string.Empty;
 
+                            }
+
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.Room != null)
+                                {
+                                    bookedFlightResponse.RoomType = bookedHotel.Room;
+
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.RoomType = string.Empty;
+                            }
+
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.BoardDesc != null)
+                                {
+                                    bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.BoardDesc = string.Empty;
+                            }
+
+
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.RoomCode != null)
+                                {
+                                    bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.RoomCode = string.Empty;
                             }
                         }
 
@@ -1381,30 +1922,30 @@ namespace MaratukAdmin.Managers.Concrete
             return responseFinal;
         }
 
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightAsync(int userId, int roleId, string? searchText, int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightAsync(int userId, int roleId, string? searchText,int? status, int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null)
         {
-            if(roleId == 1 )
+            if(roleId == 1  || roleId == 3)
             {
-                if (searchText == null && startDate == null && endDate == null)
+                if (searchText == null && startDate == null && endDate == null && status == null)
                 {
                     return await GetBookedFlightByMaratukAgentIdAsync(userId, pageNumber, pageSize);
                 }
                 else
                 {
-                    return await SearchBookedFlightByMaratukAgentIdAsync(userId, searchText, pageNumber, pageSize, startDate, endDate);
+                    return await SearchBookedFlightByMaratukAgentIdAsync(userId, searchText, status, pageNumber, pageSize, startDate, endDate);
 
                 }
 
             }
             else
             {
-                if (searchText == null && startDate == null && endDate == null)
+                if (searchText == null && startDate == null && endDate == null && status == null)
                 {
                     return await GetBookedFlightForAccAsync(pageNumber, pageSize);
                 }
                 else
                 {
-                    return await SearchBookedFlightForAccAsync(pageNumber, pageSize, searchText, startDate, endDate);
+                    return await SearchBookedFlightForAccAsync(pageNumber, pageSize, searchText, status, startDate, endDate);
 
                 }
             }

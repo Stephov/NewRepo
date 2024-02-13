@@ -60,5 +60,21 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 .Where(o => o.OrderNumber == orderID)
                 .FirstOrDefaultAsync();
         }
+
+
+        public async Task<BookedHotel> UpdateBookedHotelAsync(BookedHotel bookedHotel)
+        {
+            try
+            {
+                _dbContext.BookedHotel.Update(bookedHotel);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return bookedHotel;
+        }
     }
 }

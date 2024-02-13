@@ -8,6 +8,10 @@
         public DateTime DateOfOrder { get; set; }
         public string ToureTypeId { get; set; }
         public int? HotelId { get; set; }
+        public string HotelName { get; set; } = string.Empty;
+        public string Room { get; set; } = string.Empty;
+        public string RoomCode { get; set; } = string.Empty;
+        public string BoardDesc { get; set; } = string.Empty;
         public string? TicketNumber { get; set; }
         public int OrderStatusId { get; set; } = 1;
         public string OrderName { get; set; } = string.Empty;
@@ -43,6 +47,9 @@
         public string ToureTypeId { get; set; }
         public int? HotelId { get; set; }
         public string HotelName { get; set; } = string.Empty;
+        public string RoomType { get; set; } = string.Empty;
+        public string BoardDesc { get; set; } = string.Empty;
+        public string RoomCode { get; set; } = string.Empty;
         public string? TicketNumber { get; set; }
         public int OrderStatusId { get; set; } = 1;
         public string OrderName{ get; set; } = string.Empty;

@@ -70,7 +70,7 @@ namespace MaratukAdmin.Repositories.Concrete
 
         public async Task<List<User>> GetUserAccAsync()
         {
-            return await _dbContext.Users.Where(u => u.Role == "Admin").ToListAsync();
+            return await _dbContext.Users.Where(u => u.Role == "Accountant").ToListAsync();
         }
 
         public async Task<bool> IsUserExistsAsync(string email)

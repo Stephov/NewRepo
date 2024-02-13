@@ -1,6 +1,7 @@
 ﻿using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
+using System.Threading.Tasks;
 
 namespace MaratukAdmin.Repositories.Abstract.Sansejour
 {
@@ -12,5 +13,8 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<BookedHotel> GetAllBookedHotelsAsync(string orderID);
         //Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel, List<BookedHotelGuest> bookedHotelGuests);
         Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel);
-    }
+
+        Task<BookedHotel> UpdateBookedHotelAsync(BookedHotel bookedHotel);
+
+    }            
 }
