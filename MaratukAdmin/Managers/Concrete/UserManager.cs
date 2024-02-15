@@ -441,17 +441,17 @@ namespace MaratukAdmin.Managers.Concrete
                 user.PhoneNumber2 = agent.PhoneNumber2;
                 user.FullName = agent.FullName;
                 user.email = agent.Email;
-                user.IsApproved = agent.IsAproved;
+                user.IsApproved = (int)agent.IsAproved;
                 if(user.IsApproved == 1)
                 {
                     user.IsApprovStatusName = "Approved";
                 }else if(user.IsApproved == 0)
                 {
-                    user.IsApprovStatusName = "Declined";
+                    user.IsApprovStatusName = "New Request";
                 }
                 else
                 {
-                    user.IsApprovStatusName = "New Request";
+                    user.IsApprovStatusName = "Declined";
                 }
                  agents.Add(user);   
             }

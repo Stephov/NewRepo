@@ -23,7 +23,7 @@ namespace MaratukAdmin.Entities
         public string Password { get; set; }
         public string PasswordSalt { get; set; }
         public bool IsActivated { get; set; }
-        public int IsAproved { get; set; }
+        public int? IsAproved { get; set; } = 0;
         public string Role { get; set; }
     }
 }
