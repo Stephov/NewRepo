@@ -60,9 +60,9 @@ namespace MaratukAdmin.Controllers
         }
 
         [HttpGet("approve")]
-        public async Task<bool> Approve(int Id)
+        public async Task<bool> Approve(int Id,int statusId)
         {
-            var res = await _userManager.ApproveUserAgency(Id);
+            var res = await _userManager.ApproveUserAgency(Id, statusId);
             return res;
         }
 

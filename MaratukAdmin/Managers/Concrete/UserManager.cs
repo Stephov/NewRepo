@@ -254,7 +254,7 @@ namespace MaratukAdmin.Managers.Concrete
                 Password = passwordHash,
                 PasswordSalt = salt,
                 IsActivated = false,
-                IsAproved = false,
+                IsAproved = 0,
                 Role = "Admin"
             };
 
@@ -291,7 +291,7 @@ namespace MaratukAdmin.Managers.Concrete
                 Password = passwordHash,
                 PasswordSalt = salt,
                 IsActivated = true,
-                IsAproved = true,
+                IsAproved = 1,
                 Role = "Agent"
             };
 
@@ -414,9 +414,9 @@ namespace MaratukAdmin.Managers.Concrete
             return res;
         }
 
-        public async Task<bool> ApproveUserAgency(int Id)
+        public async Task<bool> ApproveUserAgency(int Id,int status)
         {
-            var ras = await _userRepository.ApproveUserAgency(Id);
+            var ras = await _userRepository.ApproveUserAgency(Id, status);
             return ras;
         }
 
@@ -442,6 +442,17 @@ namespace MaratukAdmin.Managers.Concrete
                 user.FullName = agent.FullName;
                 user.email = agent.Email;
                 user.IsApproved = agent.IsAproved;
+                if(user.IsApproved == 1)
+                {
+                    user.IsApprovStatusName = "Approved";
+                }else if(user.IsApproved == 0)
+                {
+                    user.IsApprovStatusName = "Declined";
+                }
+                else
+                {
+                    user.IsApprovStatusName = "New Request";
+                }
                  agents.Add(user);   
             }
 
@@ -464,7 +475,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
 
                 if (!user.IsActivated) throw new KeyNotFoundException("User not Activated");
-                if (!user.IsAproved) throw new KeyNotFoundException("User not Approved by Admin");
+                if (user.IsAproved != 1) throw new KeyNotFoundException("User not Approved by Admin");
 
                 var tokenData = new TokenData()
                 {

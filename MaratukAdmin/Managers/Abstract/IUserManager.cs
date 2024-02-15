@@ -20,7 +20,7 @@ namespace MaratukAdmin.Managers.Abstract
         IdentityUserInfo CheckUser(string token);
 
         Task<bool> ActivateUserAgency(int Id, string HashId);
-        Task<bool> ApproveUserAgency(int Id);
+        Task<bool> ApproveUserAgency(int Id,int status);
         Task RegisterAsync(string email, string password, string userName,string fullName);
         Task RegisterAgencyUserAsync(AgencyUserCredentialsRequest agencyUserCredentialsRequest);
         Task<bool> ChangePassword(string oldPassword, string newPassword, TokenData tokenData);

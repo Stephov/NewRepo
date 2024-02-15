@@ -147,12 +147,12 @@ namespace MaratukAdmin.Repositories.Concrete
 
         }
 
-        public async Task<bool> ApproveUserAgency(int Id)
+        public async Task<bool> ApproveUserAgency(int Id,int statusId)
         {
             var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == Id);
             if (user != null)
             {
-                user.IsAproved = true;
+                user.IsAproved = statusId;
                 await _dbContext.SaveChangesAsync();
                 return true;
             }

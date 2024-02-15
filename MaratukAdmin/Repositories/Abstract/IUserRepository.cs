@@ -14,7 +14,7 @@ namespace MaratukAdmin.Repositories.Abstract
         Task CreateUserAsync(User user);
         Task CreateAgencyUserAsync(AgencyUser agencyUser);
         Task<bool> ActivateUserAgency(int Id,string HashId);
-        Task<bool> ApproveUserAgency(int Id);
+        Task<bool> ApproveUserAgency(int Id,int statusId);
         Task<bool> IsUserExistsAsync(string email);
         Task<bool> IsUserEmailExistsAsync(string email);
         Task<User> GetUserByIdAsync(int userId);

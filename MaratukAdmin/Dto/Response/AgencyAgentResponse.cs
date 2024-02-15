@@ -22,7 +22,8 @@
         public string PhoneNumber2 { get; set; }
         public string FullName { get; set; }
         public string email { get; set; }
-        public bool IsApproved { get; set; }
+        public int IsApproved { get; set; }
+        public string IsApprovStatusName { get; set; }
 
     }
 }
