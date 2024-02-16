@@ -71,10 +71,19 @@ namespace MaratukAdmin.Repositories.Concrete
         public async Task<List<BookedFlight>> GetBookedFlightByMaratukAgentIdAsync(int maratukAgent)
         {
 
-            List<int> orderStatusIds = new List<int> { 1,2,3 };
+            var result = await _dbContext.BookedFlights
+                .Where(c => c.MaratukAgentId == maratukAgent)
+                .ToListAsync();
+
+            return result;
+        }
+
+
+        public async Task<List<BookedFlight>> GetBookedFlightForHotelManagerAsync()
+        {
 
             var result = await _dbContext.BookedFlights
-                .Where(c => orderStatusIds.Contains(c.OrderStatusId))
+                .Where(c => c.HotelId != null)
                 .ToListAsync();
 
             return result;

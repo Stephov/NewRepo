@@ -56,11 +56,11 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public async Task<BookedHotel> GetAllBookedHotelsAsync(string orderID)
         {
-            List<int> orderStatusIds = new List<int> { 2, 4, 5 };
+            //List<int> orderStatusIds = new List<int> { 2, 4, 5 };
 
 
             return await _dbContext.BookedHotel
-                .Where(o => o.OrderNumber == orderID && orderStatusIds.Contains(o.OrderStatusId))
+                .Where(o => o.OrderNumber == orderID)
                 .FirstOrDefaultAsync();
         }
 
