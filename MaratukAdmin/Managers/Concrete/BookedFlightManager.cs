@@ -697,27 +697,7 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.RoomCode = string.Empty;
                     }
-
-                    if (bookedFlightResponse.OrderStatusId == 1)
-                    {
-                        bookedFlightResponse.OrderName = "Created by Client";
-                    }
-                    else if (bookedFlightResponse.OrderStatusId == 2)
-                    {
-                        bookedFlightResponse.OrderName = "Manager Approved";
-                    }
-                    else if (bookedFlightResponse.OrderStatusId == 3)
-                    {
-                        bookedFlightResponse.OrderName = "Manager Declined";
-                    }
-                    else if (bookedFlightResponse.OrderStatusId == 4)
-                    {
-                        bookedFlightResponse.OrderName = "Accountant Approved";
-                    }
-                    else if (bookedFlightResponse.OrderStatusId == 5)
-                    {
-                        bookedFlightResponse.OrderName = "Accountant Declined";
-                    }
+                    
                 }*/
 
 
@@ -781,6 +761,27 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.RoomCode = string.Empty;
                     }
+                }
+
+                if (bookedFlightResponse.OrderStatusId == 1)
+                {
+                    bookedFlightResponse.OrderName = "Created by Client";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 2)
+                {
+                    bookedFlightResponse.OrderName = "Manager Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 3)
+                {
+                    bookedFlightResponse.OrderName = "Manager Declined";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 4)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Approved";
+                }
+                else if (bookedFlightResponse.OrderStatusId == 5)
+                {
+                    bookedFlightResponse.OrderName = "Accountant Declined";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
