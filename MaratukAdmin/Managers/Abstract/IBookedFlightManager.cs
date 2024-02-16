@@ -11,7 +11,7 @@ namespace MaratukAdmin.Managers.Abstract
         Task<BookedFlightResponseFinal> GetBookedFlightAsync(int Itn);
         Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlights);
         Task<BookedFlightResponseFinal> GetBookedFlightByAgentIdAsync(int id);
-        Task<BookedFlightResponseFinalForMaratukAgent> GetBookedFlightByMaratukAgentIdAsync(int maratukAgent, int pageNumber = 1, int pageSize = 10);
+        Task<BookedFlightResponseFinalForMaratukAgent> GetBookedFlightByMaratukAgentIdAsync(int roleId,int maratukAgent, int pageNumber = 1, int pageSize = 10);
         Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightByMaratukAgentIdAsync(int maratukAgent, string? searchText,int? status,int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null);
         Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightAsync(int userId,int roleId, string? searchText,int? status, int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null);
         Task<BookedFlightResponseFinalForMaratukAgent> GetBookedFlightForAccAsync(int pageNumber, int pageSize);
