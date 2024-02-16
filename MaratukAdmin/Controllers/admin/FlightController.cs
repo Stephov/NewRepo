@@ -154,9 +154,9 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("SearchBookFlightByMaratukAgentId/{maratukAgentId:int}")]
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(int maratukAgentId, string? searchText, int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(int roleId,int maratukAgentId, string? searchText, int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
         {
-            var res = await _bookedFlightManager.SearchBookedFlightByMaratukAgentIdAsync(maratukAgentId, searchText, status, pageNumber, pageSize, startDate, endDate);
+            var res = await _bookedFlightManager.SearchBookedFlightByMaratukAgentIdAsync(roleId,maratukAgentId, searchText, status, pageNumber, pageSize, startDate, endDate);
             return res;
         }
 

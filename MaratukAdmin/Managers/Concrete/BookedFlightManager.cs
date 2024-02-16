@@ -480,7 +480,7 @@ namespace MaratukAdmin.Managers.Concrete
         }
 
 
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightByMaratukAgentIdAsync(int maratukAgent, string? searchText,int? status,int pageNumber, int pageSize, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookedFlightByMaratukAgentIdAsync(int roleId,int maratukAgent, string? searchText,int? status,int pageNumber, int pageSize, DateTime? startDate = null, DateTime? endDate = null)
         {
             BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
             List<BookedFlight> filtredByStatus = new List<BookedFlight>();
@@ -636,26 +636,90 @@ namespace MaratukAdmin.Managers.Concrete
                     EndFlightId = firstFlightInGroup.EndFlightId,
                     Comments = firstFlightInGroup.Comment
                 };
-                if (bookedFlightResponse.OrderStatusId == 1)
+              
+
+               /* if (bookedFlightResponse.HotelId != null)
                 {
-                    bookedFlightResponse.OrderName = "Created by Client";
-                }
-                else if (bookedFlightResponse.OrderStatusId == 2)
-                {
-                    bookedFlightResponse.OrderName = "Manager Approved";
-                }
-                else if (bookedFlightResponse.OrderStatusId == 3)
-                {
-                    bookedFlightResponse.OrderName = "Manager Declined";
-                }
-                else if (bookedFlightResponse.OrderStatusId == 4)
-                {
-                    bookedFlightResponse.OrderName = "Accountant Approved";
-                }
-                else if (bookedFlightResponse.OrderStatusId == 5)
-                {
-                    bookedFlightResponse.OrderName = "Accountant Declined";
-                }
+                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+
+                    if (roleId == 3)
+                    {
+                        bookedFlightResponse.OrderStatusId = bookedHotel.OrderStatusId;
+                    }
+                    var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
+
+                    if (hotel.Name != null)
+                    {
+                        bookedFlightResponse.HotelName = hotel.Name;
+
+                    }
+                    else
+                    {
+                        bookedFlightResponse.HotelName = string.Empty;
+
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.Room != null)
+                        {
+                            bookedFlightResponse.RoomType = bookedHotel.Room;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.RoomType = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.BoardDesc != null)
+                        {
+                            bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.BoardDesc = string.Empty;
+                    }
+
+                    if (bookedHotel != null)
+                    {
+                        if (bookedHotel.RoomCode != null)
+                        {
+                            bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+
+                        }
+                    }
+                    else
+                    {
+                        bookedFlightResponse.RoomCode = string.Empty;
+                    }
+
+                    if (bookedFlightResponse.OrderStatusId == 1)
+                    {
+                        bookedFlightResponse.OrderName = "Created by Client";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 2)
+                    {
+                        bookedFlightResponse.OrderName = "Manager Approved";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 3)
+                    {
+                        bookedFlightResponse.OrderName = "Manager Declined";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 4)
+                    {
+                        bookedFlightResponse.OrderName = "Accountant Approved";
+                    }
+                    else if (bookedFlightResponse.OrderStatusId == 5)
+                    {
+                        bookedFlightResponse.OrderName = "Accountant Declined";
+                    }
+                }*/
+
 
                 if (bookedFlightResponse.HotelId != null)
                 {
@@ -676,6 +740,11 @@ namespace MaratukAdmin.Managers.Concrete
 
                     if (bookedHotel != null)
                     {
+                        if (roleId == 3)
+                        {
+                            bookedFlightResponse.OrderStatusId = bookedHotel.OrderStatusId;
+                        }
+
                         if (bookedHotel.Room != null)
                         {
                             bookedFlightResponse.RoomType = bookedHotel.Room;
@@ -1938,7 +2007,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else
                 {
-                    return await SearchBookedFlightByMaratukAgentIdAsync(userId, searchText, status, pageNumber, pageSize, startDate, endDate);
+                    return await SearchBookedFlightByMaratukAgentIdAsync(roleId,userId, searchText, status, pageNumber, pageSize, startDate, endDate);
                 }
 
             }
