@@ -1046,22 +1046,22 @@ namespace MaratukAdmin.Managers.Concrete
                     return false;
                 }
             }
-            else if(role == 2)
+            else if(role == 3)
             {
                 try
                 {
-                    var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
+                    //var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
                     var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
                     int managerId = 0;
-                    int clientId = 0;
-                    foreach (var book in booked)
+                   // int clientId = 0;
+                   /* foreach (var book in booked)
                     {
                         managerId = book.MaratukAgentId;
                         clientId = book.AgentId;
                         book.OrderStatusId = status;
                         book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
                         await _mainRepository.UpdateAsync(book);
-                    }
+                    }*/
 
                     if(bookedHotel != null)
                     {
@@ -1071,7 +1071,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
 
 
-                    if (booked.Count > 1)
+                   /* if (bookedHotel != null)
                     {
                         string managerName = _userRepository.GetUserByIdAsync(managerId).Result.UserName;
 
@@ -1079,7 +1079,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                         if (status == 2)
                         {
-                            string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
+                           // string clientEmail = _userRepository.GetAgencyUsersByIdAsync(clientId).Result.Email;
 
                             if (maratukAcc.Count > 0)
                             {
@@ -1170,7 +1170,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                         }
 
-                    }
+                    }*/
 
                     return true;
                 }
@@ -1198,7 +1198,7 @@ namespace MaratukAdmin.Managers.Concrete
                             book.TotalPrice = (double)totalPrice;
                             book.Dept = (double)totalPrice;
                         }
-                        //await _mainRepository.UpdateAsync(book);
+                        await _mainRepository.UpdateAsync(book);
                     }
 
                     if (bookedHotel != null)
@@ -1933,7 +1933,6 @@ namespace MaratukAdmin.Managers.Concrete
                 else
                 {
                     return await SearchBookedFlightByMaratukAgentIdAsync(userId, searchText, status, pageNumber, pageSize, startDate, endDate);
-
                 }
 
             }
