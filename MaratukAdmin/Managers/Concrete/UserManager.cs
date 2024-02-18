@@ -67,7 +67,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             var user = await _userRepository.GetAgencyUserAsync(email);
 
-            if (user == null)
+            if(user == null)
             {
                 return false;
             }
@@ -255,7 +255,10 @@ namespace MaratukAdmin.Managers.Concrete
                 PasswordSalt = salt,
                 IsActivated = false,
                 IsAproved = 0,
-                Role = "Admin"
+                Role = "Admin",
+                RegisterDate = DateTime.Now,
+                ApprovedDate = null,
+                RejectedDate = null
             };
 
             try

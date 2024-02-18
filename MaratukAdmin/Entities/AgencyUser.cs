@@ -25,5 +25,13 @@ namespace MaratukAdmin.Entities
         public bool IsActivated { get; set; }
         public int? IsAproved { get; set; } = 0;
         public string Role { get; set; }
+        
+        public DateTime? RegisterDate { get; set; }
+
+        public DateTime? ApprovedDate { get; set; }
+
+        public DateTime? RejectedDate { get; set; }
+
+
     }
 }

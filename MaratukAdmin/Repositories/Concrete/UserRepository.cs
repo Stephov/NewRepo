@@ -153,6 +153,13 @@ namespace MaratukAdmin.Repositories.Concrete
             if (user != null)
             {
                 user.IsAproved = statusId;
+                if(statusId == 1)
+                {
+                    user.ApprovedDate = DateTime.UtcNow;
+                }
+                {
+                    user.RejectedDate = DateTime.UtcNow;
+                }
                 await _dbContext.SaveChangesAsync();
                 return true;
             }
