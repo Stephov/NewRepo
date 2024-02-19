@@ -67,7 +67,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             var user = await _userRepository.GetAgencyUserAsync(email);
 
-            if(user == null)
+            if (user == null)
             {
                 return false;
             }
@@ -90,9 +90,9 @@ namespace MaratukAdmin.Managers.Concrete
         {
             var respones = new List<AgencyAgentResponse>();
 
-            var response =  await _userRepository.GetAgencyUsersAsync(itn);
+            var response = await _userRepository.GetAgencyUsersAsync(itn);
 
-            foreach(var agencyUser in response)
+            foreach (var agencyUser in response)
             {
                 AgencyAgentResponse agent = new AgencyAgentResponse()
                 {
@@ -101,7 +101,7 @@ namespace MaratukAdmin.Managers.Concrete
                     Email = agencyUser.Email,
                     PhoneNumber = agencyUser.PhoneNumber1
                 };
-            respones.Add(agent);
+                respones.Add(agent);
             }
 
             return respones;
@@ -110,11 +110,11 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<AgencyAgentResponse> GetAgencyAgentByIdAsync(int agentId)
         {
-            
+
 
             var response = await _userRepository.GetAgencyUsersByIdAsync(agentId);
 
-            if(response != null)
+            if (response != null)
             {
                 return new AgencyAgentResponse()
                 {
@@ -144,6 +144,11 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
+        }
+
+        public async Task<List<User>> GetUsersByRoleAsync(string? role)
+        {
+            return await _userRepository.GetUsersByRoleAsync(role);
         }
 
         public async Task<AuthenticationResponse> LoginAsync(string email, string password)
@@ -184,7 +189,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                 await _userRepository.AddRefreshToken(refresh);
                 response.name = user.Name;
-                response.Role= user.Role;
+                response.Role = user.Role;
                 response.Id = user.Id;
                 return response;
             }
@@ -311,7 +316,7 @@ namespace MaratukAdmin.Managers.Concrete
 
         public async Task<AgencyUser> UpdateAgencyAgentAsync(AgencyAgentUpdateCredentialsRequest agencyAgentUpdateCredentialsRequest)
         {
-            if(agencyAgentUpdateCredentialsRequest.Password != null)
+            if (agencyAgentUpdateCredentialsRequest.Password != null)
             {
 
 
@@ -414,7 +419,7 @@ namespace MaratukAdmin.Managers.Concrete
             return res;
         }
 
-        public async Task<bool> ApproveUserAgency(int Id,int status)
+        public async Task<bool> ApproveUserAgency(int Id, int status)
         {
             var ras = await _userRepository.ApproveUserAgency(Id, status);
             return ras;
@@ -424,7 +429,7 @@ namespace MaratukAdmin.Managers.Concrete
         {
             List<AgencyAgentResponseForAcc> agents = new List<AgencyAgentResponseForAcc>();
             var res = await _userRepository.GetAllAgencyUserAsync();
-            foreach(var agent in res)
+            foreach (var agent in res)
             {
                 AgencyAgentResponseForAcc user = new AgencyAgentResponseForAcc();
 
@@ -442,10 +447,11 @@ namespace MaratukAdmin.Managers.Concrete
                 user.FullName = agent.FullName;
                 user.email = agent.Email;
                 user.IsApproved = (int)agent.IsAproved;
-                if(user.IsApproved == 1)
+                if (user.IsApproved == 1)
                 {
                     user.IsApprovStatusName = "Approved";
-                }else if(user.IsApproved == 0)
+                }
+                else if (user.IsApproved == 0)
                 {
                     user.IsApprovStatusName = "New Request";
                 }
@@ -453,10 +459,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     user.IsApprovStatusName = "Declined";
                 }
-                 agents.Add(user);   
+                agents.Add(user);
             }
 
-            return agents.OrderBy(x=> x.IsApproved).ToList();
+            return agents.OrderBy(x => x.IsApproved).ToList();
         }
 
         public async Task<AgencyAuthenticationResponse> AgencyUserLoginAsync(string email, string password)
@@ -548,16 +554,17 @@ namespace MaratukAdmin.Managers.Concrete
         }
 
         public async Task<List<ManagerResponse>> GetManagersAsync()
-        { var resp = new List<ManagerResponse>();
-           var result =  await _userRepository.GetManagersAsync("manager");
-            foreach(var manager in result)
+        {
+            var resp = new List<ManagerResponse>();
+            var result = await _userRepository.GetManagersAsync("manager");
+            foreach (var manager in result)
             {
                 ManagerResponse response = new ManagerResponse();
                 response.Id = manager.Id;
                 response.Name = manager.Name;
                 resp.Add(response);
             }
-            
+
             return resp;
         }
 

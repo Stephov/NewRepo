@@ -126,7 +126,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.Passport = bookedFlight.Passport;
                             booked.AgentId = bookedFlight.AgentId;
                             booked.DateOfOrder = DateTime.Now;
-                            booked.ToureTypeId = "Flight";
+                            booked.ToureTypeId = "Flight + Hotel";
                             booked.TotalPrice = bookedFlight.TotalPrice + bookedFlightAndHotel.Price;
                             booked.Rate = bookedFlight.Rate;
                             booked.TotalPriceAmd = (USDRate * bookedFlight.TotalPrice) + (USDRate * bookedFlightAndHotel.Price);
