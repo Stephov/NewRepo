@@ -15,7 +15,7 @@ namespace MaratukAdmin.Dto.Request.Sansejour
 
 
         // Flight part
-        public int FlightAdult { get { return _flightAdultCount; } } 
+        public int FlightAdult { get { return _flightAdultCount; } }
         public int FlightChild { get { return _flightChildCount; } }
         public int FlightInfant { get { return _flightInfantCount; } }
 
@@ -59,21 +59,32 @@ namespace MaratukAdmin.Dto.Request.Sansejour
             RoomAdultCount = baseModel.RoomAdultCount;
             RoomChildCount = baseModel.RoomChildCount;
             RoomChildAges = baseModel.RoomChildAges;
-            PageNumber= baseModel.PageNumber;
-            PageSize= baseModel.PageSize;
-            
+            PageNumber = baseModel.PageNumber;
+            PageSize = baseModel.PageSize;
+
 
             // Define child counts and ages for Flight seach
             if (baseModel.RoomChildAges != null)
             {
+                // Check if no item in list for Infant, and add Age 1 to childs list manually.
+                while (baseModel.RoomChildCount > baseModel.RoomChildAges.Count)
+                {
+                    baseModel.RoomChildAges.Add(1);
+                    _flightInfantCount++;
+                }
+
                 foreach (var man in baseModel.RoomChildAges)
                 {
                     if (man <= 2)
                     { _flightInfantCount++; }
-                    else if (man > 2 && man <= 12)
+                    else
+                    if (man > 2 && man <= 12)
                     { _flightChildCount++; }
-                    else if (man > 12)
-                    { _flightAdultCount++; }
+                    else
+                    if (man > 12)
+                    {
+                        _flightAdultCount++;
+                    }
                 }
                 _flightAdultCount += RoomAdultCount;
             }

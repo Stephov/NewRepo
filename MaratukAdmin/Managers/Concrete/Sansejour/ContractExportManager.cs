@@ -710,23 +710,25 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {
             int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
-            int flightChildCount = 0;
-            int flightInfantCount = 0;
+            //int flightChildCount = 0;
+            int flightChildCount = searchFlightAndRoomRequest.RoomChildCount ?? 0;
+            //int flightInfantCount = 0;
+            int flightInfantCount = searchFlightAndRoomRequest.FlightInfant;
             List<SearchFligtAndRoomResponse> retValue = new();
 
             // Define child counts and ages for Flight seach
-            if (searchFlightAndRoomRequest.RoomChildAges != null)
-            {
-                foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
-                {
-                    if (man <= 2)
-                    { flightInfantCount++; }
-                    else if (man > 2 && man <= 12)
-                    { flightChildCount++; }
-                    else if (man > 12)
-                    { flightAdultCount++; }
-                }
-            }
+            //if (searchFlightAndRoomRequest.RoomChildAges != null)
+            //{
+            //    foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
+            //    {
+            //        if (man <= 2)
+            //        { flightInfantCount++; }
+            //        else if (man > 2 && man <= 12)
+            //        { flightChildCount++; }
+            //        else if (man > 12)
+            //        { flightAdultCount++; }
+            //    }
+            //}
 
             SearchFlightResult searchFlightRequest = new()
             {
@@ -838,23 +840,25 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomMockAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {
             int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
-            int flightChildCount = 0;
-            int flightInfantCount = 0;
+            //int flightChildCount = 0;
+            int flightChildCount = searchFlightAndRoomRequest.RoomChildCount ?? 0;
+            //int flightInfantCount = 0;
+            int flightInfantCount = searchFlightAndRoomRequest.FlightInfant;
             List<SearchFligtAndRoomResponse> retValue = new();
 
             // Define child counts and ages for Flight seach
-            if (searchFlightAndRoomRequest.RoomChildAges != null)
-            {
-                foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
-                {
-                    if (man <= 2)
-                    { flightInfantCount++; }
-                    else if (man > 2 && man <= 12)
-                    { flightChildCount++; }
-                    else if (man > 12)
-                    { flightAdultCount++; }
-                }
-            }
+            //if (searchFlightAndRoomRequest.RoomChildAges != null)
+            //{
+            //    foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
+            //    {
+            //        if (man <= 2)
+            //        { flightInfantCount++; }
+            //        else if (man > 2 && man <= 12)
+            //        { flightChildCount++; }
+            //        else if (man > 12)
+            //        { flightAdultCount++; }
+            //    }
+            //}
 
             SearchFlightResult searchFlightRequest = new()
             {
@@ -894,23 +898,25 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         public async Task<List<SearchFligtAndRoomLowestPricesResponse>> SearchFlightAndRoomLowestPricesAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {
             int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
-            int flightChildCount = 0;
-            int flightInfantCount = 0;
+            //int flightChildCount = 0;
+            int flightChildCount = searchFlightAndRoomRequest.RoomChildCount ?? 0;
+            //int flightInfantCount = 0;
+            int flightInfantCount = searchFlightAndRoomRequest.FlightInfant;
             List<SearchFligtAndRoomLowestPricesResponse> retValue = new();
 
-            // Define child counts and ages for Flight seach
-            if (searchFlightAndRoomRequest.RoomChildAges != null)
-            {
-                foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
-                {
-                    if (man <= 2)
-                    { flightInfantCount++; }
-                    else if (man > 2 && man <= 12)
-                    { flightChildCount++; }
-                    else if (man > 12)
-                    { flightAdultCount++; }
-                }
-            }
+            //// Define child counts and ages for Flight seach
+            //if (searchFlightAndRoomRequest.RoomChildAges != null)
+            //{
+            //    foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
+            //    {
+            //        if (man <= 2)
+            //        { flightInfantCount++; }
+            //        else if (man > 2 && man <= 12)
+            //        { flightChildCount++; }
+            //        else if (man > 12)
+            //        { flightAdultCount++; }
+            //    }
+            //}
 
             SearchFlightResult searchFlightRequest = new()
             {
@@ -973,23 +979,25 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         public async Task<List<SearchFligtAndRoomResponse>> SearchFlightAndRoomLowestPricesMockAsync(SearchFligtAndRoomRequest searchFlightAndRoomRequest)
         {
             int flightAdultCount = searchFlightAndRoomRequest.FlightAdult;
-            int flightChildCount = 0;
-            int flightInfantCount = 0;
+            //int flightChildCount = 0;
+            int flightChildCount = searchFlightAndRoomRequest.RoomChildCount ?? 0;
+            //int flightInfantCount = 0;
+            int flightInfantCount = searchFlightAndRoomRequest.FlightInfant;
             List<SearchFligtAndRoomResponse> retValue = new();
 
             // Define child counts and ages for Flight seach
-            if (searchFlightAndRoomRequest.RoomChildAges != null)
-            {
-                foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
-                {
-                    if (man <= 2)
-                    { flightInfantCount++; }
-                    else if (man > 2 && man <= 12)
-                    { flightChildCount++; }
-                    else if (man > 12)
-                    { flightAdultCount++; }
-                }
-            }
+            //if (searchFlightAndRoomRequest.RoomChildAges != null)
+            //{
+            //    foreach (var man in searchFlightAndRoomRequest.RoomChildAges)
+            //    {
+            //        if (man <= 2)
+            //        { flightInfantCount++; }
+            //        else if (man > 2 && man <= 12)
+            //        { flightChildCount++; }
+            //        else if (man > 12)
+            //        { flightAdultCount++; }
+            //    }
+            //}
 
             SearchFlightResult searchFlightRequest = new()
             {

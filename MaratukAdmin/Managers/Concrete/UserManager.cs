@@ -67,7 +67,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             var user = await _userRepository.GetAgencyUserAsync(email);
 
-            if(user == null)
+            if (user == null)
             {
                 return false;
             }
@@ -144,6 +144,11 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
+        }
+
+        public async Task<List<User>> GetUsersByRoleAsync(string? role)
+        {
+            return await _userRepository.GetUsersByRoleAsync(role);
         }
 
         public async Task<AuthenticationResponse> LoginAsync(string email, string password)

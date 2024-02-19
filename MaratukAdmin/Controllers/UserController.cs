@@ -8,7 +8,14 @@ using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Runtime.Serialization;
+using static MaratukAdmin.Controllers.UserController;
 
 namespace MaratukAdmin.Controllers
 {
@@ -52,15 +59,15 @@ namespace MaratukAdmin.Controllers
 
         [HttpGet("activate")]
         [AllowAnonymous]
-        public async Task<bool> Activate(int Id,string HashId)
+        public async Task<bool> Activate(int Id, string HashId)
         {
 
-             var res = await _userManager.ActivateUserAgency(Id,HashId);
+            var res = await _userManager.ActivateUserAgency(Id, HashId);
             return res;
         }
 
         [HttpGet("approve")]
-        public async Task<bool> Approve(int Id,int statusId)
+        public async Task<bool> Approve(int Id, int statusId)
         {
             var res = await _userManager.ApproveUserAgency(Id, statusId);
             return res;
@@ -70,9 +77,35 @@ namespace MaratukAdmin.Controllers
         [HttpGet("GetAgencyUserForAcc")]
         public async Task<ActionResult> GetAgencyUsersForAcc()
         {
-            var result =  await _userManager.GetAgencyAgentsForAccAsync();
+            var result = await _userManager.GetAgencyAgentsForAccAsync();
 
             return Ok(result);
+        }
+
+
+        [HttpGet("GetUsersByRole")]
+        public async Task<ActionResult> GetUsersByRole([FromQuery][Required] enumRoles role = enumRoles.All)
+        {
+            string? selectedRole = (role == enumRoles.All) ? null : role.ToString();
+
+            var result = await _userManager.GetUsersByRoleAsync(selectedRole);
+
+            return Ok(result);
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum enumRoles
+        {
+            [Display(Name = "All")]
+            All,
+            [Display(Name = "Accountant")]
+            Accountant,
+            [Display(Name = "Admin")]
+            Admin,
+            [Display(Name = "Hotel")]
+            Hotel,
+            [Display(Name = "Manager")]
+            Manager
         }
 
         [HttpGet("auth/profile")]
@@ -248,7 +281,7 @@ namespace MaratukAdmin.Controllers
         {
             try
             {
-                var res =  await _userManager.GetAgencyAgentByItnAsync(itn);
+                var res = await _userManager.GetAgencyAgentByItnAsync(itn);
 
                 return Ok(res);
             }
@@ -307,7 +340,7 @@ namespace MaratukAdmin.Controllers
         /// <param name="newPassword">New password</param>
         /// <returns></returns>
         [HttpPut("updatePasswordByEmail")]
-        public async Task<ActionResult> ChangePassword(string newPassword1, string newPassword2,string email,string hash)
+        public async Task<ActionResult> ChangePassword(string newPassword1, string newPassword2, string email, string hash)
         {
             try
             {
@@ -340,10 +373,10 @@ namespace MaratukAdmin.Controllers
         public async Task<ActionResult> ChangePassword(string email)
         {
 
-                bool isChanged = await _userManager.ForgotPassword(email);
+            bool isChanged = await _userManager.ForgotPassword(email);
 
-                return Ok(isChanged);
-            
+            return Ok(isChanged);
+
         }
 
 
