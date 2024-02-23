@@ -82,6 +82,14 @@ namespace MaratukAdmin.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetAgencyUsersForAccById/{agentId:int}")]
+        public async Task<ActionResult> GetAgencyUsersForAccById(int agentId)
+        {
+            var result = await _userManager.GetAgencyAgentsForAccAsyncById(agentId);
+
+            return Ok(result);
+        }
+
 
         [HttpGet("GetUsersByRole")]
         public async Task<ActionResult> GetUsersByRole([FromQuery][Required] enumRoles role = enumRoles.All)

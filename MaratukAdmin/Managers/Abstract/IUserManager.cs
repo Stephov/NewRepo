@@ -10,6 +10,7 @@ namespace MaratukAdmin.Managers.Abstract
     {
         Task<AuthenticationResponse> LoginAsync(string email, string password);
         Task<List<AgencyAgentResponseForAcc>> GetAgencyAgentsForAccAsync();
+        Task<AgencyAgentResponseForAcc> GetAgencyAgentsForAccAsyncById(int agentId);
         Task<bool> DeleteAgentAsync(int agentId);
         Task<AgencyUser> UpdateAgencyAgentAsync(AgencyAgentUpdateCredentialsRequest agencyAgentUpdateCredentialsRequest);
         Task<bool> ForgotPassword(string email);
