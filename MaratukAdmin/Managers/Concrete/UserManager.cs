@@ -573,7 +573,7 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<List<ManagerResponse>> GetManagersAsync()
         {
             var resp = new List<ManagerResponse>();
-            var result = await _userRepository.GetManagersAsync("manager");
+            var result = await _userRepository.GetManagersAsync("FligthManager");
             foreach (var manager in result)
             {
                 ManagerResponse response = new ManagerResponse();

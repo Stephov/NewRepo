@@ -102,9 +102,9 @@ namespace MaratukAdmin.Controllers
             Accountant,
             [Display(Name = "Admin")]
             Admin,
-            [Display(Name = "Hotel")]
+            [Display(Name = "ManagerHotel")]
             Hotel,
-            [Display(Name = "Manager")]
+            [Display(Name = "FligthManager")]
             Manager
         }
 
