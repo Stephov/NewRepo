@@ -10,7 +10,7 @@
         public string Email { get; set; }
         public string Passport { get; set; }
         public int AgentId { get; set; }
-        public int AgentStatusId { get; set; }
+        public int BookStatusForClient { get; set; }
         public DateTime DateOfOrder { get; set; }
         public string ToureTypeId { get; set; }
         public int? HotelId { get; set; }
@@ -26,7 +26,8 @@
         public DateTime PasportExpiryDate { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukAgentId { get; set; }
-        public int MaratukAgentStatusId { get; set; }
+        public int MaratukHotelAgentId { get; set; }
+        public int BookStatusForMaratuk { get; set; }
         public int GenderId { get; set; }
         public int CountryId { get; set; }
         public double? Dept { get; set; }

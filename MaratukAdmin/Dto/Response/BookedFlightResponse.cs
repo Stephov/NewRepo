@@ -12,13 +12,14 @@
         public string Room { get; set; } = string.Empty;
         public string RoomCode { get; set; } = string.Empty;
         public string BoardDesc { get; set; } = string.Empty;
+        public string RoomType { get; set; } = string.Empty;
         public string? TicketNumber { get; set; }
         public int OrderStatusId { get; set; } = 1;
-        public string OrderName { get; set; } = string.Empty;
         public double TotalPrice { get; set; }
         public string Rate { get; set; }
         public int AgentId { get; set; }
-        public int AgentStatusId { get; set; }
+        public int BookStatusForClient { get; set; }
+        public string BookStatusForClientName { get; set; }
         public string AgentName { get; set; }
 
         public double TotalPriceAmd { get; set; }
@@ -28,7 +29,8 @@
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukAgentId { get; set; }
-        public int MaratukAgentStatusId { get; set; }
+        public int BookStatusForMaratuk { get; set; }
+        public string BookStatusForMaratukName { get; set; }
         public string? MaratukAgentName { get; set; }
         public int CountryId { get; set; }
         public string? CountryName { get; set; }
@@ -52,11 +54,11 @@
         public string RoomCode { get; set; } = string.Empty;
         public string? TicketNumber { get; set; }
         public int OrderStatusId { get; set; } = 1;
-        public string OrderName{ get; set; } = string.Empty;
         public double TotalPrice { get; set; }
         public string Rate { get; set; }
         public int AgentId { get; set; }
-        public int AgentStatusId { get; set; }
+        public int BookStatusForClient { get; set; }
+        public string BookStatusForClientName { get; set; }
         public string AgentName { get; set; }
 
         public double TotalPriceAmd { get; set; }
@@ -66,7 +68,9 @@
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukAgentId { get; set; }
-        public int MaratukAgentStatusId { get; set; }
+        public int MaratukHotelAgentId { get; set; }
+        public int BookStatusForMaratuk { get; set; }
+        public string BookStatusForMaratukName { get; set; }
         public string? MaratukAgentName { get; set; }
         public int CountryId { get; set; }
         public string? CountryName { get; set; }
