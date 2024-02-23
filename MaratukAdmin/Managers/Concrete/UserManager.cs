@@ -354,6 +354,14 @@ namespace MaratukAdmin.Managers.Concrete
             return result;
         }
 
+        public async Task<AgencyUser> UpdateAgencyAgentForAccAsync(UpdateAgencyUser agent)
+        {
+
+            var result = await _userRepository.UpdateAgencyUserForAcc(agent);
+
+            return result;
+        }
+
 
         public async Task RegisterAsync(string email, string password, string userName, string fullName)
         {

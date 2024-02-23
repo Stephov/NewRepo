@@ -283,6 +283,24 @@ namespace MaratukAdmin.Controllers
             }
         }
 
+        [HttpPost("updateAgencyAgentForAcc")]
+        public async Task<ActionResult> UpdateAgency([FromBody] UpdateAgencyUser agent)
+        {
+            try
+            {
+               var res = await _userManager.UpdateAgencyAgentForAccAsync(agent);
+
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
 
         [HttpGet("GetAgencyAgent/{itn:int}")]
         public async Task<ActionResult> GetAgencyAgentAsync(int itn)
