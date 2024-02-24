@@ -15,6 +15,8 @@ namespace MaratukAdmin.Entities.Sansejour
         public string? BoardDesc { get; set; }
         public int HotelAgentId { get; set; }              // Record from Users table
         public int MaratukHotelAgentId { get; set; }       // Record from AgencyUser table
-
+        public DateTime AccomodationStartDate { get; set; }
+        public DateTime? AccomodationEndDate { get; set; }
+        public bool LateCheckout { get; set; }
     }
 }

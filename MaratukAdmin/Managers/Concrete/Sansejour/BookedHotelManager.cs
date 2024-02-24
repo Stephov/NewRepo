@@ -73,8 +73,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     //Rate = addBookedHotel.Rate,
                     TotalPriceAmd = USDRate * addBookedHotel.TotalPrice,
                     GuestsCount = addBookedHotel.GuestsCount,
-                    TourStartDate = addBookedHotel.TourStartDate,
-                    TourEndDate = addBookedHotel.TourEndDate,
+                    AccomodationStartDate = addBookedHotel.TourStartDate,
+                    AccomodationEndDate = addBookedHotel.TourEndDate,
                     //MaratukAgentId = addBookedHotel.MaratukAgentId,
                     Dept = addBookedHotel.TotalPrice
                 };
