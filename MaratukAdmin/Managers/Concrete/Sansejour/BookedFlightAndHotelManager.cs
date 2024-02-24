@@ -23,6 +23,7 @@ using MimeKit;
 using MimeKit.Tnef;
 using System;
 using System.Collections.Generic;
+using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
 {
@@ -101,6 +102,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 string? hotelName = string.Empty;
                 string? hotelCountry = string.Empty;
                 string? hotelCity = string.Empty;
+                int hotelDaysCount = 1;
 
                 // *** Flight part
                 orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
@@ -141,6 +143,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.GenderId = bookedFlight.GenderId;
                             booked.Dept = bookedFlight.TotalPrice;
                             booked.HotelId = bookedFlightAndHotel.HotelId;
+                            booked.AgentStatusId = (int)Enums.BookStatusForClient.Waiting;
+                            booked.MaratukAgentStatusId = (int)Enums.BookStatusForClient.Waiting;
 
                             var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
                             Fligthname1 = fligth.Name;
@@ -182,6 +186,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         }
 
                         // *** Hotel part
+                        //hotelDaysCount = tourEndDate - tourStartDate
                         BookedHotel bookedHotel = new()
                         {
                             OrderNumber = orderNumber,
@@ -192,14 +197,18 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             SejourRateId = bookedFlightAndHotel.SejourRateId,
                             CountryId = countryId,
                             ToureTypeId = "Hotel",
-                            TotalPrice = bookedFlightAndHotel.Price,
-                            TotalPriceAmd = USDRate * bookedFlightAndHotel.Price,
+                            TotalPrice = hotelDaysCount * bookedFlightAndHotel.Price,
+                            TotalPriceAmd = USDRate * hotelDaysCount * bookedFlightAndHotel.Price,
                             GuestsCount = guestsCount,
                             TourStartDate = tourStartDate,
                             TourEndDate = tourEndDate,
                             Dept = bookedFlightAndHotel.Price,
                             Board = bookedFlightAndHotel.Board,
-                            BoardDesc = bookedFlightAndHotel.BoardDesc
+                            BoardDesc = bookedFlightAndHotel.BoardDesc,
+                            AgentId = bookedFlightAndHotel.AgentIdHotel,
+                            BookStatusForClient = (int)Enums.BookStatusForClient.Waiting,
+                            MaratukAgentId = bookedFlightAndHotel.MaratukAgentIdHotel,
+                            BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting
                         };
 
                         await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);
