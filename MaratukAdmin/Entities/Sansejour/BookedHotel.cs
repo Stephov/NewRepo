@@ -24,9 +24,10 @@
         //public int MaratukAgentId { get; set; }
         public int CountryId { get; set; }
         public double? Dept { get; set; }
-        public DateTime TourStartDate { get; set; }
-        public DateTime? TourEndDate { get; set; }
-        public int AgentId { get; set; }
+        public DateTime AccomodationStartDate { get; set; }
+        public DateTime? AccomodationEndDate { get; set; }
+        public bool LateCheckout { get; set; }
+        public int HotelAgentId { get; set; }
         public int BookStatusForClient { get; set; }
         public int MaratukHotelAgentId { get; set; }
         public int BookStatusForMaratuk { get; set; }
