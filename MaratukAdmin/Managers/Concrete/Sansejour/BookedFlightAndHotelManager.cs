@@ -130,9 +130,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.AgentId = bookedFlight.AgentId;
                             booked.DateOfOrder = DateTime.Now;
                             booked.ToureTypeId = "Flight + Hotel";
-                            booked.TotalPrice = bookedFlight.TotalPrice + bookedFlightAndHotel.Price;
+                            booked.TotalPrice = bookedFlight.TotalPrice + bookedFlightAndHotel.HotelTotalPrice;
                             booked.Rate = bookedFlight.Rate;
-                            booked.TotalPriceAmd = (USDRate * bookedFlight.TotalPrice) + (USDRate * bookedFlightAndHotel.Price);
+                            booked.TotalPriceAmd = (USDRate * bookedFlight.TotalPrice) + (USDRate * bookedFlightAndHotel.HotelTotalPrice);
                             booked.PassengersCount = bookedFlight.PassengersCount;
                             booked.TourStartDate = bookedFlight.TourStartDate;
                             booked.TourEndDate = bookedFlight.TourEndDate;
@@ -199,8 +199,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             SejourRateId = bookedFlightAndHotel.SejourRateId,
                             CountryId = countryId,
                             ToureTypeId = "Hotel",
-                            TotalPrice = hotelDaysCount * bookedFlightAndHotel.Price,
-                            TotalPriceAmd = USDRate * hotelDaysCount * bookedFlightAndHotel.Price,
+                            Price = bookedFlightAndHotel.Price,
+                            HotelTotalPrice = hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
+                            HotelTotalPriceAmd = USDRate * hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
                             GuestsCount = guestsCount,
                             AccomodationStartDate = bookedFlightAndHotel.AccomodationStartDate,
                             AccomodationEndDate = bookedFlightAndHotel.AccomodationEndDate,
@@ -225,7 +226,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             hotelCity = hotel.hotelCityNameEng;
                         }
 
-                        totalPay = (totalPayFlight + bookedHotel.TotalPrice).ToString();
+                        totalPay = (totalPayFlight + bookedHotel.HotelTotalPrice).ToString();
 
 
                         await _transactionRepository.CommitTransAsync();                                            // Commit transaction

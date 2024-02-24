@@ -11,6 +11,7 @@ namespace MaratukAdmin.Entities.Sansejour
         public int HotelId { get; set; }
         public string? HotelCode { get; set; }
         public double Price { get; set; }
+        public double HotelTotalPrice { get; set; }
         public string? Board { get; set; }
         public string? BoardDesc { get; set; }
         public int HotelAgentId { get; set; }              // Record from Users table
