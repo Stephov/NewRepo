@@ -18,12 +18,17 @@
         public string CompanyLegalAddress { get; set; }
         public int Itn { get; set; }
         public string BankAccountNumber { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
         public string PhoneNumber1 { get; set; }
         public string PhoneNumber2 { get; set; }
         public string FullName { get; set; }
         public string email { get; set; }
         public int IsApproved { get; set; }
         public string IsApprovStatusName { get; set; }
+        public DateTime RegisterDate { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public DateTime? RejectedDate { get; set; }
 
     }
 }

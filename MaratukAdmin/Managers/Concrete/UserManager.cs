@@ -1,6 +1,7 @@
 ﻿using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
+using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Models;
 using MaratukAdmin.Repositories.Abstract;
@@ -18,11 +19,17 @@ namespace MaratukAdmin.Managers.Concrete
     {
         private readonly IUserRepository _userRepository;
         private readonly JwtTokenService _jwtTokenService;
+        private readonly ICountryManager _countryManager;
+        private readonly ICityManager _cityManager;
+        // private readonly ICityRepository _cityRepository;
 
-        public UserManager(IUserRepository userRepository, JwtTokenService jwtTokenService)
+        public UserManager(IUserRepository userRepository, JwtTokenService jwtTokenService, ICountryManager countryManager, ICityManager cityManager)
         {
             _userRepository = userRepository;
             _jwtTokenService = jwtTokenService;
+            _countryManager = countryManager;
+            _cityManager = cityManager;
+            // _cityRepository = cityRepository;
         }
 
 
@@ -347,6 +354,14 @@ namespace MaratukAdmin.Managers.Concrete
             return result;
         }
 
+        public async Task<AgencyUser> UpdateAgencyAgentForAccAsync(UpdateAgencyUser agent)
+        {
+
+            var result = await _userRepository.UpdateAgencyUserForAcc(agent);
+
+            return result;
+        }
+
 
         public async Task RegisterAsync(string email, string password, string userName, string fullName)
         {
@@ -463,6 +478,17 @@ namespace MaratukAdmin.Managers.Concrete
                 user.PhoneNumber2 = agent.PhoneNumber2;
                 user.FullName = agent.FullName;
                 user.email = agent.Email;
+                user.RegisterDate = agent.RegisterDate;
+                user.ApprovedDate = agent.ApprovedDate;
+                user.RejectedDate = agent.RejectedDate;
+                if(agent.CountryId != 0)
+                {
+                    user.Country = _countryManager.GetCountryNameByIdAsync(agent.CountryId).Result?.NameENG;
+                }
+                if(agent.CityId!= 0)
+                {
+                    user.City = _cityManager.GetCityNameByIdAsync(agent.CityId).Result?.NameEng;
+                }
                 user.IsApproved = (int)agent.IsAproved;
                 if (user.IsApproved == 1)
                 {
@@ -480,6 +506,56 @@ namespace MaratukAdmin.Managers.Concrete
             }
 
             return agents.OrderBy(x => x.IsApproved).ToList();
+        }
+
+        public async Task<AgencyAgentResponseForAcc> GetAgencyAgentsForAccAsyncById(int agentId)
+        {
+            var res = await _userRepository.GetAgencyUsersByIdAsync(agentId);
+
+
+                AgencyAgentResponseForAcc user = new AgencyAgentResponseForAcc();
+
+
+
+
+                user.Id = res.Id;
+                user.AgencyName = res.AgencyName;
+                user.FullCompanyName = res.FullCompanyName;
+                user.CompanyLocation = res.CompanyLocation;
+                user.CompanyLegalAddress = res.CompanyLegalAddress;
+                user.Itn = res.Itn;
+                user.PhoneNumber1 = res.PhoneNumber1;
+                user.PhoneNumber2 = res.PhoneNumber2;
+                user.FullName = res.FullName;
+                user.email = res.Email;
+                user.RegisterDate = res.RegisterDate;
+                user.ApprovedDate = res.ApprovedDate;
+                user.RejectedDate = res.RejectedDate;
+                if (res.CountryId != 0)
+                {
+                    user.Country = _countryManager.GetCountryNameByIdAsync(res.CountryId).Result?.NameENG;
+                }
+                if (res.CityId != 0)
+                {
+                    user.City = _cityManager.GetCityNameByIdAsync(res.CityId).Result?.NameEng;
+                }
+                user.IsApproved = (int)res.IsAproved;
+                if (user.IsApproved == 1)
+                {
+                    user.IsApprovStatusName = "Approved";
+                }
+                else if (user.IsApproved == 0)
+                {
+                    user.IsApprovStatusName = "New Request";
+                }
+                else
+                {
+                    user.IsApprovStatusName = "Declined";
+                }
+   
+            
+
+            return user;
         }
 
         public async Task<AgencyAuthenticationResponse> AgencyUserLoginAsync(string email, string password)
@@ -573,7 +649,7 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<List<ManagerResponse>> GetManagersAsync()
         {
             var resp = new List<ManagerResponse>();
-            var result = await _userRepository.GetManagersAsync("manager");
+            var result = await _userRepository.GetManagersAsync("FligthManager");
             foreach (var manager in result)
             {
                 ManagerResponse response = new ManagerResponse();

@@ -151,6 +151,32 @@ namespace MaratukAdmin.Repositories.Concrete
 
         }
 
+        public async Task<AgencyUser> UpdateAgencyUserForAcc(UpdateAgencyUser agencyAgentUpdateCredentialsRequest)
+        {
+            var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == agencyAgentUpdateCredentialsRequest.Id);
+            if (user != null)
+            {
+                user.AgencyName = agencyAgentUpdateCredentialsRequest.AgencyName;
+                user.FullCompanyName = agencyAgentUpdateCredentialsRequest.FullCompanyName;
+                user.CountryId = agencyAgentUpdateCredentialsRequest.CountryId;
+                user.CityId = agencyAgentUpdateCredentialsRequest.CityId;
+                user.CompanyLocation = agencyAgentUpdateCredentialsRequest.CompanyLocation;
+                user.CompanyLegalAddress = agencyAgentUpdateCredentialsRequest.CompanyLegalAddress;
+                user.Itn = agencyAgentUpdateCredentialsRequest.Itn;
+                user.BankAccountNumber = agencyAgentUpdateCredentialsRequest.BankAccountNumber;
+                user.PhoneNumber1 = agencyAgentUpdateCredentialsRequest.PhoneNumber1;
+                user.PhoneNumber2 = agencyAgentUpdateCredentialsRequest.PhoneNumber2;
+                user.FullName = agencyAgentUpdateCredentialsRequest.FullName;
+                user.Email = agencyAgentUpdateCredentialsRequest.Email;
+                
+
+                await _dbContext.SaveChangesAsync();
+                return user;
+            }
+            else { return user; }
+
+    }
+
         public async Task<bool> ApproveUserAgency(int Id,int statusId)
         {
             var user = await _dbContext.AgencyUser.FirstOrDefaultAsync(u => u.Id == Id);

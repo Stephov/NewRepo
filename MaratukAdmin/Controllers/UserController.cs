@@ -5,7 +5,6 @@ using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
-using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -83,6 +82,14 @@ namespace MaratukAdmin.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetAgencyUsersForAccById/{agentId:int}")]
+        public async Task<ActionResult> GetAgencyUsersForAccById(int agentId)
+        {
+            var result = await _userManager.GetAgencyAgentsForAccAsyncById(agentId);
+
+            return Ok(result);
+        }
+
 
         [HttpGet("GetUsersByRole")]
         public async Task<ActionResult> GetUsersByRole([FromQuery][Required] Enums.enumRoles  role = Enums.enumRoles.All)
@@ -94,20 +101,20 @@ namespace MaratukAdmin.Controllers
             return Ok(result);
         }
 
-        //[JsonConverter(typeof(StringEnumConverter))]
-        //public enum enumRoles
-        //{
-        //    [Display(Name = "All")]
-        //    All,
-        //    [Display(Name = "Accountant")]
-        //    Accountant,
-        //    [Display(Name = "Admin")]
-        //    Admin,
-        //    [Display(Name = "Hotel")]
-        //    Hotel,
-        //    [Display(Name = "Manager")]
-        //    Manager
-        //}
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum enumRoles
+        {
+            [Display(Name = "All")]
+            All,
+            [Display(Name = "Accountant")]
+            Accountant,
+            [Display(Name = "Admin")]
+            Admin,
+            [Display(Name = "Hotel")]
+            Hotel,
+            [Display(Name = "Manager")]
+            Manager
+        }
 
         [HttpGet("auth/profile")]
         [AllowAnonymous]
@@ -276,6 +283,24 @@ namespace MaratukAdmin.Controllers
             }
         }
 
+        [HttpPost("updateAgencyAgentForAcc")]
+        public async Task<ActionResult> UpdateAgency([FromBody] UpdateAgencyUser agent)
+        {
+            try
+            {
+               var res = await _userManager.UpdateAgencyAgentForAccAsync(agent);
+
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
 
         [HttpGet("GetAgencyAgent/{itn:int}")]
         public async Task<ActionResult> GetAgencyAgentAsync(int itn)
