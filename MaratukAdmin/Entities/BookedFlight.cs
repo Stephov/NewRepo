@@ -25,7 +25,7 @@
         public DateTime? DeadLine { get; set; }
         public DateTime PasportExpiryDate { get; set; }
         public double Paid { get; set; } = 0;
-        public int MaratukAgentId { get; set; }
+        public int MaratukFlightAgentId { get; set; }
         public int MaratukHotelAgentId { get; set; }
         public int BookStatusForMaratuk { get; set; }
         public int GenderId { get; set; }

@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using MimeKit.Tnef;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using static MaratukAdmin.Utils.Enums;
@@ -135,7 +136,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.PassengersCount = bookedFlight.PassengersCount;
                             booked.TourStartDate = bookedFlight.TourStartDate;
                             booked.TourEndDate = bookedFlight.TourEndDate;
-                            booked.MaratukAgentId = bookedFlight.MaratukAgentId;
+                            booked.MaratukFlightAgentId = bookedFlight.MaratukFlightAgentId;
+                            booked.MaratukHotelAgentId = bookedFlight.MaratukHotelAgentId;
                             booked.CountryId = bookedFlight.CountryId;
                             booked.StartFlightId = bookedFlight.StartFlightId;
                             booked.EndFlightId = bookedFlight.EndFlightId;
@@ -143,8 +145,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.GenderId = bookedFlight.GenderId;
                             booked.Dept = bookedFlight.TotalPrice;
                             booked.HotelId = bookedFlightAndHotel.HotelId;
-                            booked.AgentStatusId = (int)Enums.BookStatusForClient.Waiting;
-                            booked.MaratukAgentStatusId = (int)Enums.BookStatusForClient.Waiting;
+                            booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
+                            booked.BookStatusForMaratuk = (int)Enums.BookStatusForMaratuk.Waiting;
 
                             var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
                             Fligthname1 = fligth.Name;
@@ -169,7 +171,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             }
 
                             listOfArrivals.Add(booked.Name + " " + booked.Surname);
-                            var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukAgentId);
+                            var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukFlightAgentId);
                             if (maratukAgent != null)
                             {
                                 maratukAgentEmail = maratukAgent.Email;
@@ -205,9 +207,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             Dept = bookedFlightAndHotel.Price,
                             Board = bookedFlightAndHotel.Board,
                             BoardDesc = bookedFlightAndHotel.BoardDesc,
-                            AgentId = bookedFlightAndHotel.AgentIdHotel,
+                            AgentId = bookedFlightAndHotel.HotelAgentId,
                             BookStatusForClient = (int)Enums.BookStatusForClient.Waiting,
-                            MaratukAgentId = bookedFlightAndHotel.MaratukAgentIdHotel,
+                            MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
                             BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting
                         };
 

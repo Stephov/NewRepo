@@ -97,15 +97,16 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.PassengersCount = bookedFlight.PassengersCount;
                     booked.TourStartDate = bookedFlight.TourStartDate;
                     booked.TourEndDate = bookedFlight.TourEndDate;
-                    booked.MaratukAgentId = bookedFlight.MaratukAgentId;
+                    booked.MaratukFlightAgentId = bookedFlight.MaratukFlightAgentId;
+                    booked.MaratukHotelAgentId = bookedFlight.MaratukHotelAgentId;
                     booked.CountryId = bookedFlight.CountryId;
                     booked.StartFlightId = bookedFlight.StartFlightId;
                     booked.EndFlightId = bookedFlight.EndFlightId;
                     booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
                     booked.GenderId = bookedFlight.GenderId;
                     booked.Dept = bookedFlight.TotalPrice;
-                    booked.BookStatusForClient = 1;
-                    booked.BookStatusForMaratuk = 1;
+                    booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
+                    booked.BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting;
 
                     var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
                     Fligthname1 = fligth.Name;
@@ -129,7 +130,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
 
                     listOfArrivals.Add(booked.Name + " " + booked.Surname);
-                    var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukAgentId);
+                    var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukFlightAgentId);
                     if (maratukAgent != null)
                     {
                         maratukAgentEmail = maratukAgent.Email;
@@ -236,9 +237,9 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
-                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
@@ -505,9 +506,9 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
-                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
@@ -830,9 +831,9 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
-                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
@@ -1082,8 +1083,8 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukAgentId,
-                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
+                    MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
@@ -1331,7 +1332,7 @@ namespace MaratukAdmin.Managers.Concrete
                     int clientId = 0;
                     foreach (var book in booked)
                     {
-                        managerId = book.MaratukAgentId;
+                        managerId = book.MaratukFlightAgentId;
                         clientId = book.AgentId;
                         book.BookStatusForClient = statusForClientFligth;
                         book.BookStatusForMaratuk = newStatusForMaratukFligth;
@@ -1513,7 +1514,7 @@ namespace MaratukAdmin.Managers.Concrete
                     int clientId = 0;
                     foreach (var book in booked)
                     {
-                        managerId = book.MaratukAgentId;
+                        managerId = book.MaratukFlightAgentId;
                         clientId = book.AgentId;
                         book.BookStatusForClient = statusForClientFligth;
                         book.BookStatusForMaratuk = newStatusForMaratukFligth;
@@ -1654,7 +1655,7 @@ namespace MaratukAdmin.Managers.Concrete
                     int clientId = 0;
                     foreach (var book in booked)
                     {
-                        managerId = book.MaratukAgentId;
+                        managerId = book.MaratukFlightAgentId;
                         clientId = book.AgentId;
                         book.OrderStatusId = status;
                         book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
@@ -1885,9 +1886,9 @@ namespace MaratukAdmin.Managers.Concrete
                         TourEndDate = firstFlightInGroup.TourEndDate,
                         DeadLine = firstFlightInGroup.DeadLine,
                         Paid = firstFlightInGroup.Paid,
-                        MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                        MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                         BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
-                        MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                        MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                         CountryId = firstFlightInGroup.CountryId,
                         CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                         Dept = firstFlightInGroup.Dept,
@@ -2020,9 +2021,9 @@ namespace MaratukAdmin.Managers.Concrete
                             TourEndDate = firstFlightInGroup.TourEndDate,
                             DeadLine = firstFlightInGroup.DeadLine,
                             Paid = firstFlightInGroup.Paid,
-                            MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                            MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                             BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
-                            MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                            MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                             CountryId = firstFlightInGroup.CountryId,
                             CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                             Dept = firstFlightInGroup.Dept,
@@ -2335,9 +2336,9 @@ namespace MaratukAdmin.Managers.Concrete
                         TourEndDate = firstFlightInGroup.TourEndDate,
                         DeadLine = firstFlightInGroup.DeadLine,
                         Paid = firstFlightInGroup.Paid,
-                        MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                        MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                         BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
-                        MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                        MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                         CountryId = firstFlightInGroup.CountryId,
                         CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                         Dept = firstFlightInGroup.Dept,
@@ -2470,9 +2471,9 @@ namespace MaratukAdmin.Managers.Concrete
                             TourEndDate = firstFlightInGroup.TourEndDate,
                             DeadLine = firstFlightInGroup.DeadLine,
                             Paid = firstFlightInGroup.Paid,
-                            MaratukAgentId = firstFlightInGroup.MaratukAgentId,
+                            MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                             BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
-                            MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukAgentId).Result.UserName,
+                            MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                             CountryId = firstFlightInGroup.CountryId,
                             CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                             Dept = firstFlightInGroup.Dept,

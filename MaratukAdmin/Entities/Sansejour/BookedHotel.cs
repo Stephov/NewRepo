@@ -28,7 +28,7 @@
         public DateTime? TourEndDate { get; set; }
         public int AgentId { get; set; }
         public int BookStatusForClient { get; set; }
-        public int MaratukAgentId { get; set; }
+        public int MaratukHotelAgentId { get; set; }
         public int BookStatusForMaratuk { get; set; }
     }
 }
