@@ -21,8 +21,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using MimeKit.Tnef;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
 {
@@ -101,6 +103,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 string? hotelName = string.Empty;
                 string? hotelCountry = string.Empty;
                 string? hotelCity = string.Empty;
+                int hotelDaysCount = 1;
 
                 // *** Flight part
                 orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
@@ -133,7 +136,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.PassengersCount = bookedFlight.PassengersCount;
                             booked.TourStartDate = bookedFlight.TourStartDate;
                             booked.TourEndDate = bookedFlight.TourEndDate;
-                            booked.MaratukAgentId = bookedFlight.MaratukAgentId;
+                            booked.MaratukFlightAgentId = bookedFlight.MaratukFlightAgentId;
+                            booked.MaratukHotelAgentId = bookedFlight.MaratukHotelAgentId;
                             booked.CountryId = bookedFlight.CountryId;
                             booked.StartFlightId = bookedFlight.StartFlightId;
                             booked.EndFlightId = bookedFlight.EndFlightId;
@@ -141,6 +145,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.GenderId = bookedFlight.GenderId;
                             booked.Dept = bookedFlight.TotalPrice;
                             booked.HotelId = bookedFlightAndHotel.HotelId;
+                            booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
+                            booked.BookStatusForMaratuk = (int)Enums.BookStatusForMaratuk.Waiting;
 
                             var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
                             Fligthname1 = fligth.Name;
@@ -165,7 +171,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             }
 
                             listOfArrivals.Add(booked.Name + " " + booked.Surname);
-                            var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukAgentId);
+                            var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukFlightAgentId);
                             if (maratukAgent != null)
                             {
                                 maratukAgentEmail = maratukAgent.Email;
@@ -182,6 +188,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         }
 
                         // *** Hotel part
+                        //hotelDaysCount = tourEndDate - tourStartDate
                         BookedHotel bookedHotel = new()
                         {
                             OrderNumber = orderNumber,
@@ -192,14 +199,18 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             SejourRateId = bookedFlightAndHotel.SejourRateId,
                             CountryId = countryId,
                             ToureTypeId = "Hotel",
-                            TotalPrice = bookedFlightAndHotel.Price,
-                            TotalPriceAmd = USDRate * bookedFlightAndHotel.Price,
+                            TotalPrice = hotelDaysCount * bookedFlightAndHotel.Price,
+                            TotalPriceAmd = USDRate * hotelDaysCount * bookedFlightAndHotel.Price,
                             GuestsCount = guestsCount,
                             TourStartDate = tourStartDate,
                             TourEndDate = tourEndDate,
                             Dept = bookedFlightAndHotel.Price,
                             Board = bookedFlightAndHotel.Board,
-                            BoardDesc = bookedFlightAndHotel.BoardDesc
+                            BoardDesc = bookedFlightAndHotel.BoardDesc,
+                            AgentId = bookedFlightAndHotel.HotelAgentId,
+                            BookStatusForClient = (int)Enums.BookStatusForClient.Waiting,
+                            MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
+                            BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting
                         };
 
                         await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);

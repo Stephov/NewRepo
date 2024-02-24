@@ -5,6 +5,7 @@ using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
+using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -92,9 +93,9 @@ namespace MaratukAdmin.Controllers
 
 
         [HttpGet("GetUsersByRole")]
-        public async Task<ActionResult> GetUsersByRole([FromQuery][Required] enumRoles role = enumRoles.All)
+        public async Task<ActionResult> GetUsersByRole([FromQuery][Required] Enums.enumRoles  role = Enums.enumRoles.All)
         {
-            string? selectedRole = (role == enumRoles.All) ? null : role.ToString();
+            string? selectedRole = (role == Enums.enumRoles.All) ? null : role.ToString();
 
             var result = await _userManager.GetUsersByRoleAsync(selectedRole);
 
@@ -110,9 +111,9 @@ namespace MaratukAdmin.Controllers
             Accountant,
             [Display(Name = "Admin")]
             Admin,
-            [Display(Name = "ManagerHotel")]
+            [Display(Name = "Hotel")]
             Hotel,
-            [Display(Name = "FligthManager")]
+            [Display(Name = "Manager")]
             Manager
         }
 

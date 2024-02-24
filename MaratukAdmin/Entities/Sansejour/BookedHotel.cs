@@ -26,9 +26,9 @@
         public double? Dept { get; set; }
         public DateTime TourStartDate { get; set; }
         public DateTime? TourEndDate { get; set; }
-        public int BookStatusForMaratuk { get; set; }
+        public int AgentId { get; set; }
         public int BookStatusForClient { get; set; }
-
-
+        public int MaratukHotelAgentId { get; set; }
+        public int BookStatusForMaratuk { get; set; }
     }
 }

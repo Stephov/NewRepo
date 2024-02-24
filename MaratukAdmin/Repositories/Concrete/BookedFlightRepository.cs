@@ -72,7 +72,7 @@ namespace MaratukAdmin.Repositories.Concrete
         {
 
             var result = await _dbContext.BookedFlights
-                .Where(c => c.MaratukAgentId == maratukAgent)
+                .Where(c => c.MaratukFlightAgentId == maratukAgent)
                 .ToListAsync();
 
             return result;
