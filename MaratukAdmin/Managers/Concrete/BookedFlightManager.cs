@@ -238,7 +238,8 @@ namespace MaratukAdmin.Managers.Concrete
                     Email = flight.Email,
                     Passport = flight.Passport,
                     PasportExpiryDate = flight.PasportExpiryDate,
-                    GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                    GenderName = (flight.GenderId == 1) ? "Male" : "Female",
+                    PassengerTypeId = flight.PassengerTypeId,
                 }).ToList();
 
                 var firstFlightInGroup = group.First();
@@ -269,6 +270,7 @@ namespace MaratukAdmin.Managers.Concrete
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                    PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
                     EndFlightId = firstFlightInGroup.EndFlightId,
@@ -508,7 +510,8 @@ namespace MaratukAdmin.Managers.Concrete
                     Email = flight.Email,
                     Passport = flight.Passport,
                     PasportExpiryDate = flight.PasportExpiryDate,
-                    GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                    GenderName = (flight.GenderId == 1) ? "Male" : "Female",
+                    PassengerTypeId = flight.PassengerTypeId,
                 }).ToList();
 
                 var firstFlightInGroup = group.First();
@@ -537,6 +540,7 @@ namespace MaratukAdmin.Managers.Concrete
                     BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
+                    PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
@@ -832,7 +836,8 @@ namespace MaratukAdmin.Managers.Concrete
                     Email = flight.Email,
                     Passport = flight.Passport,
                     PasportExpiryDate = flight.PasportExpiryDate,
-                    GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                    GenderName = (flight.GenderId == 1) ? "Male" : "Female",
+                    PassengerTypeId = flight.PassengerTypeId
                 }).ToList();
 
                 var firstFlightInGroup = group.First();
@@ -862,6 +867,7 @@ namespace MaratukAdmin.Managers.Concrete
                     BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
+                    PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
@@ -1085,6 +1091,7 @@ namespace MaratukAdmin.Managers.Concrete
                     Email = flight.Email,
                     Passport = flight.Passport,
                     PasportExpiryDate = flight.PasportExpiryDate,
+                    PassengerTypeId = flight.PassengerTypeId,
                     GenderName = (flight.GenderId == 1) ? "Male" : "Female"
                     // Map other properties as needed
                 }).ToList();
@@ -1113,6 +1120,7 @@ namespace MaratukAdmin.Managers.Concrete
                     MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
+                    PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
@@ -1283,6 +1291,7 @@ namespace MaratukAdmin.Managers.Concrete
             booked.PasportExpiryDate = bookedUserInfoForMaratuk.PasportExpiryDate;
             booked.BirthDay = bookedUserInfoForMaratuk.BirthDay;
             booked.GenderId = bookedUserInfoForMaratuk.GenderId;
+            booked.PassengerTypeId = bookedUserInfoForMaratuk.PassengerTypeId;
 
             return await _mainRepository.UpdateAsync(booked);
 
@@ -1887,6 +1896,7 @@ namespace MaratukAdmin.Managers.Concrete
                         Email = flight.Email,
                         Passport = flight.Passport,
                         PasportExpiryDate = flight.PasportExpiryDate,
+                        PassengerTypeId = flight.PassengerTypeId,
                         GenderName = (flight.GenderId == 1) ? "Male" : "Female"
                     }).ToList();
 
@@ -1917,6 +1927,7 @@ namespace MaratukAdmin.Managers.Concrete
                         BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
                         MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                         CountryId = firstFlightInGroup.CountryId,
+                        PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                         CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                         Dept = firstFlightInGroup.Dept,
                         StartFlightId = firstFlightInGroup.StartFlightId,
@@ -2022,6 +2033,7 @@ namespace MaratukAdmin.Managers.Concrete
                             Email = flight.Email,
                             Passport = flight.Passport,
                             PasportExpiryDate = flight.PasportExpiryDate,
+                            PassengerTypeId = flight.PassengerTypeId,
                             GenderName = (flight.GenderId == 1) ? "Male" : "Female"
                         }).ToList();
 
@@ -2053,6 +2065,7 @@ namespace MaratukAdmin.Managers.Concrete
                             MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                             CountryId = firstFlightInGroup.CountryId,
                             CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                            PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                             Dept = firstFlightInGroup.Dept,
                             StartFlightId = firstFlightInGroup.StartFlightId,
                             EndFlightId = firstFlightInGroup.EndFlightId,
@@ -2337,7 +2350,8 @@ namespace MaratukAdmin.Managers.Concrete
                         Email = flight.Email,
                         Passport = flight.Passport,
                         PasportExpiryDate = flight.PasportExpiryDate,
-                        GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                        GenderName = (flight.GenderId == 1) ? "Male" : "Female",
+                        PassengerTypeId = flight.PassengerTypeId
                     }).ToList();
 
                     var firstFlightInGroup = group.First();
@@ -2368,6 +2382,7 @@ namespace MaratukAdmin.Managers.Concrete
                         MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                         CountryId = firstFlightInGroup.CountryId,
                         CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                        PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                         Dept = firstFlightInGroup.Dept,
                         StartFlightId = firstFlightInGroup.StartFlightId,
                         EndFlightId = firstFlightInGroup.EndFlightId,
@@ -2472,6 +2487,7 @@ namespace MaratukAdmin.Managers.Concrete
                             Email = flight.Email,
                             Passport = flight.Passport,
                             PasportExpiryDate = flight.PasportExpiryDate,
+                            PassengerTypeId = flight.PassengerTypeId,
                             GenderName = (flight.GenderId == 1) ? "Male" : "Female"
                         }).ToList();
 
@@ -2503,6 +2519,7 @@ namespace MaratukAdmin.Managers.Concrete
                             MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                             CountryId = firstFlightInGroup.CountryId,
                             CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
+                            PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                             Dept = firstFlightInGroup.Dept,
                             StartFlightId = firstFlightInGroup.StartFlightId,
                             EndFlightId = firstFlightInGroup.EndFlightId,

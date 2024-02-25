@@ -29,6 +29,7 @@
         public int MaratukHotelAgentId { get; set; }
         public int BookStatusForMaratuk { get; set; }
         public int GenderId { get; set; }
+        public int PassengerTypeId { get; set; }
         public int CountryId { get; set; }
         public double? Dept { get; set; }
 

@@ -1,30 +1,16 @@
 ﻿using AutoMapper;
-using Bogus.DataSets;
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
-using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
-using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
-using MaratukAdmin.Repositories.Concrete;
-using MaratukAdmin.Repositories.Concrete.Sansejour;
 using MaratukAdmin.Utils;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using MimeKit;
-using MimeKit.Tnef;
-using SixLabors.ImageSharp.Processing;
-using System;
-using System.Collections.Generic;
-using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
 {
@@ -143,7 +129,6 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.EndFlightId = bookedFlight.EndFlightId;
                             booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
                             booked.GenderId = bookedFlight.GenderId;
-                            booked.PassengerTypeId = bookedFlight.PassengerTypeId;
                             booked.PassengerTypeId = bookedFlight.PassengerTypeId;
                             booked.Dept = bookedFlight.TotalPrice;
                             booked.HotelId = bookedFlightAndHotel.HotelId;

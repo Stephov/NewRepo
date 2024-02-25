@@ -27,6 +27,7 @@ namespace MaratukAdmin.Dto.Request
         public int StartFlightId { get; set; }
         public int? EndFlightId { get; set; }
         public int GenderId { get; set; }
+        public int PassengerTypeId { get; set; }
 
     }
 }

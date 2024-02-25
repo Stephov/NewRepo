@@ -23,6 +23,8 @@
         public string AgentName { get; set; }
 
         public double TotalPriceAmd { get; set; }
+        public int PassengerTypeId { get; set; }
+
         public int PassengersCount { get; set; }
         public DateTime TourStartDate { get; set; }
         public DateTime? TourEndDate { get; set; }
@@ -63,6 +65,7 @@
 
         public double TotalPriceAmd { get; set; }
         public int PassengersCount { get; set; }
+        public int PassengerTypeId { get; set; }
         public DateTime TourStartDate { get; set; }
         public DateTime? TourEndDate { get; set; }
         public DateTime? DeadLine { get; set; }
@@ -104,7 +107,8 @@
         public string Email { get; set; }
         public string Passport { get; set; }
         public DateTime PasportExpiryDate { get; set; }
-        public string GenderName { get; set; }
+        public string GenderName { get; set; } 
+        public int PassengerTypeId { get; set; }
 
     }
 
@@ -119,6 +123,8 @@
         public string Passport { get; set; }
         public DateTime PasportExpiryDate { get; set; }
         public string GenderName { get; set; }
+        public int PassengerTypeId { get; set; }
+
 
     }
 
@@ -133,6 +139,7 @@
         public string Passport { get; set; }
         public DateTime PasportExpiryDate { get; set; }
         public int GenderId { get; set; }
+        public int PassengerTypeId { get; set; }
 
     }
 }
