@@ -143,6 +143,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.EndFlightId = bookedFlight.EndFlightId;
                             booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
                             booked.GenderId = bookedFlight.GenderId;
+                            booked.PassengerTypeId = bookedFlight.PassengerTypeId;
+                            booked.PassengerTypeId = bookedFlight.PassengerTypeId;
                             booked.Dept = bookedFlight.TotalPrice;
                             booked.HotelId = bookedFlightAndHotel.HotelId;
                             booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
