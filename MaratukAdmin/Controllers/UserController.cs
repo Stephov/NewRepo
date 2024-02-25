@@ -102,20 +102,20 @@ namespace MaratukAdmin.Controllers
             return Ok(result);
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
-        public enum enumRoles
-        {
-            [Display(Name = "All")]
-            All,
-            [Display(Name = "Accountant")]
-            Accountant,
-            [Display(Name = "Admin")]
-            Admin,
-            [Display(Name = "Hotel")]
-            Hotel,
-            [Display(Name = "Manager")]
-            Manager
-        }
+        //[JsonConverter(typeof(StringEnumConverter))]
+        //public enum enumRoles
+        //{
+        //    [Display(Name = "All")]
+        //    All,
+        //    [Display(Name = "Accountant")]
+        //    Accountant,
+        //    [Display(Name = "Admin")]
+        //    Admin,
+        //    [Display(Name = "Hotel")]
+        //    Hotel,
+        //    [Display(Name = "Manager")]
+        //    Manager
+        //}
 
         [HttpGet("auth/profile")]
         [AllowAnonymous]

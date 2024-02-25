@@ -10,16 +10,16 @@ namespace MaratukAdmin.Utils
         [JsonConverter(typeof(StringEnumConverter))]
         public enum enumRoles
         {
-            [Display(Name = "All")]
+            //[Display(Name = "All")]
             All,
-            [Display(Name = "Accountant")]
+            //[Display(Name = "Accountant")]
             Accountant,
-            [Display(Name = "Admin")]
+            //[Display(Name = "Admin")]
             Admin,
-            [Display(Name = "Hotel")]
-            Hotel,
-            [Display(Name = "Manager")]
-            Manager
+            //[Display(Name = "HotelManager")]
+            HotelManager,
+            //[Display(Name = "FligthManager")]
+            FligthManager
         }
 
         public enum BookStatusForClient
