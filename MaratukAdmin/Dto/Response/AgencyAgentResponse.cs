@@ -19,7 +19,9 @@
         public int Itn { get; set; }
         public string BankAccountNumber { get; set; }
         public string Country { get; set; }
+        public int CountryId { get; set; }
         public string City { get; set; }
+        public int CityId { get; set; }
         public string PhoneNumber1 { get; set; }
         public string PhoneNumber2 { get; set; }
         public string FullName { get; set; }

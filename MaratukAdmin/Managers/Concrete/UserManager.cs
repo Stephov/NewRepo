@@ -481,11 +481,14 @@ namespace MaratukAdmin.Managers.Concrete
                 user.RegisterDate = agent.RegisterDate;
                 user.ApprovedDate = agent.ApprovedDate;
                 user.RejectedDate = agent.RejectedDate;
-                if(agent.CountryId != 0)
+                user.BankAccountNumber = agent.BankAccountNumber;
+                user.CountryId= agent.CountryId;
+                user.CityId = agent.CityId;
+                if (agent.CountryId != 0)
                 {
                     user.Country = _countryManager.GetCountryNameByIdAsync(agent.CountryId).Result?.NameENG;
                 }
-                if(agent.CityId!= 0)
+                if (agent.CityId != 0)
                 {
                     user.City = _cityManager.GetCityNameByIdAsync(agent.CityId).Result?.NameEng;
                 }
@@ -513,47 +516,50 @@ namespace MaratukAdmin.Managers.Concrete
             var res = await _userRepository.GetAgencyUsersByIdAsync(agentId);
 
 
-                AgencyAgentResponseForAcc user = new AgencyAgentResponseForAcc();
+            AgencyAgentResponseForAcc user = new AgencyAgentResponseForAcc();
 
 
 
 
-                user.Id = res.Id;
-                user.AgencyName = res.AgencyName;
-                user.FullCompanyName = res.FullCompanyName;
-                user.CompanyLocation = res.CompanyLocation;
-                user.CompanyLegalAddress = res.CompanyLegalAddress;
-                user.Itn = res.Itn;
-                user.PhoneNumber1 = res.PhoneNumber1;
-                user.PhoneNumber2 = res.PhoneNumber2;
-                user.FullName = res.FullName;
-                user.email = res.Email;
-                user.RegisterDate = res.RegisterDate;
-                user.ApprovedDate = res.ApprovedDate;
-                user.RejectedDate = res.RejectedDate;
-                if (res.CountryId != 0)
-                {
-                    user.Country = _countryManager.GetCountryNameByIdAsync(res.CountryId).Result?.NameENG;
-                }
-                if (res.CityId != 0)
-                {
-                    user.City = _cityManager.GetCityNameByIdAsync(res.CityId).Result?.NameEng;
-                }
-                user.IsApproved = (int)res.IsAproved;
-                if (user.IsApproved == 1)
-                {
-                    user.IsApprovStatusName = "Approved";
-                }
-                else if (user.IsApproved == 0)
-                {
-                    user.IsApprovStatusName = "New Request";
-                }
-                else
-                {
-                    user.IsApprovStatusName = "Declined";
-                }
-   
-            
+            user.Id = res.Id;
+            user.AgencyName = res.AgencyName;
+            user.FullCompanyName = res.FullCompanyName;
+            user.CompanyLocation = res.CompanyLocation;
+            user.CompanyLegalAddress = res.CompanyLegalAddress;
+            user.Itn = res.Itn;
+            user.PhoneNumber1 = res.PhoneNumber1;
+            user.PhoneNumber2 = res.PhoneNumber2;
+            user.FullName = res.FullName;
+            user.email = res.Email;
+            user.RegisterDate = res.RegisterDate;
+            user.ApprovedDate = res.ApprovedDate;
+            user.RejectedDate = res.RejectedDate;
+            user.BankAccountNumber = res.BankAccountNumber;
+            user.CountryId= res.CountryId;
+            user.CityId = res.CityId;
+            if (res.CountryId != 0)
+            {
+                user.Country = _countryManager.GetCountryNameByIdAsync(res.CountryId).Result?.NameENG;
+            }
+            if (res.CityId != 0)
+            {
+                user.City = _cityManager.GetCityNameByIdAsync(res.CityId).Result?.NameEng;
+            }
+            user.IsApproved = (int)res.IsAproved;
+            if (user.IsApproved == 1)
+            {
+                user.IsApprovStatusName = "Approved";
+            }
+            else if (user.IsApproved == 0)
+            {
+                user.IsApprovStatusName = "New Request";
+            }
+            else
+            {
+                user.IsApprovStatusName = "Declined";
+            }
+
+
 
             return user;
         }
