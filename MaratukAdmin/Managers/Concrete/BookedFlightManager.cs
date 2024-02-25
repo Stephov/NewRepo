@@ -35,6 +35,7 @@ namespace MaratukAdmin.Managers.Concrete
         private readonly IFlightRepository _flightRepository;
         private readonly ICurrencyRatesRepository _currencyRatesRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IAirportManager _airportManager;
         private readonly IMapper _mapper;
 
 
@@ -44,6 +45,7 @@ namespace MaratukAdmin.Managers.Concrete
             ICountryManager countryManager,
             IUserRepository userRepository,
             ICurrencyRatesRepository currencyRatesRepository,
+            IAirportManager airportManager,
             IFlightRepository flightRepository, IMainRepository<BookedFlight> mainRepository)
         {
 
@@ -56,6 +58,7 @@ namespace MaratukAdmin.Managers.Concrete
             _flightRepository = flightRepository;
             _mainRepository = mainRepository;
             _hotelManager = hotelManager;
+            _airportManager = airportManager;
         }
 
         public async Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlight)
@@ -76,8 +79,32 @@ namespace MaratukAdmin.Managers.Concrete
                 string totalPay = string.Empty;
                 string maratukAgentEmail = string.Empty;
 
+                int countFligth = await _bookedFlightRepository.GetBookedFlightCountAsync();
 
-                string orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
+                Flight fligthRes = null;
+
+                if (addBookedFlight.First().EndFlightId == null) {
+                    fligthRes = await _flightRepository.GetFlightByIdAsync(addBookedFlight.First().StartFlightId);
+                }
+                else
+                {
+                    fligthRes = await _flightRepository.GetFlightByIdAsync(addBookedFlight.First().EndFlightId);
+                }
+
+                string AirCode = _airportManager.GetAirportNameByIdAsync(fligthRes.DepartureAirportId).Result.Code;
+
+                var schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(addBookedFlight.First().StartFlightId);
+
+                Flight schedule2 = null;
+
+                if (addBookedFlight.First().EndFlightId != null)
+                {
+                    schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync((int)addBookedFlight.First().EndFlightId);
+                }
+
+                countFligth++;
+                string orderNumber = AirCode + countFligth.ToString("D8");
+
                 foreach (var bookedFlight in addBookedFlight)
                 {
                     BookedFlight booked = new BookedFlight();
@@ -147,8 +174,8 @@ namespace MaratukAdmin.Managers.Concrete
                                     Phone Number: {agentPhone}
                                     Email: {agentEmail}
                                     Full list of arrivals: {listOfArrivalsString}
-                                    {Fligthname1} / {FligthNumber1} / 08:15-09:15
-                                    {Fligthname2} / {FligthNumber2} / 22:15-23:15
+                                    {Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay}
+                                    {Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay}
                                     Total payable: {totalPay} 
                                     Date of sale: {date}";
 

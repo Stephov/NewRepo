@@ -13,5 +13,6 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<BookedFlight> GetBookedFlightByIdAsync(int Id);
         Task<List<BookedFlight>> GetBookedFlightByOrderNumberAsync(string orderNumber);
         Task<List<BookedFlight>> GetBookedFlightByMaratukAgentForAccAsync();
+        Task<int> GetBookedFlightCountAsync();
     }
 }

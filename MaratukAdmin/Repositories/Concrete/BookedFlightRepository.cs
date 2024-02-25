@@ -100,5 +100,19 @@ namespace MaratukAdmin.Repositories.Concrete
 
             return result;
         }
+
+        public async Task<int> GetBookedFlightCountAsync()
+        {
+            var counts = await _dbContext.BookedFlights
+           .GroupBy(bf => bf.OrderNumber)
+           .Select(group => new
+           {
+               OrderNumber = group.Key,
+               Count = group.Count()
+           })
+           .ToListAsync();
+
+            return counts.Count;
+        }
     }
 }

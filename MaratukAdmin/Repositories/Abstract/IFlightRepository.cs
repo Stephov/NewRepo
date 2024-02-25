@@ -9,7 +9,7 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<IEnumerable<Flight>> GetAllFlightsAsync();
         Task<List<FlightCountry>> GetAllCountryFlightsAsync();
         Task<Flight> GetFlightByIdAsync(int? id);
-
+        Task<Flight> GetFlightSchedulesByIdAsync(int? id);
         Task<List<Flight>> GetFlightByIdsAsync(int departureCountryId,int departureCityId,int DestinationCountryId, int destinationCityId);
         Task<List<Flight>> GetFlightByIdsAsync(int departureCountryId,int destinationCountryId);
         Task<Flight> CreateFlightAsync(Flight flight);

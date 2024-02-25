@@ -30,6 +30,13 @@ namespace MaratukAdmin.Repositories.Concrete
                 .SingleOrDefaultAsync(f => f.Id == id);
         }
 
+        public async Task<Flight> GetFlightSchedulesByIdAsync(int? id)
+        {
+            return await _dbContext.Flight
+                .Include(f => f.Schedules)
+                .SingleOrDefaultAsync(f => f.Id == id);
+        }
+
         public async Task<Flight> CreateFlightAsync(Flight flight)
         {
             try
