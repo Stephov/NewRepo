@@ -15,6 +15,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
         public DbSet<BookedFlight> BookedFlights { get; set; }
         public DbSet<BookedHotel> BookedHotel { get; set; }
+        public DbSet<BookPayments> BookPayments { get; set; }
         public DbSet<AgentStatus> AgentStatus { get; set; }
         public DbSet<MaratukAgentStatus> MaratukAgentStatus { get; set; }
         public DbSet<BookedHotelGuest> BookedHotelGuest { get; set; }
@@ -92,16 +93,19 @@ namespace MaratukAdmin.Infrastructure
 
             modelBuilder.Entity<BookedFlight>()
                .HasKey(e => e.Id);
-            
+
             modelBuilder.Entity<BookedHotel>()
                .HasKey(e => e.Id);
-            
+
+            modelBuilder.Entity<BookPayments>()
+                           .HasKey(e => e.Id);
+
             modelBuilder.Entity<AgentStatus>()
                .HasKey(e => e.Id);
-            
+
             modelBuilder.Entity<MaratukAgentStatus>()
                .HasKey(e => e.Id);
-            
+
             modelBuilder.Entity<BookedHotelGuest>()
                .HasKey(e => e.Id);
 
@@ -147,15 +151,15 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<HotelBoard>()
                 .HasKey(r => r.Id);
 
-        modelBuilder.Entity<Room>()
-                .HasKey(r => r.Id);
-            
+            modelBuilder.Entity<Room>()
+                    .HasKey(r => r.Id);
+
             modelBuilder.Entity<RoomType>()
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<HotelImage>()
                 .HasKey(r => r.Id);
-            
+
             modelBuilder.Entity<SyncSejourContractExportView>()
                 .HasKey(r => r.Id);
 
@@ -173,10 +177,10 @@ namespace MaratukAdmin.Infrastructure
 
             modelBuilder.Entity<SyncSejourAccomodationType>()
                     .HasKey(r => r.Id);
-            
+
             modelBuilder.Entity<SyncSejourAccomodationDescription>()
                     .HasKey(r => r.Id);
-            
+
             modelBuilder.Entity<SpecialOffer>()
                     .HasKey(r => r.Id);
 
@@ -218,10 +222,10 @@ namespace MaratukAdmin.Infrastructure
 
             modelBuilder.Entity<Currency>()
            .HasKey(r => r.Id);
-           
+
             modelBuilder.Entity<CurrencyRates>()
            .HasKey(r => r.Id);
-           
+
             modelBuilder.Entity<RoomCategory>()
                 .HasKey(r => r.Id);
 
@@ -235,7 +239,7 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<RoomSearchResponseLowestPrices>().HasNoKey().ToView("Sp_Search_Room_LowestPrices");
 
 
-           
+
         }
 
     }
