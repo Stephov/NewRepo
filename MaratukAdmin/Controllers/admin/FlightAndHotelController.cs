@@ -49,6 +49,26 @@ namespace MaratukAdmin.Controllers.admin
             }
         }
 
+        [HttpPost("PayForBookedFlightAndHotel")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> PayForBookedFlightAndHotel([FromBody] PayForBookedFlightAndHotelRequest payForBookedFlightAndHotel)
+        {
+            try
+            {
+                var result = await _bookedFlightAndHotelManager.PayForBookedFlightAndHotelAsync(payForBookedFlightAndHotel);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
 
         [HttpGet("GetBookedFlight/{Itn:int}")]
         [AllowAnonymous]
