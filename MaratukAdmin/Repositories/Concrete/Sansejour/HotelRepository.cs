@@ -172,6 +172,13 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return await Task.FromResult(retValue);
         }
 
+        public async Task<BookPayment> AddBookPaymentAsync(BookPayment payment)
+        {
+            await _dbContext.BookPayments.AddAsync(payment);
+            await _dbContext.SaveChangesAsync();
+
+            return payment;
+        }
     }
 
 

@@ -18,5 +18,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task FillNewHotelsListAsync(List<Hotel> hotelList);
         //Task<Hotel> AddHotelAsync(AddHotelRequest hotelRequest);
 
+        // Todo Teghapoxel steghic BookPaymentRepository
+        Task<BookPayment> AddBookPaymentAsync(BookPayment payment);
     }
 }

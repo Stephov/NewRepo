@@ -22,7 +22,7 @@ namespace MaratukAdmin.Utils
             FligthManager
         }
 
-        public enum BookStatusForClient
+        public enum enumBookStatusForClient
         {
             Waiting = 1,
             Canceled = 2,
@@ -35,7 +35,7 @@ namespace MaratukAdmin.Utils
             TicketSent = 9
         }
 
-        public enum BookStatusForMaratuk
+        public enum enumBookStatusForMaratuk
         {
             Waiting = 1,
             Canceled = 2,
@@ -48,6 +48,12 @@ namespace MaratukAdmin.Utils
             PaidPartially = 9,
             PaidInFull = 10,
             TicketSent = 11
+        }
+
+        public enum enumBookPaymentTypes
+        {
+            PaymentPerformed = 1,
+            PaymentRefunded = 2
         }
     }
 }

@@ -9,6 +9,7 @@ using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
+using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         private readonly IUserRepository _userRepository;
         private readonly ICurrencyRatesRepository _currencyRatesRepository;
         private readonly IFlightRepository _flightRepository;
+        private readonly IAirportManager _airportManager;
         private readonly IMapper _mapper;
 
         public BookedFlightAndHotelManager(MaratukDbContext dbContext,
@@ -41,6 +43,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                                             IUserRepository userRepository,
                                             ICurrencyRatesRepository currencyRatesRepository,
                                             IFlightRepository flightRepository,
+                                            IAirportManager airportManager,
                                             IMapper mapper
                                             )
         {
@@ -56,6 +59,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             _mapper = mapper;
             _currencyRatesRepository = currencyRatesRepository;
             _flightRepository = flightRepository;
+            _airportManager = airportManager;
         }
 
         public async Task<string> AddBookedFlightAndHotelAsync(BookedFlightAndHotel bookedFlightAndHotel)
@@ -92,9 +96,33 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 int hotelDaysCount = 1;
 
                 // *** Flight part
-                orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
+                int countFligth = await _bookedFlightRepository.GetBookedFlightCountAsync();
+
+                Flight fligthRes = null;
 
                 List<AddBookedFlight> addBookedFlight = bookedFlightAndHotel.BookedFlights;
+                if (addBookedFlight.First().EndFlightId == null)
+                {
+                    fligthRes = await _flightRepository.GetFlightByIdAsync(addBookedFlight.First().StartFlightId);
+                }
+                else
+                {
+                    fligthRes = await _flightRepository.GetFlightByIdAsync(addBookedFlight.First().EndFlightId);
+                }
+
+                string AirCode = _airportManager.GetAirportNameByIdAsync(fligthRes.DepartureAirportId).Result.Code;
+
+                var schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(addBookedFlight.First().StartFlightId);
+
+                Flight schedule2 = null;
+
+                if (addBookedFlight.First().EndFlightId != null)
+                {
+                    schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync((int)addBookedFlight.First().EndFlightId);
+                }
+
+                countFligth++;
+                orderNumber = AirCode + countFligth.ToString("D8");
 
                 //await _transactionRepository.BeginTransAsync();                                             // Begin transaction
                 var strategy = _transactionRepository.CreateExecutionStrategy();
@@ -132,8 +160,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.PassengerTypeId = bookedFlight.PassengerTypeId;
                             booked.Dept = bookedFlight.TotalPrice;
                             booked.HotelId = bookedFlightAndHotel.HotelId;
-                            booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
-                            booked.BookStatusForMaratuk = (int)Enums.BookStatusForMaratuk.Waiting;
+                            booked.BookStatusForClient = (int)Enums.enumBookStatusForClient.Waiting;
+                            booked.BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.Waiting;
 
                             var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
                             Fligthname1 = fligth.Name;
@@ -186,20 +214,22 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             SejourRateId = bookedFlightAndHotel.SejourRateId,
                             CountryId = countryId,
                             ToureTypeId = "Hotel",
+                            // todo miguce Price toxnel ev rename anel -> PricePerDay ?
                             Price = bookedFlightAndHotel.Price,
-                            HotelTotalPrice = hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
-                            HotelTotalPriceAmd = USDRate * hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
+                            HotelTotalPrice = bookedFlightAndHotel.HotelTotalPrice,
+                            HotelTotalPriceAmd = USDRate * bookedFlightAndHotel.HotelTotalPrice,
                             GuestsCount = guestsCount,
                             AccomodationStartDate = bookedFlightAndHotel.AccomodationStartDate,
                             AccomodationEndDate = bookedFlightAndHotel.AccomodationEndDate,
+                            AccomodationDaysCount = hotelDaysCount,
                             LateCheckout = bookedFlightAndHotel.LateCheckout,
                             Dept = bookedFlightAndHotel.Price,
                             Board = bookedFlightAndHotel.Board,
                             BoardDesc = bookedFlightAndHotel.BoardDesc,
                             HotelAgentId = bookedFlightAndHotel.HotelAgentId,
-                            BookStatusForClient = (int)Enums.BookStatusForClient.Waiting,
+                            BookStatusForClient = (int)Enums.enumBookStatusForClient.Waiting,
                             MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
-                            BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting
+                            BookStatusForMaratuk = (int)Enums.enumBookStatusForClient.Waiting
                         };
 
                         await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);
@@ -217,7 +247,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
 
                         await _transactionRepository.CommitTransAsync();                                            // Commit transaction
-                        //await transaction.CommitAsync();
+                                                                                                                    //await transaction.CommitAsync();
                     }
                 });
                 string listOfArrivalsString = string.Join(", ", listOfArrivals);
@@ -248,381 +278,65 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             return orderNumber;
         }
 
-        
+
         public async Task<string> PayForBookedFlightAndHotelAsync(PayForBookedFlightAndHotelRequest payForBookedFlightAndHotel)
         {
-            string orderNumber = "";
-            /*
             try
             {
                 var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
-                string agentName = string.Empty;
-                string companyName = string.Empty;
-                string agentPhone = string.Empty;
-                string agentEmail = string.Empty;
-                List<string> listOfArrivals = new List<string>();
-                List<string> listOfGuests = new List<string>();
-                string Fligthname1 = string.Empty;
-                string FligthNumber1 = string.Empty;
-                string Fligthname2 = string.Empty;
-                string FligthNumber2 = string.Empty;
-                string TotalCurrency = string.Empty;
-                string totalPay = string.Empty;
-                double totalPayFlight = 0;
-                string maratukAgentEmail = string.Empty;
-                //List<BookedHotelGuest> bookedHotelGuests = new();
-                int guestsCount = 0;
-
-                DateTime tourStartDate = DateTime.MinValue;
-                DateTime? tourEndDate = null;
-                int countryId = 0;
-                string? hotelName = string.Empty;
-                string? hotelCountry = string.Empty;
-                string? hotelCity = string.Empty;
-                int hotelDaysCount = 1;
-
-                // *** Flight part
-                orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
-
-                List<AddBookedFlight> addBookedFlight = bookedFlightAndHotel.BookedFlights;
+                double paidSum = 0;
+                double totalDebt = 0;
 
                 var strategy = _transactionRepository.CreateExecutionStrategy();
                 await strategy.ExecuteAsync(async () =>
                 {
                     await _transactionRepository.BeginTransAsync();                                             // Begin transaction
                     {
+                        List<BookedFlight> bookedFlights = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(payForBookedFlightAndHotel.OrderNumber);
 
-                        foreach (var bookedFlight in addBookedFlight)
+                        if (bookedFlights != null && bookedFlights.Count > 0)
                         {
-                            BookedFlight booked = new BookedFlight();
-                            booked.OrderNumber = orderNumber;
-                            booked.Name = bookedFlight.Name;
-                            booked.Surname = bookedFlight.Surname;
-                            booked.PhoneNumber = bookedFlight.PhoneNumber;
-                            booked.BirthDay = bookedFlight.BirthDay;
-                            booked.Email = bookedFlight.Email;
-                            booked.Passport = bookedFlight.Passport;
-                            booked.AgentId = bookedFlight.AgentId;
-                            booked.DateOfOrder = DateTime.Now;
-                            booked.ToureTypeId = "Flight + Hotel";
-                            booked.TotalPrice = bookedFlight.TotalPrice + bookedFlightAndHotel.HotelTotalPrice;
-                            booked.Rate = bookedFlight.Rate;
-                            booked.TotalPriceAmd = (USDRate * bookedFlight.TotalPrice) + (USDRate * bookedFlightAndHotel.HotelTotalPrice);
-                            booked.PassengersCount = bookedFlight.PassengersCount;
-                            booked.TourStartDate = bookedFlight.TourStartDate;
-                            booked.TourEndDate = bookedFlight.TourEndDate;
-                            booked.MaratukFlightAgentId = bookedFlight.MaratukFlightAgentId;
-                            booked.MaratukHotelAgentId = bookedFlight.MaratukHotelAgentId;
-                            booked.CountryId = bookedFlight.CountryId;
-                            booked.StartFlightId = bookedFlight.StartFlightId;
-                            booked.EndFlightId = bookedFlight.EndFlightId;
-                            booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
-                            booked.GenderId = bookedFlight.GenderId;
-                            booked.Dept = bookedFlight.TotalPrice;
-                            booked.HotelId = bookedFlightAndHotel.HotelId;
-                            booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
-                            booked.BookStatusForMaratuk = (int)Enums.BookStatusForMaratuk.Waiting;
-
-                            var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
-                            Fligthname1 = fligth.Name;
-                            FligthNumber1 = fligth.FlightValue;
-                            //totalPay = booked.TotalPrice.ToString();
-                            totalPayFlight = booked.TotalPrice;
-
-                            if (booked.EndFlightId != null)
+                            foreach (var flight in bookedFlights)
                             {
-                                var fligth2 = await _flightRepository.GetFlightByIdAsync(booked.EndFlightId);
-                                Fligthname2 = fligth.Name;
-                                FligthNumber2 = fligth.FlightValue;
+                                paidSum = payForBookedFlightAndHotel.Sum * ((payForBookedFlightAndHotel.PaymentType == (int)Enums.enumBookPaymentTypes.PaymentPerformed) ? 1 : (-1));
+                                flight.Paid += paidSum;
+                                
+                                totalDebt = (double)(flight.Dept - paidSum);
+                                flight.Dept = totalDebt;
                             }
 
-                            var agent = await _userRepository.GetAgencyUsersByIdAsync(booked.AgentId);
+                            // Update debt in BookedFlights table
+                            await _bookedFlightRepository.UpdateBookedFlightsAsync(bookedFlights);
 
-                            if (agent != null)
+                            // Add Payment
+                            BookPayment payment = new()
                             {
-                                agentName = agent.FullName;
-                                agentEmail = agent.Email;
-                                agentPhone = agent.PhoneNumber1;
-                            }
-
-                            listOfArrivals.Add(booked.Name + " " + booked.Surname);
-                            var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukFlightAgentId);
-                            if (maratukAgent != null)
-                            {
-                                maratukAgentEmail = maratukAgent.Email;
-                            }
-                            await _bookedFlightRepository.CreateBookedFlightAsync(booked);
-
-                            // Variables to use for Hotel
-                            guestsCount++;
-                            tourStartDate = booked.TourStartDate;
-                            tourEndDate = booked.TourEndDate;
-                            countryId = booked.CountryId;
-
-                            listOfGuests.Add(booked.Name + " " + booked.Surname);
+                                OrderNumber = payForBookedFlightAndHotel.OrderNumber,
+                                Sum = payForBookedFlightAndHotel.Sum,
+                                Currency = payForBookedFlightAndHotel.Currency,
+                                SumAMD = USDRate * payForBookedFlightAndHotel.Sum,
+                                PaymentType = payForBookedFlightAndHotel.PaymentType,
+                                PayerId = payForBookedFlightAndHotel.PayerId,
+                                PaymentDate = DateTime.Now
+                            };
+                            await _hotelRepository.AddBookPaymentAsync(payment);
                         }
-
-                        // *** Hotel part
-                        //hotelDaysCount = tourEndDate - tourStartDate
-                        BookedHotel bookedHotel = new()
-                        {
-                            OrderNumber = orderNumber,
-                            Room = bookedFlightAndHotel.Room,
-                            RoomCode = bookedFlightAndHotel.RoomType,
-                            HotelId = bookedFlightAndHotel.HotelId,
-                            HotelCode = bookedFlightAndHotel.HotelCode,
-                            SejourRateId = bookedFlightAndHotel.SejourRateId,
-                            CountryId = countryId,
-                            ToureTypeId = "Hotel",
-                            Price = bookedFlightAndHotel.Price,
-                            HotelTotalPrice = hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
-                            HotelTotalPriceAmd = USDRate * hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
-                            GuestsCount = guestsCount,
-                            AccomodationStartDate = bookedFlightAndHotel.AccomodationStartDate,
-                            AccomodationEndDate = bookedFlightAndHotel.AccomodationEndDate,
-                            LateCheckout = bookedFlightAndHotel.LateCheckout,
-                            Dept = bookedFlightAndHotel.Price,
-                            Board = bookedFlightAndHotel.Board,
-                            BoardDesc = bookedFlightAndHotel.BoardDesc,
-                            HotelAgentId = bookedFlightAndHotel.HotelAgentId,
-                            BookStatusForClient = (int)Enums.BookStatusForClient.Waiting,
-                            MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
-                            BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting
-                        };
-
-                        await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);
-
-                        var hotel = await _hotelRepository.GetHotelByCodeAsync(bookedFlightAndHotel.HotelCode);
-
-                        if (hotel != null && hotel.hotel != null)
-                        {
-                            hotelName = hotel.hotel.Name;
-                            hotelCountry = hotel.hotelCountryNameEng;
-                            hotelCity = hotel.hotelCityNameEng;
-                        }
-
-                        totalPay = (totalPayFlight + bookedHotel.HotelTotalPrice).ToString();
-
 
                         await _transactionRepository.CommitTransAsync();                                            // Commit transaction
-                        //await transaction.CommitAsync();
                     }
                 });
-                string listOfArrivalsString = string.Join(", ", listOfArrivals);
-                string date = DateTime.Now.ToString();
-                string textBody = $@"
-                                    {orderNumber}
-                                    Agent: {companyName} 
-                                    Creator: {agentName}
-                                    Phone Number: {agentPhone}
-                                    Email: {agentEmail}
-                                    Full list of arrivals: {listOfArrivalsString}
-                                    {Fligthname1} / {FligthNumber1} / 08:15-09:15
-                                    {Fligthname2} / {FligthNumber2} / 22:15-23:15
-                                    Hotel: {hotelName}
-                                    City/Country: {hotelCity} / {hotelCountry}
-                                    Country: {hotelCountry}
-                                    Total payable: {totalPay} 
-                                    Date of sale: {date}";
-
-                MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBody);
             }
             catch (Exception)
             {
                 //await _transactionRepository.RollbackTransAsync();        // Rollback transaction
                 throw;
             }
-            */
-            return orderNumber;
+
+            return "OK";
         }
-        
-        /*
-        public async Task<string> PayForBookedFlightAndHotelAsync(PayForBookedFlightAndHotelRequest payForBookedFlightAndHotel)
-        {
-            string orderNumber = "";
-            try
-            {
-                var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
-                string agentName = string.Empty;
-                string companyName = string.Empty;
-                string agentPhone = string.Empty;
-                string agentEmail = string.Empty;
-                List<string> listOfArrivals = new List<string>();
-                List<string> listOfGuests = new List<string>();
-                string Fligthname1 = string.Empty;
-                string FligthNumber1 = string.Empty;
-                string Fligthname2 = string.Empty;
-                string FligthNumber2 = string.Empty;
-                string TotalCurrency = string.Empty;
-                string totalPay = string.Empty;
-                double totalPayFlight = 0;
-                string maratukAgentEmail = string.Empty;
-                //List<BookedHotelGuest> bookedHotelGuests = new();
-                int guestsCount = 0;
-
-                DateTime tourStartDate = DateTime.MinValue;
-                DateTime? tourEndDate = null;
-                int countryId = 0;
-                string? hotelName = string.Empty;
-                string? hotelCountry = string.Empty;
-                string? hotelCity = string.Empty;
-                int hotelDaysCount = 1;
-
-                // *** Flight part
-                orderNumber = "RAN" + RandomNumberGenerators.GenerateRandomNumber(10);
-
-                List<AddBookedFlight> addBookedFlight = bookedFlightAndHotel.BookedFlights;
-
-                var strategy = _transactionRepository.CreateExecutionStrategy();
-                await strategy.ExecuteAsync(async () =>
-                {
-                    await _transactionRepository.BeginTransAsync();                                             // Begin transaction
-                    {
-
-                        foreach (var bookedFlight in addBookedFlight)
-                        {
-                            BookedFlight booked = new BookedFlight();
-                            booked.OrderNumber = orderNumber;
-                            booked.Name = bookedFlight.Name;
-                            booked.Surname = bookedFlight.Surname;
-                            booked.PhoneNumber = bookedFlight.PhoneNumber;
-                            booked.BirthDay = bookedFlight.BirthDay;
-                            booked.Email = bookedFlight.Email;
-                            booked.Passport = bookedFlight.Passport;
-                            booked.AgentId = bookedFlight.AgentId;
-                            booked.DateOfOrder = DateTime.Now;
-                            booked.ToureTypeId = "Flight + Hotel";
-                            booked.TotalPrice = bookedFlight.TotalPrice + bookedFlightAndHotel.HotelTotalPrice;
-                            booked.Rate = bookedFlight.Rate;
-                            booked.TotalPriceAmd = (USDRate * bookedFlight.TotalPrice) + (USDRate * bookedFlightAndHotel.HotelTotalPrice);
-                            booked.PassengersCount = bookedFlight.PassengersCount;
-                            booked.TourStartDate = bookedFlight.TourStartDate;
-                            booked.TourEndDate = bookedFlight.TourEndDate;
-                            booked.MaratukFlightAgentId = bookedFlight.MaratukFlightAgentId;
-                            booked.MaratukHotelAgentId = bookedFlight.MaratukHotelAgentId;
-                            booked.CountryId = bookedFlight.CountryId;
-                            booked.StartFlightId = bookedFlight.StartFlightId;
-                            booked.EndFlightId = bookedFlight.EndFlightId;
-                            booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
-                            booked.GenderId = bookedFlight.GenderId;
-                            booked.Dept = bookedFlight.TotalPrice;
-                            booked.HotelId = bookedFlightAndHotel.HotelId;
-                            booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
-                            booked.BookStatusForMaratuk = (int)Enums.BookStatusForMaratuk.Waiting;
-
-                            var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
-                            Fligthname1 = fligth.Name;
-                            FligthNumber1 = fligth.FlightValue;
-                            //totalPay = booked.TotalPrice.ToString();
-                            totalPayFlight = booked.TotalPrice;
-
-                            if (booked.EndFlightId != null)
-                            {
-                                var fligth2 = await _flightRepository.GetFlightByIdAsync(booked.EndFlightId);
-                                Fligthname2 = fligth.Name;
-                                FligthNumber2 = fligth.FlightValue;
-                            }
-
-                            var agent = await _userRepository.GetAgencyUsersByIdAsync(booked.AgentId);
-
-                            if (agent != null)
-                            {
-                                agentName = agent.FullName;
-                                agentEmail = agent.Email;
-                                agentPhone = agent.PhoneNumber1;
-                            }
-
-                            listOfArrivals.Add(booked.Name + " " + booked.Surname);
-                            var maratukAgent = await _userRepository.GetUserByIdAsync(booked.MaratukFlightAgentId);
-                            if (maratukAgent != null)
-                            {
-                                maratukAgentEmail = maratukAgent.Email;
-                            }
-                            await _bookedFlightRepository.CreateBookedFlightAsync(booked);
-
-                            // Variables to use for Hotel
-                            guestsCount++;
-                            tourStartDate = booked.TourStartDate;
-                            tourEndDate = booked.TourEndDate;
-                            countryId = booked.CountryId;
-
-                            listOfGuests.Add(booked.Name + " " + booked.Surname);
-                        }
-
-                        // *** Hotel part
-                        //hotelDaysCount = tourEndDate - tourStartDate
-                        BookedHotel bookedHotel = new()
-                        {
-                            OrderNumber = orderNumber,
-                            Room = bookedFlightAndHotel.Room,
-                            RoomCode = bookedFlightAndHotel.RoomType,
-                            HotelId = bookedFlightAndHotel.HotelId,
-                            HotelCode = bookedFlightAndHotel.HotelCode,
-                            SejourRateId = bookedFlightAndHotel.SejourRateId,
-                            CountryId = countryId,
-                            ToureTypeId = "Hotel",
-                            Price = bookedFlightAndHotel.Price,
-                            HotelTotalPrice = hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
-                            HotelTotalPriceAmd = USDRate * hotelDaysCount * bookedFlightAndHotel.HotelTotalPrice,
-                            GuestsCount = guestsCount,
-                            AccomodationStartDate = bookedFlightAndHotel.AccomodationStartDate,
-                            AccomodationEndDate = bookedFlightAndHotel.AccomodationEndDate,
-                            LateCheckout = bookedFlightAndHotel.LateCheckout,
-                            Dept = bookedFlightAndHotel.Price,
-                            Board = bookedFlightAndHotel.Board,
-                            BoardDesc = bookedFlightAndHotel.BoardDesc,
-                            HotelAgentId = bookedFlightAndHotel.HotelAgentId,
-                            BookStatusForClient = (int)Enums.BookStatusForClient.Waiting,
-                            MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
-                            BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting
-                        };
-
-                        await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);
-
-                        var hotel = await _hotelRepository.GetHotelByCodeAsync(bookedFlightAndHotel.HotelCode);
-
-                        if (hotel != null && hotel.hotel != null)
-                        {
-                            hotelName = hotel.hotel.Name;
-                            hotelCountry = hotel.hotelCountryNameEng;
-                            hotelCity = hotel.hotelCityNameEng;
-                        }
-
-                        totalPay = (totalPayFlight + bookedHotel.HotelTotalPrice).ToString();
 
 
-                        await _transactionRepository.CommitTransAsync();                                            // Commit transaction
-                        //await transaction.CommitAsync();
-                    }
-                });
-                string listOfArrivalsString = string.Join(", ", listOfArrivals);
-                string date = DateTime.Now.ToString();
-                string textBody = $@"
-                                    {orderNumber}
-                                    Agent: {companyName} 
-                                    Creator: {agentName}
-                                    Phone Number: {agentPhone}
-                                    Email: {agentEmail}
-                                    Full list of arrivals: {listOfArrivalsString}
-                                    {Fligthname1} / {FligthNumber1} / 08:15-09:15
-                                    {Fligthname2} / {FligthNumber2} / 22:15-23:15
-                                    Hotel: {hotelName}
-                                    City/Country: {hotelCity} / {hotelCountry}
-                                    Country: {hotelCountry}
-                                    Total payable: {totalPay} 
-                                    Date of sale: {date}";
 
-                MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBody);
-            }
-            catch (Exception)
-            {
-                //await _transactionRepository.RollbackTransAsync();        // Rollback transaction
-                throw;
-            }
-            
-            return orderNumber;
-        }
-        */
         public async Task<List<BookedHotelResponse>> GetBookedFlightsAsync(int Itn)
         {
             throw new NotImplementedException();
