@@ -3,6 +3,7 @@ using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities.Sansejour;
+using MaratukAdmin.Exceptions;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete;
@@ -60,14 +61,12 @@ namespace MaratukAdmin.Controllers.admin
 
                 return Ok(result);
             }
+            catch (IncorrectDataException ex)
+            { return BadRequest(ex.Message); }
             catch (ArgumentException ex)
-            {
-                return Forbid(ex.Message);
-            }
+            { return Forbid(ex.Message); }
             catch (Exception)
-            {
-                return BadRequest("Something went wrong");
-            }
+            { return BadRequest("Something went wrong"); }
         }
 
         [HttpGet("GetBookedFlight/{Itn:int}")]

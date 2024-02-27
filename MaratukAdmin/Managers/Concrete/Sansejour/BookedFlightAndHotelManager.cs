@@ -4,6 +4,7 @@ using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
+using MaratukAdmin.Exceptions;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Abstract.Sansejour;
@@ -93,7 +94,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 string? hotelName = string.Empty;
                 string? hotelCountry = string.Empty;
                 string? hotelCity = string.Empty;
-                int hotelDaysCount = 1;
+                int accomodationDaysCount = 1;
 
                 // *** Flight part
                 int countFligth = await _bookedFlightRepository.GetBookedFlightCountAsync();
@@ -203,7 +204,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         }
 
                         // *** Hotel part
-                        //hotelDaysCount = tourEndDate - tourStartDate
+                        accomodationDaysCount = (int)((DateTime)tourEndDate - tourStartDate).TotalDays;
+                        accomodationDaysCount += (bookedFlightAndHotel.LateCheckout) ? 1 : 0;
+
                         BookedHotel bookedHotel = new()
                         {
                             OrderNumber = orderNumber,
@@ -221,7 +224,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             GuestsCount = guestsCount,
                             AccomodationStartDate = bookedFlightAndHotel.AccomodationStartDate,
                             AccomodationEndDate = bookedFlightAndHotel.AccomodationEndDate,
-                            AccomodationDaysCount = hotelDaysCount,
+                            AccomodationDaysCount = accomodationDaysCount,
                             LateCheckout = bookedFlightAndHotel.LateCheckout,
                             Dept = bookedFlightAndHotel.Price,
                             Board = bookedFlightAndHotel.Board,
@@ -281,10 +284,13 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         public async Task<string> PayForBookedFlightAndHotelAsync(PayForBookedFlightAndHotelRequest payForBookedFlightAndHotel)
         {
+            string retValue = "OK";
             try
             {
-                var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
-                double paidSum = 0;
+                //var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
+                double paidAMD = 0;
+                double paidInCurrency = 0;
+                int paymentSign = (payForBookedFlightAndHotel.PaymentType.ToString() == Enums.enumBookPaymentTypes.D.ToString()) ? 1 : (-1);
                 double totalDebt = 0;
 
                 var strategy = _transactionRepository.CreateExecutionStrategy();
@@ -298,10 +304,15 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         {
                             foreach (var flight in bookedFlights)
                             {
-                                paidSum = payForBookedFlightAndHotel.Sum * ((payForBookedFlightAndHotel.PaymentType == (int)Enums.enumBookPaymentTypes.PaymentPerformed) ? 1 : (-1));
-                                flight.Paid += paidSum;
-                                
-                                totalDebt = (double)(flight.Dept - paidSum);
+                                paidAMD = payForBookedFlightAndHotel.SumAMD * paymentSign;
+                                paidInCurrency = payForBookedFlightAndHotel.SumInCurrency * paymentSign;
+                                flight.Paid += paidInCurrency;
+
+                                totalDebt = (double)(flight.Dept - paidInCurrency);
+                                if (flight.TotalPrice < totalDebt)
+                                {
+                                    throw new IncorrectDataException("In result of this operation the Debt will exceed the Total price.");
+                                }
                                 flight.Dept = totalDebt;
                             }
 
@@ -312,10 +323,11 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             BookPayment payment = new()
                             {
                                 OrderNumber = payForBookedFlightAndHotel.OrderNumber,
-                                Sum = payForBookedFlightAndHotel.Sum,
+                                PaymentNumber = payForBookedFlightAndHotel.PaymentNumber,
+                                SumAMD = payForBookedFlightAndHotel.SumAMD,
                                 Currency = payForBookedFlightAndHotel.Currency,
-                                SumAMD = USDRate * payForBookedFlightAndHotel.Sum,
-                                PaymentType = payForBookedFlightAndHotel.PaymentType,
+                                SumInCurrency = payForBookedFlightAndHotel.SumInCurrency,
+                                PaymentType = payForBookedFlightAndHotel.PaymentType.ToString(),
                                 PayerId = payForBookedFlightAndHotel.PayerId,
                                 PaymentDate = DateTime.Now
                             };
@@ -326,13 +338,18 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     }
                 });
             }
-            catch (Exception)
+            catch (Exception ex) when(ex is IncorrectDataException)
+            {
+                retValue = ex.Message;
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 //await _transactionRepository.RollbackTransAsync();        // Rollback transaction
                 throw;
             }
 
-            return "OK";
+            return retValue;
         }
 
 

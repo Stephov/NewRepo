@@ -1,7 +1,11 @@
 ﻿using Bogus.DataSets;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace MaratukAdmin.Utils
 {
@@ -52,8 +56,23 @@ namespace MaratukAdmin.Utils
 
         public enum enumBookPaymentTypes
         {
-            PaymentPerformed = 1,
-            PaymentRefunded = 2
+            [EnumMember(Value = "D")]
+            D,
+            [EnumMember(Value = "C")]
+            C
         }
+
+        //public class EnumTypeSchemaFilter : ISchemaFilter
+        //{
+        //    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        //    {
+        //        if (context.Type.IsEnum)
+        //        {
+        //            var enumValues = Enum.GetNames(context.Type);
+        //            schema.Enum = enumValues.Length > 0 ? enumValues.Select(v => new OpenApiString(v)).Cast<IOpenApiAny>().ToList() : null;
+        //            schema.Type = "string";
+        //        }
+        //    }
+        //}
     }
 }
