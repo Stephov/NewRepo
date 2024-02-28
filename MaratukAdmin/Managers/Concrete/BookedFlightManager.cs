@@ -108,6 +108,7 @@ namespace MaratukAdmin.Managers.Concrete
                 foreach (var bookedFlight in addBookedFlight)
                 {
                     BookedFlight booked = new BookedFlight();
+                    booked.PassengerTypeId = bookedFlight.PassengerTypeId;
                     booked.OrderNumber = orderNumber;
                     booked.Name = bookedFlight.Name;
                     booked.Surname = bookedFlight.Surname;

@@ -27,7 +27,7 @@
         public double? Dept { get; set; }
         public DateTime AccomodationStartDate { get; set; }
         public DateTime? AccomodationEndDate { get; set; }
-        public bool LateCheckout { get; set; }
+        public bool? LateCheckout { get; set; }
         public int HotelAgentId { get; set; }
         public int BookStatusForClient { get; set; }
         public int MaratukHotelAgentId { get; set; }
