@@ -83,7 +83,8 @@ namespace MaratukAdmin.Managers.Concrete
 
                 Flight fligthRes = null;
 
-                if (addBookedFlight.First().EndFlightId == null) {
+                if (addBookedFlight.First().EndFlightId == null)
+                {
                     fligthRes = await _flightRepository.GetFlightByIdAsync(addBookedFlight.First().StartFlightId);
                 }
                 else
@@ -266,7 +267,7 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
+                    MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
@@ -281,73 +282,73 @@ namespace MaratukAdmin.Managers.Concrete
 
                 try
                 {
-                    if (bookedFlightResponse.HotelId != null)
-                    {
-                        var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
-                        if (bookedHotel != null)
-                        {
+                     if (bookedFlightResponse.HotelId != null)
+                     {
+                         var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                         if (bookedHotel != null)
+                         {
 
-                            var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
+                             var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
-                            if (hotel.Name != null)
-                            {
-                                bookedFlightResponse.HotelName = hotel.Name;
+                             if (hotel.Name != null)
+                             {
+                                 bookedFlightResponse.HotelName = hotel.Name;
 
-                            }
-                            else
-                            {
-                                bookedFlightResponse.HotelName = string.Empty;
-                            }
+                             }
+                             else
+                             {
+                                 bookedFlightResponse.HotelName = string.Empty;
+                             }
 
-                            if (bookedHotel != null)
-                            {
+                             if (bookedHotel != null)
+                             {
 
-                                if (bookedHotel.Room != null)
-                                {
-                                    bookedFlightResponse.RoomType = bookedHotel.Room;
+                                 if (bookedHotel.Room != null)
+                                 {
+                                     bookedFlightResponse.RoomType = bookedHotel.Room;
 
-                                }
-                            }
-                            else
-                            {
-                                bookedFlightResponse.RoomType = string.Empty;
-                            }
+                                 }
+                             }
+                             else
+                             {
+                                 bookedFlightResponse.RoomType = string.Empty;
+                             }
 
-                            if (bookedHotel != null)
-                            {
-                                if (bookedHotel.BoardDesc != null)
-                                {
-                                    bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+                             if (bookedHotel != null)
+                             {
+                                 if (bookedHotel.BoardDesc != null)
+                                 {
+                                     bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
 
-                                }
-                            }
-                            else
-                            {
-                                bookedFlightResponse.BoardDesc = string.Empty;
-                            }
+                                 }
+                             }
+                             else
+                             {
+                                 bookedFlightResponse.BoardDesc = string.Empty;
+                             }
 
-                            if (bookedHotel != null)
-                            {
-                                if (bookedHotel.RoomCode != null)
-                                {
-                                    bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+                             if (bookedHotel != null)
+                             {
+                                 if (bookedHotel.RoomCode != null)
+                                 {
+                                     bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
 
-                                }
-                            }
-                            else
-                            {
-                                bookedFlightResponse.RoomCode = string.Empty;
-                            }
-                        }
+                                 }
+                             }
+                             else
+                             {
+                                 bookedFlightResponse.RoomCode = string.Empty;
+                             }
+                         }
 
-                    }
+                     }
                 }
                 catch (Exception ex)
                 {
                     var k = ex.Message;
                 }
 
-                if (bookedFlightResponse.BookStatusForMaratuk   == 1)
+                if (bookedFlightResponse.BookStatusForMaratuk == 1)
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                 }
@@ -615,11 +616,12 @@ namespace MaratukAdmin.Managers.Concrete
                         }
 
                     }
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     var k = ex.Message;
                 }
-               
+
 
                 if (bookedFlightResponse.BookStatusForMaratuk == 1)
                 {
@@ -770,7 +772,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (filtred.Count <= 0)
             {
-                filtred = filtredByStatus;
+                return new BookedFlightResponseFinalForMaratukAgent();
             }
 
 
@@ -1118,7 +1120,7 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
+                    MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     PassengerTypeId = firstFlightInGroup.PassengerTypeId,

@@ -30,7 +30,7 @@
         public DateTime? TourEndDate { get; set; }
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
-        public int MaratukAgentId { get; set; }
+        public int MaratukFlightAgentId { get; set; }
         public int BookStatusForMaratuk { get; set; }
         public string BookStatusForMaratukName { get; set; }
         public string? MaratukAgentName { get; set; }
