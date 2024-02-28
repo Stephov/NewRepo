@@ -282,66 +282,66 @@ namespace MaratukAdmin.Managers.Concrete
 
                 try
                 {
-                     if (bookedFlightResponse.HotelId != null)
-                     {
-                         var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
-                         if (bookedHotel != null)
-                         {
+                    if (bookedFlightResponse.HotelId != null)
+                    {
+                        var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                        if (bookedHotel != null)
+                        {
 
-                             var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
+                            var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
-                             if (hotel.Name != null)
-                             {
-                                 bookedFlightResponse.HotelName = hotel.Name;
+                            if (hotel.Name != null)
+                            {
+                                bookedFlightResponse.HotelName = hotel.Name;
 
-                             }
-                             else
-                             {
-                                 bookedFlightResponse.HotelName = string.Empty;
-                             }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.HotelName = string.Empty;
+                            }
 
-                             if (bookedHotel != null)
-                             {
+                            if (bookedHotel != null)
+                            {
 
-                                 if (bookedHotel.Room != null)
-                                 {
-                                     bookedFlightResponse.RoomType = bookedHotel.Room;
+                                if (bookedHotel.Room != null)
+                                {
+                                    bookedFlightResponse.RoomType = bookedHotel.Room;
 
-                                 }
-                             }
-                             else
-                             {
-                                 bookedFlightResponse.RoomType = string.Empty;
-                             }
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.RoomType = string.Empty;
+                            }
 
-                             if (bookedHotel != null)
-                             {
-                                 if (bookedHotel.BoardDesc != null)
-                                 {
-                                     bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.BoardDesc != null)
+                                {
+                                    bookedFlightResponse.BoardDesc = bookedHotel.BoardDesc;
 
-                                 }
-                             }
-                             else
-                             {
-                                 bookedFlightResponse.BoardDesc = string.Empty;
-                             }
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.BoardDesc = string.Empty;
+                            }
 
-                             if (bookedHotel != null)
-                             {
-                                 if (bookedHotel.RoomCode != null)
-                                 {
-                                     bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
+                            if (bookedHotel != null)
+                            {
+                                if (bookedHotel.RoomCode != null)
+                                {
+                                    bookedFlightResponse.RoomCode = bookedHotel.RoomCode;
 
-                                 }
-                             }
-                             else
-                             {
-                                 bookedFlightResponse.RoomCode = string.Empty;
-                             }
-                         }
+                                }
+                            }
+                            else
+                            {
+                                bookedFlightResponse.RoomCode = string.Empty;
+                            }
+                        }
 
-                     }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -772,7 +772,9 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (filtred.Count <= 0)
             {
-                return new BookedFlightResponseFinalForMaratukAgent();
+                var res = new BookedFlightResponseFinalForMaratukAgent();
+                res.bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
+                return res;
             }
 
 
@@ -1918,8 +1920,7 @@ namespace MaratukAdmin.Managers.Concrete
                         TotalPrice = firstFlightInGroup.TotalPrice,
                         Rate = firstFlightInGroup.Rate,
                         AgentId = firstFlightInGroup.AgentId,//add agentName
-                        BookStatusForClient = firstFlightInGroup.BookStatusForClient,
-                        AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                        BookStatusForClient = firstFlightInGroup.BookStatusForClient,                        //AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
                         TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                         PassengersCount = firstFlightInGroup.PassengersCount,
                         TourStartDate = firstFlightInGroup.TourStartDate,
