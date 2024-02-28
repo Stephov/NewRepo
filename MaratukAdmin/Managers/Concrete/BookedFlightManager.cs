@@ -2289,12 +2289,9 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (filtred.Count <= 0)
             {
-                if (filtred.Count <= 0)
-                {
-                    var res = new BookedFlightResponseFinalForMaratukAgent();
-                    res.bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
-                    return res;
-                }
+                var res = new BookedFlightResponseFinalForMaratukAgent();
+                res.bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
+                return res;
             }
 
 
