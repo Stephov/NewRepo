@@ -204,7 +204,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             tourEndDate = booked.TourEndDate;
                             countryId = booked.CountryId;
                             hotelAgentId = booked.AgentId;
-                            maratukHotelAgentId = booked.MaratukHotelAgentId;
+                            maratukHotelAgentId = (int)booked.MaratukHotelAgentId;
 
                             listOfGuests.Add(booked.Name + " " + booked.Surname);
                         }
