@@ -15,7 +15,9 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<FlightInfoFunction> FlightInfoResults { get; set; }
         public DbSet<BookedFlight> BookedFlights { get; set; }
         public DbSet<BookedHotel> BookedHotel { get; set; }
-        public DbSet<BookPayments> BookPayments { get; set; }
+        public DbSet<BookPayment> BookPayments { get; set; }
+        public DbSet<BookPaymentType> BookPaymentTypes { get; set; }
+        public DbSet<BookPaymentStatus> BookPaymentStatuses { get; set; }
         public DbSet<AgentStatus> AgentStatus { get; set; }
         public DbSet<MaratukAgentStatus> MaratukAgentStatus { get; set; }
         public DbSet<BookedHotelGuest> BookedHotelGuest { get; set; }
@@ -97,8 +99,14 @@ namespace MaratukAdmin.Infrastructure
             modelBuilder.Entity<BookedHotel>()
                .HasKey(e => e.Id);
 
-            modelBuilder.Entity<BookPayments>()
-                           .HasKey(e => e.Id);
+            modelBuilder.Entity<BookPayment>()
+                .HasKey(e => e.Id);
+
+            modelBuilder.Entity<BookPaymentType>()
+                .HasKey(e => e.Id);
+
+            modelBuilder.Entity<BookPaymentStatus>()
+                .HasKey(e => e.Id);
 
             modelBuilder.Entity<AgentStatus>()
                .HasKey(e => e.Id);

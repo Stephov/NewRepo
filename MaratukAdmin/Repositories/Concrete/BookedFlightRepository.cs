@@ -1,5 +1,6 @@
 ﻿using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
+using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Models;
 using MaratukAdmin.Repositories.Abstract;
@@ -113,6 +114,17 @@ namespace MaratukAdmin.Repositories.Concrete
            .ToListAsync();
 
             return counts.Count;
+        }
+
+        public async Task UpdateBookedFlightsAsync(List<BookedFlight> bookedFlights)
+        {
+            //foreach (var bookedFlight in bookedFlights)
+            //{
+            //    _dbContext.Entry(bookedFlight).State = EntityState.Modified;
+            //}
+            
+            _dbContext.BookedFlights.UpdateRange(bookedFlights);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

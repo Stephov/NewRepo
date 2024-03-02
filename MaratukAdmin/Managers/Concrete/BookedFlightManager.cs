@@ -134,8 +134,8 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
                     booked.GenderId = bookedFlight.GenderId;
                     booked.Dept = bookedFlight.TotalPrice;
-                    booked.BookStatusForClient = (int)Enums.BookStatusForClient.Waiting;
-                    booked.BookStatusForMaratuk = (int)Enums.BookStatusForClient.Waiting;
+                    booked.BookStatusForClient = (int)Enums.enumBookStatusForClient.Waiting;
+                    booked.BookStatusForMaratuk = (int)Enums.enumBookStatusForClient.Waiting;
 
                     var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
                     Fligthname1 = fligth.Name;

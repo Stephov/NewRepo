@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Dto.Request.Sansejour;
+﻿using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Infrastructure;
@@ -42,6 +43,11 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             {
                 throw;
             }
+        }
+
+        public async Task<string> PayForBookedFlightAndHotelAsync(PayForBookedFlightAndHotelRequest payForBookedFlightAndHotel)
+        {
+            return "OK";
         }
     }
 }

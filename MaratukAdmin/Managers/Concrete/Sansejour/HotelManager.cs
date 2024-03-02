@@ -29,6 +29,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Xml.Serialization;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
 {
@@ -192,6 +193,29 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             //}
             // ***
             var entity = await _hotelRepository.GetHotelByCodeAsync(code);
+
+            if (entity == null)
+            {
+                throw new ApiBaseException(StatusCodes.Status404NotFound);
+            }
+
+            return entity;
+        }
+
+        public async Task<List<Hotel>?> GetHotelsByCountryIdAndCityIdAsync(List<int>? countryIds = null, List<int>? cityIds = null)
+        {
+            var entity = await _hotelRepository.GetHotelsByCountryIdAndCityIdAsync(countryIds, cityIds);
+
+            if (entity == null)
+            {
+                throw new ApiBaseException(StatusCodes.Status404NotFound);
+            }
+
+            return entity;
+        }
+        public async Task<List<HotelResponseModel>?> GetHotelsByCountryIdAndCityIdAsync(int? countryId = null, int? cityId = null)
+        {
+            var entity = await _hotelRepository.GetHotelsByCountryIdAndCityIdAsync(countryId, cityId);
 
             if (entity == null)
             {
