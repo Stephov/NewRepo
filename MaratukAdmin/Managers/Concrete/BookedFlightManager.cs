@@ -396,6 +396,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -436,6 +440,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 10)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 11)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                 }
 
 
@@ -679,6 +687,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -719,6 +731,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 10)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 11)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -1014,6 +1030,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -1054,6 +1074,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 10)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 11)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -1263,6 +1287,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -1303,6 +1331,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 10)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 11)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -1737,19 +1769,19 @@ namespace MaratukAdmin.Managers.Concrete
                         statusForClientHotel = 10;//In 
                         statusForClientFligth = 10;//Confirmed by Accountant
                     }
-                    if (status == 2)//Ticket is rejected
+                    if (status == 13)//Ticket is rejected
                     {
                         if (bookedHotel != null)
                         {
-                            newStatusForMaratukFligth = 2;//Canceled
-                            newStatusForMaratukHotel = 2;//Canceled
-                            statusForClientFligth = 2;//Canceled
-                            statusForClientHotel = 2;//Canceled
+                            newStatusForMaratukFligth = 13;//Canceled
+                            newStatusForMaratukHotel = 13;//Canceled
+                            statusForClientFligth = 11;//Canceled
+                            statusForClientHotel = 13;//Canceled
                         }
                         else
                         {
-                            newStatusForMaratukFligth = 2;//Canceled
-                            statusForClientFligth = 2;// Canceled
+                            newStatusForMaratukFligth = 13;//Canceled
+                            statusForClientFligth = 11;// Canceled
                         }
                     }
 
@@ -2047,6 +2079,10 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                     }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                    }
                     //////////////////////////////////////
                     if (bookedFlightResponse.BookStatusForClient == 1)
                     {
@@ -2087,6 +2123,10 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForClient == 10)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 11)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                     }
 
                     bookedFlightResponses.Add(bookedFlightResponse);
@@ -2254,6 +2294,10 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                         }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                        }
                         //////////////////////////////////////
                         if (bookedFlightResponse.BookStatusForClient == 1)
                         {
@@ -2294,6 +2338,10 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 10)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 11)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                         }
 
 
@@ -2519,6 +2567,10 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                     }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                    }
                     //////////////////////////////////////
                     if (bookedFlightResponse.BookStatusForClient == 1)
                     {
@@ -2559,6 +2611,10 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForClient == 10)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 11)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                     }
 
                     bookedFlightResponses.Add(bookedFlightResponse);
@@ -2726,6 +2782,10 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
                         }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                        }
                         //////////////////////////////////////
                         if (bookedFlightResponse.BookStatusForClient == 1)
                         {
@@ -2766,6 +2826,10 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 10)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 11)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                         }
 
                         bookedFlightResponses.Add(bookedFlightResponse);
