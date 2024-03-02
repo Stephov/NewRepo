@@ -1720,34 +1720,62 @@ namespace MaratukAdmin.Managers.Concrete
             }
             else
             {
+                int newStatusForMaratukFligth = status;
+                int statusForClientFligth = 0;
+                int newStatusForMaratukHotel = 0;
+                int statusForClientHotel = 0;
+
                 try
                 {
                     var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
                     var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
+
+                    if (status == 12)//Confirmed by Accountant
+                    {
+                        newStatusForMaratukFligth = 12;//Confirmed by Accountant
+                        newStatusForMaratukHotel = 12;
+                        statusForClientHotel = 10;//In 
+                        statusForClientFligth = 10;//Confirmed by Accountant
+                    }
+                    if (status == 2)//Ticket is rejected
+                    {
+                        if (bookedHotel != null)
+                        {
+                            newStatusForMaratukFligth = 2;//Canceled
+                            newStatusForMaratukHotel = 2;//Canceled
+                            statusForClientFligth = 2;//Canceled
+                            statusForClientHotel = 2;//Canceled
+                        }
+                        else
+                        {
+                            newStatusForMaratukFligth = 2;//Canceled
+                            statusForClientFligth = 2;// Canceled
+                        }
+                    }
+
                     int managerId = 0;
                     int clientId = 0;
                     foreach (var book in booked)
                     {
                         managerId = book.MaratukFlightAgentId;
                         clientId = book.AgentId;
-                        book.OrderStatusId = status;
+                        book.BookStatusForClient = statusForClientFligth;
+                        book.BookStatusForMaratuk = newStatusForMaratukFligth;
                         book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
-                        /*if (totalPrice != null)
+                        if (totalPrice != null)
                         {
                             book.TotalPrice = (double)totalPrice;
                             book.Dept = (double)totalPrice;
-                        }*/
+                        }
                         await _mainRepository.UpdateAsync(book);
                     }
 
+
                     if (bookedHotel != null)
                     {
-                        bookedHotel.OrderStatusId = status;
+                        bookedHotel.BookStatusForMaratuk = newStatusForMaratukHotel;
+                        bookedHotel.BookStatusForClient = statusForClientHotel;
 
-                        /*if (totalPrice != null)
-                        {
-                            bookedHotel.TotalPrice = (double)totalPrice;
-                        }*/
                         await _bookedHotelRepository.UpdateBookedHotelAsync(bookedHotel);
                     }
 
