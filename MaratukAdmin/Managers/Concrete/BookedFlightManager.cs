@@ -255,7 +255,6 @@ namespace MaratukAdmin.Managers.Concrete
                     ToureTypeId = firstFlightInGroup.ToureTypeId,
                     HotelId = firstFlightInGroup.HotelId,
                     TicketNumber = firstFlightInGroup.TicketNumber,
-                    OrderStatusId = firstFlightInGroup.OrderStatusId,
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -813,49 +812,47 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (status != null)
             {
-                filtredByStatus = listBookedFlightsAll.Where(x => x.OrderStatusId == status).ToList();
+                filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
             }
             else
             {
                 filtredByStatus = listBookedFlightsAll;
             }
 
-            var filtredEndDate = listBookedFlightsAll.Where(x => x.TourEndDate != null).ToList();
 
 
-            List<BookedFlight?> filtred = new List<BookedFlight?>();
 
             if (startDate == null && endDate == null && searchText != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
-            if (filtred.Count <= 0)
+            if (filtredByStatus.Count <= 0)
             {
                 var res = new BookedFlightResponseFinalForMaratukAgent();
                 res.bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
@@ -863,7 +860,7 @@ namespace MaratukAdmin.Managers.Concrete
             }
 
 
-            var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
+            var groupedBookedFlights = filtredByStatus.GroupBy(flight => flight.OrderNumber).ToList();
 
 
             int distinctOrderNumbersCount = groupedBookedFlights.Count;
@@ -889,7 +886,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-            var groupedFlights = filtred
+            var groupedFlights = filtredByStatus
                                 .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
                                 .Select(group => new
                                 {
@@ -941,7 +938,6 @@ namespace MaratukAdmin.Managers.Concrete
                     ToureTypeId = firstFlightInGroup.ToureTypeId,
                     HotelId = firstFlightInGroup.HotelId,
                     TicketNumber = firstFlightInGroup.TicketNumber,
-                    OrderStatusId = firstFlightInGroup.OrderStatusId,
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -1266,7 +1262,6 @@ namespace MaratukAdmin.Managers.Concrete
                     ToureTypeId = firstFlightInGroup.ToureTypeId,
                     HotelId = firstFlightInGroup.HotelId,
                     TicketNumber = firstFlightInGroup.TicketNumber,
-                    OrderStatusId = firstFlightInGroup.OrderStatusId,
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -2115,7 +2110,6 @@ namespace MaratukAdmin.Managers.Concrete
                         ToureTypeId = firstFlightInGroup.ToureTypeId,
                         HotelId = firstFlightInGroup.HotelId,
                         TicketNumber = firstFlightInGroup.TicketNumber,
-                        OrderStatusId = firstFlightInGroup.OrderStatusId,
                         TotalPrice = firstFlightInGroup.TotalPrice,
                         Rate = firstFlightInGroup.Rate,
                         AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -2267,7 +2261,6 @@ namespace MaratukAdmin.Managers.Concrete
                             ToureTypeId = firstFlightInGroup.ToureTypeId,
                             HotelId = firstFlightInGroup.HotelId,
                             TicketNumber = firstFlightInGroup.TicketNumber,
-                            OrderStatusId = firstFlightInGroup.OrderStatusId,
                             TotalPrice = firstFlightInGroup.TotalPrice,
                             Rate = firstFlightInGroup.Rate,
                             AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -2478,47 +2471,44 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (status != null)
             {
-                filtredByStatus = listBookedFlightsAll.Where(x => x.OrderStatusId == status).ToList();
+                filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
             }
             else
             {
                 filtredByStatus = listBookedFlightsAll;
             }
 
-
-            List<BookedFlight?> filtred = new List<BookedFlight?>();
-
             if (startDate == null && endDate == null && searchText != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
-            if (filtred.Count <= 0)
+            if (filtredByStatus.Count <= 0)
             {
                 var res = new BookedFlightResponseFinalForMaratukAgent();
                 res.bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
@@ -2527,7 +2517,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-            var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
+            var groupedBookedFlights = filtredByStatus.GroupBy(flight => flight.OrderNumber).ToList();
 
             int distinctOrderNumbersCount = groupedBookedFlights.Count;
 
@@ -2546,7 +2536,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-            var groupedFlights = filtred
+            var groupedFlights = filtredByStatus
                                 .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
                                 .Select(group => new
                                 {
@@ -2602,7 +2592,6 @@ namespace MaratukAdmin.Managers.Concrete
                         ToureTypeId = firstFlightInGroup.ToureTypeId,
                         HotelId = firstFlightInGroup.HotelId,
                         TicketNumber = firstFlightInGroup.TicketNumber,
-                        OrderStatusId = firstFlightInGroup.OrderStatusId,
                         TotalPrice = firstFlightInGroup.TotalPrice,
                         Rate = firstFlightInGroup.Rate,
                         AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -2755,7 +2744,6 @@ namespace MaratukAdmin.Managers.Concrete
                             ToureTypeId = firstFlightInGroup.ToureTypeId,
                             HotelId = firstFlightInGroup.HotelId,
                             TicketNumber = firstFlightInGroup.TicketNumber,
-                            OrderStatusId = firstFlightInGroup.OrderStatusId,
                             TotalPrice = firstFlightInGroup.TotalPrice,
                             Rate = firstFlightInGroup.Rate,
                             AgentId = firstFlightInGroup.AgentId,//add agentName
