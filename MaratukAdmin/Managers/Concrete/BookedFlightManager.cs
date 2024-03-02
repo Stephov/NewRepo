@@ -2240,7 +2240,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else
                 {
-                    if (bookedHotels.OrderStatusId == 2 || bookedHotels.OrderStatusId == 4 || bookedHotels.OrderStatusId == 5)
+                    if (bookedHotels.BookStatusForMaratuk == 7 || bookedHotels.BookStatusForMaratuk == 12 || bookedHotels.BookStatusForMaratuk == 13)
                     {
                         var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                         {
@@ -2728,7 +2728,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else
                 {
-                    if (bookedHotels.OrderStatusId == 2 || bookedHotels.OrderStatusId == 4 || bookedHotels.OrderStatusId == 4)
+                    if (bookedHotels.BookStatusForMaratuk == 7 || bookedHotels.BookStatusForMaratuk == 12 || bookedHotels.BookStatusForMaratuk == 13)
                     {
                         var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                         {
