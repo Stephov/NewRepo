@@ -923,8 +923,61 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         if (roleId == 3)
                         {
-                            bookedFlightResponse.OrderStatusId = bookedHotel.OrderStatusId;
+                            if (bookedHotel.BookStatusForMaratuk == 1)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Waiting";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 2)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Canceled";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 3)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Ticket is confirmed";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 4)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Ticket is rejected";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 5)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Hotel is confirmed";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 6)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Hotel is rejected";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 7)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 8)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Invoice sent";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 9)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Paid partially";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 10)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Paid in full";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 11)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 12)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 13)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                            }
                         }
+
+
 
                         var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
@@ -940,8 +993,6 @@ namespace MaratukAdmin.Managers.Concrete
 
                         if (bookedHotel != null)
                         {
-
-
                             if (bookedHotel.Room != null)
                             {
                                 bookedFlightResponse.RoomType = bookedHotel.Room;
