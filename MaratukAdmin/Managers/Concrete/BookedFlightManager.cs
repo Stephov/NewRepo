@@ -812,12 +812,51 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (status != null)
             {
-                filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
+                if (roleId == 1)
+                {
+                    if (status == 1)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
+                    }
+                    else if (status == 3)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 7).ToList();
+                    }
+                    else
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 2).ToList();
+                    }
+                }
+                else
+                {
+                    if (status == 1)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
+                    }
+                    else if (status == 5)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 7).ToList();
+                    }
+                    else
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 2).ToList();
+                    }
+                }
             }
             else
             {
                 filtredByStatus = listBookedFlightsAll;
             }
+
+
+            /*            if (status != null)
+                        {
+                            filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
+                        }
+                        else
+                        {
+                            filtredByStatus = listBookedFlightsAll;
+                        }*/
 
 
 
@@ -1081,7 +1120,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
 
                 }
-                if(roleId == 1) 
+                if (roleId == 1)
                 {
                     if (bookedFlightResponse.BookStatusForMaratuk == 1)
                     {
@@ -1181,7 +1220,7 @@ namespace MaratukAdmin.Managers.Concrete
                         bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                     }
                 }
-                
+
 
                 bookedFlightResponses.Add(bookedFlightResponse);
             }
@@ -2477,6 +2516,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 filtredByStatus = listBookedFlightsAll;
             }
+
 
             if (startDate == null && endDate == null && searchText != null)
             {
