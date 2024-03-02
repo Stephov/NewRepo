@@ -16,7 +16,7 @@
         public string? RoomCode { get; set; }
         public int OrderStatusId { get; set; } = 1;
         //public string Rate { get; set; }
-        public double Price { get; set; }
+        public double? Price { get; set; }
         public double HotelTotalPrice { get; set; }
         public double HotelTotalPriceAmd { get; set; }
         public int GuestsCount { get; set; }
@@ -28,7 +28,7 @@
         public DateTime AccomodationStartDate { get; set; }
         public DateTime? AccomodationEndDate { get; set; }
         public int AccomodationDaysCount { get; set; }
-        public bool LateCheckout { get; set; }
+        public bool? LateCheckout { get; set; }
         public int HotelAgentId { get; set; }
         public int BookStatusForClient { get; set; }
         public int MaratukHotelAgentId { get; set; }

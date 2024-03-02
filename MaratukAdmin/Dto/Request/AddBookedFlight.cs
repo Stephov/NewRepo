@@ -22,7 +22,7 @@ namespace MaratukAdmin.Dto.Request
         public DateTime? TourEndDate { get; set; }
 
         public int MaratukFlightAgentId { get; set; }
-        public int MaratukHotelAgentId { get; set; }
+        public int? MaratukHotelAgentId { get; set; }
         public int CountryId { get; set; }
         public int StartFlightId { get; set; }
         public int? EndFlightId { get; set; }
