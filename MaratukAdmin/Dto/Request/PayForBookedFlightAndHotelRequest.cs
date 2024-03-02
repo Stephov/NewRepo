@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using MaratukAdmin.Utils;
+using System.ComponentModel;
 
 namespace MaratukAdmin.Dto.Request
 {
@@ -12,6 +13,8 @@ namespace MaratukAdmin.Dto.Request
         //[JsonConverter(typeof(StringEnumConverter))]
         [DefaultValue("D")]
         public string PaymentType { get; set; }
+        [DefaultValue(Enums.enumBookPaymentStatuses.InProcess)]
+        public int PaymentStatus { get; set; }
         public int PayerId { get; set; }
         public DateTime PaymentDate { get; set; }
     }

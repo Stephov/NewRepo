@@ -20,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using System.Drawing;
 using System.Linq;
 using static MaratukAdmin.Repositories.Concrete.Sansejour.HotelRepository;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -103,7 +104,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             //                                    && h.City == ((cityIds == null) ? h.City : cityIds)
             //                                    ).ToListAsync();
 
-            return await _dbContext.Hotel.Where(h => 
+            return await _dbContext.Hotel.Where(h =>
                                                 (countryIds == null || !countryIds.Any() || countryIds.Contains((int)h.Country))
                                                 &&
                                                 (cityIds == null || !cityIds.Any() || cityIds.Contains((int)h.City))
@@ -112,6 +113,46 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
             //var hotels = dbContext.Hotel
             //    .Where(hotel => hotel.Country == 6226 && cityIds.Contains(hotel.City));
+        }
+
+        public async Task<List<HotelResponseModel>?> GetHotelsByCountryIdAndCityIdAsync(int? countryId = null, int? cityId = null)
+        {
+            //var bbb = await (from hotel in _dbContext.Hotel
+            //                 where (countryId == null || (int)hotel.Country == countryId) &&
+            //                       (cityId == null || (int)hotel.City == cityId)
+            //                 select new HotelResponseModel
+            //                 {
+            //                     hotel = hotel,
+            //                     hotelImages = _dbContext.HotelImage.Where(hi => hi.HotelId == hotel.Id).ToList()
+            //                 }).ToListAsync();
+
+            var result = await (from hotel in _dbContext.Hotel
+                                join ctry in _dbContext.Country
+                                on hotel.Country equals ctry.Id
+                                join cty in _dbContext.City
+                                on hotel.City equals cty.Id
+                                join hotelImages in _dbContext.HotelImage
+                                on hotel.Id equals hotelImages.HotelId into hotelImageGroup
+                                from hotelImages in hotelImageGroup.DefaultIfEmpty()
+                                where (countryId == null || (int)hotel.Country == countryId)
+                                   && (cityId == null || (int)hotel.City == cityId)
+                                select new HotelResponseModel()
+                                {
+                                    hotel = hotel,
+                                    hotelCityName = cty.Name,
+                                    hotelCityNameEng = cty.NameEng,
+                                    hotelCountryName = ctry.Name,
+                                    hotelCountryNameEng = ctry.NameENG,
+                                    hotelImages = _dbContext.HotelImage.Where(hi => hi.HotelId == hotel.Id).ToList()
+                                }).ToListAsync();
+
+            return result;
+
+            //return await _dbContext.Hotel.Where(h =>
+            //                                (countryId == null || (int)h.Country == countryId)
+            //                                &&
+            //                                (cityId == null || (int)h.City == cityId)
+            //                                ).ToListAsync();
         }
         public async Task<HotelResponseModel?> GetHotelByCodeAsync(string code)
         {

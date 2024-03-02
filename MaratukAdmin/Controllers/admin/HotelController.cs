@@ -20,7 +20,7 @@ namespace MaratukAdmin.Controllers.admin
         private readonly IBookedHotelManager _bookedHotelManager;
 
         public HotelController(IHotelManager hotelManager,
-                                IHotelBoardManager hotelBoardManager,   
+                                IHotelBoardManager hotelBoardManager,
                                 IBookedHotelManager bookedHotelManager,
                                 JwtTokenService jwtTokenService) : base(jwtTokenService)
         {
@@ -46,6 +46,8 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetHotelByCode/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetHotelByCode(string code)
         {
             var result = await _hotelManager.GetHotelByCodeAsync(code);
@@ -54,6 +56,8 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetHotelByCodeMock/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetHotelByCodeMock(string code)
         {
             var result = await _hotelManager.GetHotelByCodeMockAsync(code);
@@ -62,6 +66,8 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetHotelBoardByCode/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetHotelBoardByCode(string code)
         {
             var result = await _hotelBoardManager.GetHotelBoardByCodeAsync(code);
@@ -70,11 +76,34 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetAllHotelBoards/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetAllHotelBoards()
         {
             var result = await _hotelBoardManager.GetAllHotelBoardsAsync();
 
             return Ok(result);
+        }
+
+        [HttpGet("GetHotelsByCountryAndCity/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetHotelsByCountryAndCity(int? countryId = null, int? cityId = null)
+        {
+            try
+            {
+                var result = await _hotelManager.GetHotelsByCountryIdAndCityIdAsync(countryId, cityId);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Something went wrong");
+            }
         }
 
         [HttpPut]

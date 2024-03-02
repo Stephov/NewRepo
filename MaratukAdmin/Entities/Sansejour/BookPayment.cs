@@ -8,6 +8,7 @@
         public string Currency { get; set; }
         public double SumInCurrency { get; set; }
         public string PaymentType { get; set; }
+        public int PaymentStatus { get; set; }
         public int PayerId { get; set; }
         public DateTime PaymentDate { get; set; }
     }

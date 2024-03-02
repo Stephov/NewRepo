@@ -16,6 +16,8 @@ namespace MaratukAdmin.Managers.Abstract.Sansejour
         Task<Hotel> GetHotelByIdAsync(int id);
         Task<HotelResponseModel> GetHotelByCodeAsync(string code);
         Task<HotelResponseModel> GetHotelByCodeMockAsync(string code);
+        Task<List<Hotel>?> GetHotelsByCountryIdAndCityIdAsync(List<int>? countryIds = null, List<int>? cityIds = null);
+        Task<List<HotelResponseModel>?> GetHotelsByCountryIdAndCityIdAsync(int? countryId = null, int? cityId = null);
         Task<Hotel> AddHotelAsync(AddHotelRequest hotelImageRequest);
         Task<Hotel> UpdateHotelAsync(UpdateHotelRequest hotel);
         Task<bool> RefreshHotelList();

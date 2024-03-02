@@ -14,6 +14,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<HotelResponseModel> GetHoteByCodeMockAsync(string code);
         Task<List<Hotel>> GetAllHotelsAsync();
         Task<List<Hotel>?> GetHotelsByCountryIdAndCityIdAsync(List<int>? countryIds = null, List<int>? cityIds = null);
+        Task<List<HotelResponseModel>?> GetHotelsByCountryIdAndCityIdAsync(int? countryId = null, int? cityId = null);
         Task EraseHotelListAsync();
         Task FillNewHotelsListAsync(List<Hotel> hotelList);
         //Task<Hotel> AddHotelAsync(AddHotelRequest hotelRequest);

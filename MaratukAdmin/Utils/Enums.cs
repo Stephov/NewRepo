@@ -62,6 +62,13 @@ namespace MaratukAdmin.Utils
             C
         }
 
+        public enum enumBookPaymentStatuses
+        {
+            InProcess = 1,
+            Approved = 2,
+            Declined = 3,
+            Cancelled = 4
+        }
         //public class EnumTypeSchemaFilter : ISchemaFilter
         //{
         //    public void Apply(OpenApiSchema schema, SchemaFilterContext context)

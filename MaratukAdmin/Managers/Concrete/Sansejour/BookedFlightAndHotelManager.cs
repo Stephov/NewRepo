@@ -95,6 +95,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 string? hotelCountry = string.Empty;
                 string? hotelCity = string.Empty;
                 int accomodationDaysCount = 1;
+                int hotelAgentId = 0;
+                int maratukHotelAgentId = 0;
+
 
                 // *** Flight part
                 int countFligth = await _bookedFlightRepository.GetBookedFlightCountAsync();
@@ -151,7 +154,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.PassengersCount = bookedFlight.PassengersCount;
                             booked.TourStartDate = bookedFlight.TourStartDate;
                             booked.TourEndDate = bookedFlight.TourEndDate;
-                            booked.MaratukFlightAgentId = bookedFlight.MaratukFlightAgentId;
+                            //booked.MaratukFlightAgentId = bookedFlight.MaratukFlightAgentId;
+                            booked.MaratukFlightAgentId = 22;                                   // Inesa Sevinyan
                             booked.MaratukHotelAgentId = bookedFlight.MaratukHotelAgentId;
                             booked.CountryId = bookedFlight.CountryId;
                             booked.StartFlightId = bookedFlight.StartFlightId;
@@ -199,6 +203,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             tourStartDate = booked.TourStartDate;
                             tourEndDate = booked.TourEndDate;
                             countryId = booked.CountryId;
+                            hotelAgentId = booked.AgentId;
+                            maratukHotelAgentId = booked.MaratukHotelAgentId;
 
                             listOfGuests.Add(booked.Name + " " + booked.Surname);
                         }
@@ -229,9 +235,11 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             Dept = bookedFlightAndHotel.Price,
                             Board = bookedFlightAndHotel.Board,
                             BoardDesc = bookedFlightAndHotel.BoardDesc,
-                            HotelAgentId = bookedFlightAndHotel.HotelAgentId,
+                            //HotelAgentId = bookedFlightAndHotel.HotelAgentId,
+                            HotelAgentId = hotelAgentId,
                             BookStatusForClient = (int)Enums.enumBookStatusForClient.Waiting,
-                            MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
+                            //MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
+                            MaratukHotelAgentId = maratukHotelAgentId,
                             BookStatusForMaratuk = (int)Enums.enumBookStatusForClient.Waiting
                         };
 
@@ -328,6 +336,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                                 Currency = payForBookedFlightAndHotel.Currency,
                                 SumInCurrency = payForBookedFlightAndHotel.SumInCurrency,
                                 PaymentType = payForBookedFlightAndHotel.PaymentType.ToString(),
+                                PaymentStatus = payForBookedFlightAndHotel.PaymentStatus,
                                 PayerId = payForBookedFlightAndHotel.PayerId,
                                 PaymentDate = DateTime.Now
                             };
@@ -338,7 +347,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     }
                 });
             }
-            catch (Exception ex) when(ex is IncorrectDataException)
+            catch (Exception ex) when (ex is IncorrectDataException)
             {
                 retValue = ex.Message;
                 throw ex;
