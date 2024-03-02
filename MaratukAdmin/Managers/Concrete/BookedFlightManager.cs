@@ -374,7 +374,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                 {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                 {
@@ -392,6 +392,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -407,7 +411,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 4)
                 {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 5)
                 {
@@ -428,6 +432,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 9)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 10)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                 }
 
 
@@ -649,7 +657,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                 {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                 {
@@ -667,6 +675,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -682,7 +694,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 4)
                 {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 5)
                 {
@@ -703,6 +715,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 9)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 10)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -976,7 +992,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                 {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                 {
@@ -994,6 +1010,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -1009,7 +1029,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 4)
                 {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 5)
                 {
@@ -1030,6 +1050,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 9)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 10)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -1217,7 +1241,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                 {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                 {
@@ -1235,6 +1259,10 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -1250,7 +1278,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 4)
                 {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 5)
                 {
@@ -1271,6 +1299,10 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 9)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 10)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -1965,7 +1997,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                     {
-                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                     {
@@ -1983,6 +2015,10 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                     }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                    }
                     //////////////////////////////////////
                     if (bookedFlightResponse.BookStatusForClient == 1)
                     {
@@ -1998,7 +2034,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 4)
                     {
-                        bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 5)
                     {
@@ -2019,6 +2055,10 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForClient == 9)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 10)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                     }
 
                     bookedFlightResponses.Add(bookedFlightResponse);
@@ -2164,7 +2204,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                         {
-                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                         {
@@ -2182,6 +2222,10 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                         }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                        }
                         //////////////////////////////////////
                         if (bookedFlightResponse.BookStatusForClient == 1)
                         {
@@ -2197,7 +2241,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 4)
                         {
-                            bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 5)
                         {
@@ -2218,6 +2262,10 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 9)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 10)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                         }
 
 
@@ -2421,7 +2469,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                     {
-                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                     {
@@ -2439,6 +2487,10 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                     }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                    }
                     //////////////////////////////////////
                     if (bookedFlightResponse.BookStatusForClient == 1)
                     {
@@ -2454,7 +2506,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 4)
                     {
-                        bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 5)
                     {
@@ -2475,6 +2527,10 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForClient == 9)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 10)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                     }
 
                     bookedFlightResponses.Add(bookedFlightResponse);
@@ -2620,7 +2676,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                         {
-                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                         {
@@ -2638,6 +2694,10 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                         }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                        }
                         //////////////////////////////////////
                         if (bookedFlightResponse.BookStatusForClient == 1)
                         {
@@ -2653,7 +2713,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 4)
                         {
-                            bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 5)
                         {
@@ -2674,6 +2734,10 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 9)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 10)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
                         }
 
                         bookedFlightResponses.Add(bookedFlightResponse);
