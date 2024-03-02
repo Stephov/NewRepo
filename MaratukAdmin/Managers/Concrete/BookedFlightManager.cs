@@ -83,7 +83,8 @@ namespace MaratukAdmin.Managers.Concrete
 
                 Flight fligthRes = null;
 
-                if (addBookedFlight.First().EndFlightId == null) {
+                if (addBookedFlight.First().EndFlightId == null)
+                {
                     fligthRes = await _flightRepository.GetFlightByIdAsync(addBookedFlight.First().StartFlightId);
                 }
                 else
@@ -108,6 +109,7 @@ namespace MaratukAdmin.Managers.Concrete
                 foreach (var bookedFlight in addBookedFlight)
                 {
                     BookedFlight booked = new BookedFlight();
+                    booked.PassengerTypeId = bookedFlight.PassengerTypeId;
                     booked.OrderNumber = orderNumber;
                     booked.Name = bookedFlight.Name;
                     booked.Surname = bookedFlight.Surname;
@@ -253,7 +255,6 @@ namespace MaratukAdmin.Managers.Concrete
                     ToureTypeId = firstFlightInGroup.ToureTypeId,
                     HotelId = firstFlightInGroup.HotelId,
                     TicketNumber = firstFlightInGroup.TicketNumber,
-                    OrderStatusId = firstFlightInGroup.OrderStatusId,
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -265,7 +266,7 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
+                    MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     BookStatusForMaratuk = firstFlightInGroup.BookStatusForMaratuk,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
@@ -346,7 +347,7 @@ namespace MaratukAdmin.Managers.Concrete
                     var k = ex.Message;
                 }
 
-                if (bookedFlightResponse.BookStatusForMaratuk   == 1)
+                if (bookedFlightResponse.BookStatusForMaratuk == 1)
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                 }
@@ -372,7 +373,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                 {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                 {
@@ -390,6 +391,14 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -405,7 +414,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 4)
                 {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 5)
                 {
@@ -426,6 +435,14 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 9)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 10)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 11)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                 }
 
 
@@ -557,7 +574,58 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             if (roleId == 3)
                             {
-                                bookedFlightResponse.BookStatusForMaratuk = bookedHotel.BookStatusForMaratuk;
+                                if (bookedHotel.BookStatusForMaratuk == 1)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Waiting";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 2)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Canceled";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 3)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Ticket is confirmed";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 4)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Ticket is rejected";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 5)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Hotel is confirmed";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 6)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Hotel is rejected";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 7)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 8)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Invoice sent";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 9)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Paid partially";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 10)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Paid in full";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 11)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 12)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                                }
+                                else if (bookedHotel.BookStatusForMaratuk == 13)
+                                {
+                                    bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                                }
                             }
 
                             var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
@@ -614,92 +682,111 @@ namespace MaratukAdmin.Managers.Concrete
                         }
 
                     }
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     var k = ex.Message;
                 }
-               
 
-                if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                if (roleId == 1)
                 {
-                    bookedFlightResponse.BookStatusForMaratukName = "Waiting";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 2)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Canceled";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 3)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Ticket is confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 4)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Ticket is rejected";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 5)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Hotel is confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 6)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Hotel is rejected";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 7)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 8)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Invoice sent";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 9)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Paid partially";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 10)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Paid in full";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 11)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
-                }
-                //////////////////////////////////////
-                if (bookedFlightResponse.BookStatusForClient == 1)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Waiting";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 2)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Canceled";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 3)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "In process";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 4)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 5)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Rejected";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 6)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Invoice sent";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 7)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Partially paid";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 8)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Fully paid";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 9)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                    if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Waiting";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 2)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 3)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Ticket is confirmed";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 4)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Ticket is rejected";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 5)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Hotel is confirmed";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 6)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Hotel is rejected";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 7)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 8)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Invoice sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 9)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Paid partially";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 10)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Paid in full";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 11)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                    }
+                    //////////////////////////////////////
+                    if (bookedFlightResponse.BookStatusForClient == 1)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Waiting";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 2)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 3)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "In process";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 4)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 5)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Rejected";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 6)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Invoice sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 7)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Partially paid";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 8)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Fully paid";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 9)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 10)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 11)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
+                    }
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -725,55 +812,94 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (status != null)
             {
-                filtredByStatus = listBookedFlightsAll.Where(x => x.OrderStatusId == status).ToList();
+                if (roleId == 1)
+                {
+                    if (status == 1)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
+                    }
+                    else if (status == 3)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 7).ToList();
+                    }
+                    else
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 2).ToList();
+                    }
+                }
+                else
+                {
+                    if (status == 1)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
+                    }
+                    else if (status == 5)
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 7).ToList();
+                    }
+                    else
+                    {
+                        filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status || x.BookStatusForMaratuk == 2).ToList();
+                    }
+                }
             }
             else
             {
                 filtredByStatus = listBookedFlightsAll;
             }
 
-            var filtredEndDate = listBookedFlightsAll.Where(x => x.TourEndDate != null).ToList();
+
+            /*            if (status != null)
+                        {
+                            filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
+                        }
+                        else
+                        {
+                            filtredByStatus = listBookedFlightsAll;
+                        }*/
 
 
-            List<BookedFlight?> filtred = new List<BookedFlight?>();
+
 
             if (startDate == null && endDate == null && searchText != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
-            if (filtred.Count <= 0)
+            if (filtredByStatus.Count <= 0)
             {
-                filtred = filtredByStatus;
+                var res = new BookedFlightResponseFinalForMaratukAgent();
+                res.bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
+                return res;
             }
 
 
-            var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
+            var groupedBookedFlights = filtredByStatus.GroupBy(flight => flight.OrderNumber).ToList();
 
 
             int distinctOrderNumbersCount = groupedBookedFlights.Count;
@@ -799,7 +925,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-            var groupedFlights = filtred
+            var groupedFlights = filtredByStatus
                                 .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
                                 .Select(group => new
                                 {
@@ -851,7 +977,6 @@ namespace MaratukAdmin.Managers.Concrete
                     ToureTypeId = firstFlightInGroup.ToureTypeId,
                     HotelId = firstFlightInGroup.HotelId,
                     TicketNumber = firstFlightInGroup.TicketNumber,
-                    OrderStatusId = firstFlightInGroup.OrderStatusId,
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -886,8 +1011,61 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         if (roleId == 3)
                         {
-                            bookedFlightResponse.OrderStatusId = bookedHotel.OrderStatusId;
+                            if (bookedHotel.BookStatusForMaratuk == 1)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Waiting";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 2)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Canceled";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 3)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Ticket is confirmed";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 4)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Ticket is rejected";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 5)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Hotel is confirmed";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 6)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Hotel is rejected";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 7)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 8)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Invoice sent";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 9)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Paid partially";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 10)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Paid in full";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 11)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 12)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                            }
+                            else if (bookedHotel.BookStatusForMaratuk == 13)
+                            {
+                                bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                            }
                         }
+
+
 
                         var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
@@ -903,8 +1081,6 @@ namespace MaratukAdmin.Managers.Concrete
 
                         if (bookedHotel != null)
                         {
-
-
                             if (bookedHotel.Room != null)
                             {
                                 bookedFlightResponse.RoomType = bookedHotel.Room;
@@ -944,88 +1120,107 @@ namespace MaratukAdmin.Managers.Concrete
                     }
 
                 }
+                if (roleId == 1)
+                {
+                    if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Waiting";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 2)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 3)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Ticket is confirmed";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 4)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Ticket is rejected";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 5)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Hotel is confirmed";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 6)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Hotel is rejected";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 7)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 8)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Invoice sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 9)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Paid partially";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 10)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Paid in full";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 11)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                    }
+                    //////////////////////////////////////
+                    if (bookedFlightResponse.BookStatusForClient == 1)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Waiting";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 2)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 3)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "In process";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 4)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 5)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Rejected";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 6)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Invoice sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 7)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Partially paid";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 8)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Fully paid";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 9)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 10)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 11)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
+                    }
+                }
 
-                if (bookedFlightResponse.BookStatusForMaratuk == 1)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Waiting";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 2)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Canceled";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 3)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Ticket is confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 4)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Ticket is rejected";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 5)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Hotel is confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 6)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Hotel is rejected";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 7)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 8)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Invoice sent";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 9)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Paid partially";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 10)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Paid in full";
-                }
-                else if (bookedFlightResponse.BookStatusForMaratuk == 11)
-                {
-                    bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
-                }
-                //////////////////////////////////////
-                if (bookedFlightResponse.BookStatusForClient == 1)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Waiting";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 2)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Canceled";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 3)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "In process";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 4)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 5)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Rejected";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 6)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Invoice sent";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 7)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Partially paid";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 8)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Fully paid";
-                }
-                else if (bookedFlightResponse.BookStatusForClient == 9)
-                {
-                    bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
-                }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
             }
@@ -1106,7 +1301,6 @@ namespace MaratukAdmin.Managers.Concrete
                     ToureTypeId = firstFlightInGroup.ToureTypeId,
                     HotelId = firstFlightInGroup.HotelId,
                     TicketNumber = firstFlightInGroup.TicketNumber,
-                    OrderStatusId = firstFlightInGroup.OrderStatusId,
                     TotalPrice = firstFlightInGroup.TotalPrice,
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -1117,7 +1311,7 @@ namespace MaratukAdmin.Managers.Concrete
                     TourEndDate = firstFlightInGroup.TourEndDate,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
-                    MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
+                    MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
                     MaratukAgentName = _userRepository.GetUserByIdAsync(firstFlightInGroup.MaratukFlightAgentId).Result.UserName,
                     CountryId = firstFlightInGroup.CountryId,
                     PassengerTypeId = firstFlightInGroup.PassengerTypeId,
@@ -1212,7 +1406,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                 {
-                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                 {
@@ -1230,6 +1424,14 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                 }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                {
+                    bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                }
                 //////////////////////////////////////
                 if (bookedFlightResponse.BookStatusForClient == 1)
                 {
@@ -1245,7 +1447,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 4)
                 {
-                    bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                 }
                 else if (bookedFlightResponse.BookStatusForClient == 5)
                 {
@@ -1266,6 +1468,14 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 9)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 10)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                }
+                else if (bookedFlightResponse.BookStatusForClient == 11)
+                {
+                    bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                 }
 
                 bookedFlightResponses.Add(bookedFlightResponse);
@@ -1683,34 +1893,62 @@ namespace MaratukAdmin.Managers.Concrete
             }
             else
             {
+                int newStatusForMaratukFligth = status;
+                int statusForClientFligth = 0;
+                int newStatusForMaratukHotel = 0;
+                int statusForClientHotel = 0;
+
                 try
                 {
                     var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
                     var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
+
+                    if (status == 12)//Confirmed by Accountant
+                    {
+                        newStatusForMaratukFligth = 12;//Confirmed by Accountant
+                        newStatusForMaratukHotel = 12;
+                        statusForClientHotel = 10;//In 
+                        statusForClientFligth = 10;//Confirmed by Accountant
+                    }
+                    if (status == 13)//Ticket is rejected
+                    {
+                        if (bookedHotel != null)
+                        {
+                            newStatusForMaratukFligth = 13;//Canceled
+                            newStatusForMaratukHotel = 13;//Canceled
+                            statusForClientFligth = 11;//Canceled
+                            statusForClientHotel = 13;//Canceled
+                        }
+                        else
+                        {
+                            newStatusForMaratukFligth = 13;//Canceled
+                            statusForClientFligth = 11;// Canceled
+                        }
+                    }
+
                     int managerId = 0;
                     int clientId = 0;
                     foreach (var book in booked)
                     {
                         managerId = book.MaratukFlightAgentId;
                         clientId = book.AgentId;
-                        book.OrderStatusId = status;
+                        book.BookStatusForClient = statusForClientFligth;
+                        book.BookStatusForMaratuk = newStatusForMaratukFligth;
                         book.Comment = string.IsNullOrWhiteSpace(comment) ? string.Empty : comment;
-                        /*if (totalPrice != null)
+                        if (totalPrice != null)
                         {
                             book.TotalPrice = (double)totalPrice;
                             book.Dept = (double)totalPrice;
-                        }*/
+                        }
                         await _mainRepository.UpdateAsync(book);
                     }
 
+
                     if (bookedHotel != null)
                     {
-                        bookedHotel.OrderStatusId = status;
+                        bookedHotel.BookStatusForMaratuk = newStatusForMaratukHotel;
+                        bookedHotel.BookStatusForClient = statusForClientHotel;
 
-                        /*if (totalPrice != null)
-                        {
-                            bookedHotel.TotalPrice = (double)totalPrice;
-                        }*/
                         await _bookedHotelRepository.UpdateBookedHotelAsync(bookedHotel);
                     }
 
@@ -1911,12 +2149,10 @@ namespace MaratukAdmin.Managers.Concrete
                         ToureTypeId = firstFlightInGroup.ToureTypeId,
                         HotelId = firstFlightInGroup.HotelId,
                         TicketNumber = firstFlightInGroup.TicketNumber,
-                        OrderStatusId = firstFlightInGroup.OrderStatusId,
                         TotalPrice = firstFlightInGroup.TotalPrice,
                         Rate = firstFlightInGroup.Rate,
                         AgentId = firstFlightInGroup.AgentId,//add agentName
-                        BookStatusForClient = firstFlightInGroup.BookStatusForClient,
-                        AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                        BookStatusForClient = firstFlightInGroup.BookStatusForClient,                        //AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
                         TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                         PassengersCount = firstFlightInGroup.PassengersCount,
                         TourStartDate = firstFlightInGroup.TourStartDate,
@@ -1961,7 +2197,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                     {
-                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                     {
@@ -1979,6 +2215,14 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                     }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                    }
                     //////////////////////////////////////
                     if (bookedFlightResponse.BookStatusForClient == 1)
                     {
@@ -1994,7 +2238,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 4)
                     {
-                        bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 5)
                     {
@@ -2016,12 +2260,20 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
                     }
+                    else if (bookedFlightResponse.BookStatusForClient == 10)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 11)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
+                    }
 
                     bookedFlightResponses.Add(bookedFlightResponse);
                 }
                 else
                 {
-                    if (bookedHotels.OrderStatusId == 2 || bookedHotels.OrderStatusId == 4 || bookedHotels.OrderStatusId == 5)
+                    if (bookedHotels.BookStatusForMaratuk == 7 || bookedHotels.BookStatusForMaratuk == 12 || bookedHotels.BookStatusForMaratuk == 13)
                     {
                         var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                         {
@@ -2048,7 +2300,6 @@ namespace MaratukAdmin.Managers.Concrete
                             ToureTypeId = firstFlightInGroup.ToureTypeId,
                             HotelId = firstFlightInGroup.HotelId,
                             TicketNumber = firstFlightInGroup.TicketNumber,
-                            OrderStatusId = firstFlightInGroup.OrderStatusId,
                             TotalPrice = firstFlightInGroup.TotalPrice,
                             Rate = firstFlightInGroup.Rate,
                             AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -2160,7 +2411,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                         {
-                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                         {
@@ -2178,6 +2429,14 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                         }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                        }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                        }
                         //////////////////////////////////////
                         if (bookedFlightResponse.BookStatusForClient == 1)
                         {
@@ -2193,7 +2452,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 4)
                         {
-                            bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 5)
                         {
@@ -2214,6 +2473,14 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 9)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 10)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 11)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                         }
 
 
@@ -2243,7 +2510,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (status != null)
             {
-                filtredByStatus = listBookedFlightsAll.Where(x => x.OrderStatusId == status).ToList();
+                filtredByStatus = listBookedFlightsAll.Where(x => x.BookStatusForMaratuk == status).ToList();
             }
             else
             {
@@ -2251,46 +2518,46 @@ namespace MaratukAdmin.Managers.Concrete
             }
 
 
-            List<BookedFlight?> filtred = new List<BookedFlight?>();
-
             if (startDate == null && endDate == null && searchText != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
             if (searchText == null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
             if (searchText == null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate == null && startDate != null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourStartDate.Date >= startDate.Value.Date).ToList();
             }
             if (searchText != null && endDate != null && startDate == null)
             {
-                filtred = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
+                filtredByStatus = filtredByStatus.Where(x => x.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 && x.TourEndDate?.Date <= endDate.Value.Date).ToList();
             }
 
             if (searchText != null && endDate != null && startDate != null)
             {
-                filtred = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                filtredByStatus = filtredByStatus.Where(item => item.TourEndDate?.Date <= endDate.Value.Date && item.DateOfOrder.Date >= startDate.Value.Date && item.OrderNumber.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
-            if (filtred.Count <= 0)
+            if (filtredByStatus.Count <= 0)
             {
-                filtred = filtredByStatus;
+                var res = new BookedFlightResponseFinalForMaratukAgent();
+                res.bookedFlightResponses = new List<BookedFlightResponseForMaratuk>();
+                return res;
             }
 
 
 
-            var groupedBookedFlights = filtred.GroupBy(flight => flight.OrderNumber).ToList();
+            var groupedBookedFlights = filtredByStatus.GroupBy(flight => flight.OrderNumber).ToList();
 
             int distinctOrderNumbersCount = groupedBookedFlights.Count;
 
@@ -2309,7 +2576,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-            var groupedFlights = filtred
+            var groupedFlights = filtredByStatus
                                 .GroupBy(flight => new { flight.OrderNumber, flight.Rate })
                                 .Select(group => new
                                 {
@@ -2365,7 +2632,6 @@ namespace MaratukAdmin.Managers.Concrete
                         ToureTypeId = firstFlightInGroup.ToureTypeId,
                         HotelId = firstFlightInGroup.HotelId,
                         TicketNumber = firstFlightInGroup.TicketNumber,
-                        OrderStatusId = firstFlightInGroup.OrderStatusId,
                         TotalPrice = firstFlightInGroup.TotalPrice,
                         Rate = firstFlightInGroup.Rate,
                         AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -2415,7 +2681,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                     {
-                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                     {
@@ -2433,6 +2699,14 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                     }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                    {
+                        bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                    }
                     //////////////////////////////////////
                     if (bookedFlightResponse.BookStatusForClient == 1)
                     {
@@ -2448,7 +2722,7 @@ namespace MaratukAdmin.Managers.Concrete
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 4)
                     {
-                        bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                     }
                     else if (bookedFlightResponse.BookStatusForClient == 5)
                     {
@@ -2470,12 +2744,20 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
                     }
+                    else if (bookedFlightResponse.BookStatusForClient == 10)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                    }
+                    else if (bookedFlightResponse.BookStatusForClient == 11)
+                    {
+                        bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
+                    }
 
                     bookedFlightResponses.Add(bookedFlightResponse);
                 }
                 else
                 {
-                    if (bookedHotels.OrderStatusId == 2 || bookedHotels.OrderStatusId == 4 || bookedHotels.OrderStatusId == 4)
+                    if (bookedHotels.BookStatusForMaratuk == 7 || bookedHotels.BookStatusForMaratuk == 12 || bookedHotels.BookStatusForMaratuk == 13)
                     {
                         var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                         {
@@ -2502,7 +2784,6 @@ namespace MaratukAdmin.Managers.Concrete
                             ToureTypeId = firstFlightInGroup.ToureTypeId,
                             HotelId = firstFlightInGroup.HotelId,
                             TicketNumber = firstFlightInGroup.TicketNumber,
-                            OrderStatusId = firstFlightInGroup.OrderStatusId,
                             TotalPrice = firstFlightInGroup.TotalPrice,
                             Rate = firstFlightInGroup.Rate,
                             AgentId = firstFlightInGroup.AgentId,//add agentName
@@ -2614,7 +2895,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 7)
                         {
-                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed";
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForMaratuk == 8)
                         {
@@ -2632,6 +2913,14 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Ticket  sent";
                         }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 12)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Confirmed by Accountant";
+                        }
+                        else if (bookedFlightResponse.BookStatusForMaratuk == 13)
+                        {
+                            bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
+                        }
                         //////////////////////////////////////
                         if (bookedFlightResponse.BookStatusForClient == 1)
                         {
@@ -2647,7 +2936,7 @@ namespace MaratukAdmin.Managers.Concrete
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 4)
                         {
-                            bookedFlightResponse.BookStatusForClientName = "Confirmed";
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed By Managers";
                         }
                         else if (bookedFlightResponse.BookStatusForClient == 5)
                         {
@@ -2668,6 +2957,14 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 9)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Ticket  sent";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 10)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Confirmed by Accountant";
+                        }
+                        else if (bookedFlightResponse.BookStatusForClient == 11)
+                        {
+                            bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                         }
 
                         bookedFlightResponses.Add(bookedFlightResponse);

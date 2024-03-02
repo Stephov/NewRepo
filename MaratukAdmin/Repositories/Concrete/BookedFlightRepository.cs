@@ -96,7 +96,7 @@ namespace MaratukAdmin.Repositories.Concrete
         {
 
             var result = await _dbContext.BookedFlights
-                .Where(c => c.BookStatusForMaratuk == 7)
+                .Where(c => c.BookStatusForMaratuk == 7 || c.BookStatusForMaratuk == 12 || c.BookStatusForMaratuk == 13)
                 .ToListAsync();
 
             return result;

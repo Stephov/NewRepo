@@ -16,7 +16,7 @@
         public string? RoomCode { get; set; }
         public int OrderStatusId { get; set; } = 1;
         //public string Rate { get; set; }
-        public double Price { get; set; }
+        public double? Price { get; set; }
         public double HotelTotalPrice { get; set; }
         public double HotelTotalPriceAmd { get; set; }
         public int GuestsCount { get; set; }
