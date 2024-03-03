@@ -1148,7 +1148,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
                 string hotelCodes = searchRequest.HotelCodes != null ? string.Join(",", searchRequest.HotelCodes) : string.Empty;
                 //string board = searchRequest.Board != null ? string.Join(",", searchRequest.Board) : string.Empty; 
-                //int lateCheckout = searchRequest.LateCheckout ? 1 : 0;
+                int lateCheckout = searchRequest.LateCheckout ? 1 : 0;
                 //string hotelCategoryIds = searchRequest.HotelCategoryIds != null ? string.Join(",", searchRequest.HotelCategoryIds) : string.Empty;
                 //string hotelCountryIds = searchRequest.HotelCountryIds != null ? string.Join(",", searchRequest.HotelCountryIds) : string.Empty;
                 //string hotelCityIds = searchRequest.HotelCityIds != null ? string.Join(",", searchRequest.HotelCityIds) : string.Empty;
@@ -1157,7 +1157,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                                                                                        "@exportDate, @accomodationDateFrom, @accomodationDateTo, " +
                                                                                        "@roomPax, @adultPax, @childPax, " +
                                                                                        "@childAge1, @childAge2, @childAge3, @childAge4, @childAge5, " +
-                                                                                       "@hotelCodes, @pageNumber, @pageSize",
+                                                                                       "@lateCheckout, @hotelCodes, @pageNumber, @pageSize",
 
                                                                                        new SqlParameter("exportDate", exportDate ?? (object)DBNull.Value),
                                                                                        new SqlParameter("accomodationDateFrom", accomodationDateFrom),
@@ -1170,6 +1170,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                                                                                        new SqlParameter("childAge3", childAge3 ?? (object)DBNull.Value),
                                                                                        new SqlParameter("childAge4", childAge4 ?? (object)DBNull.Value),
                                                                                        new SqlParameter("childAge5", childAge5 ?? (object)DBNull.Value),
+                                                                                       new SqlParameter("lateCheckout", lateCheckout),
                                                                                        new SqlParameter("hotelCodes", hotelCodes),
                                                                                        new SqlParameter("pageNumber", pageNumber),
                                                                                        new SqlParameter("pageSize", pageSize))
