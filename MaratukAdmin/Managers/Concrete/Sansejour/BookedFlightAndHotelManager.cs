@@ -72,9 +72,12 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
                 var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
                 string agentName = string.Empty;
+                string agentNameHotel = string.Empty;
                 string companyName = string.Empty;
                 string agentPhone = string.Empty;
+                string agentPhoneHotel = string.Empty;
                 string agentEmail = string.Empty;
+                string agentEmailHotel = string.Empty;
                 List<string> listOfArrivals = new List<string>();
                 List<string> listOfGuests = new List<string>();
                 string Fligthname1 = string.Empty;
@@ -83,21 +86,25 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 string FligthNumber2 = string.Empty;
                 string TotalCurrency = string.Empty;
                 string totalPay = string.Empty;
+                string totalPayHotel = string.Empty;
                 double totalPayFlight = 0;
                 string maratukAgentEmail = string.Empty;
+                string maratukAgentEmailHotel = string.Empty;
                 //List<BookedHotelGuest> bookedHotelGuests = new();
                 int guestsCount = 0;
 
-                DateTime tourStartDate = DateTime.MinValue;
-                DateTime? tourEndDate = null;
+                //DateTime tourStartDate = DateTime.MinValue;
+                //DateTime? tourEndDate = null;
                 int countryId = 0;
                 string? hotelName = string.Empty;
                 string? hotelCountry = string.Empty;
                 string? hotelCity = string.Empty;
+                DateTime accomodationDateBegin = DateTime.MinValue;
+                DateTime accomodationDateEnd = DateTime.MinValue;
+                string strLateCheckout = "No";
                 int accomodationDaysCount = 1;
                 int hotelAgentId = 0;
                 int maratukHotelAgentId = 0;
-
 
                 // *** Flight part
                 int countFligth = await _bookedFlightRepository.GetBookedFlightCountAsync();
@@ -163,7 +170,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             booked.PasportExpiryDate = bookedFlight.PasportExpiryDate;
                             booked.GenderId = bookedFlight.GenderId;
                             booked.PassengerTypeId = bookedFlight.PassengerTypeId;
-                            booked.Dept = bookedFlight.TotalPrice;
+                            booked.Dept = bookedFlight.TotalPrice + bookedFlightAndHotel.HotelTotalPrice;
                             booked.HotelId = bookedFlightAndHotel.HotelId;
                             booked.BookStatusForClient = (int)Enums.enumBookStatusForClient.Waiting;
                             booked.BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.Waiting;
@@ -196,12 +203,12 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             {
                                 maratukAgentEmail = maratukAgent.Email;
                             }
+
+                            // Book Flight
                             await _bookedFlightRepository.CreateBookedFlightAsync(booked);
 
                             // Variables to use for Hotel
                             guestsCount++;
-                            tourStartDate = booked.TourStartDate;
-                            tourEndDate = booked.TourEndDate;
                             countryId = booked.CountryId;
                             hotelAgentId = booked.AgentId;
                             maratukHotelAgentId = (int)booked.MaratukHotelAgentId;
@@ -210,8 +217,12 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         }
 
                         // *** Hotel part
-                        accomodationDaysCount = (int)((DateTime)tourEndDate - tourStartDate).TotalDays;
-                        accomodationDaysCount += (bookedFlightAndHotel.LateCheckout) ? 1 : 0;
+                        accomodationDateBegin = bookedFlightAndHotel.AccomodationStartDate;
+                        accomodationDateEnd = (DateTime)bookedFlightAndHotel.AccomodationEndDate;
+                        accomodationDateEnd.AddDays((bookedFlightAndHotel.LateCheckout) ? 1 : 0);
+                        strLateCheckout = (bookedFlightAndHotel.LateCheckout) ? "Yes" : "No";
+
+                        accomodationDaysCount = (int)((DateTime)accomodationDateEnd - accomodationDateBegin).TotalDays;
 
                         BookedHotel bookedHotel = new()
                         {
@@ -232,7 +243,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             AccomodationEndDate = bookedFlightAndHotel.AccomodationEndDate,
                             AccomodationDaysCount = accomodationDaysCount,
                             LateCheckout = bookedFlightAndHotel.LateCheckout,
-                            Dept = bookedFlightAndHotel.Price,
+                            Dept = bookedFlightAndHotel.HotelTotalPrice,
                             Board = bookedFlightAndHotel.Board,
                             BoardDesc = bookedFlightAndHotel.BoardDesc,
                             //HotelAgentId = bookedFlightAndHotel.HotelAgentId,
@@ -243,6 +254,22 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             BookStatusForMaratuk = (int)Enums.enumBookStatusForClient.Waiting
                         };
 
+                        var agentHotel = await _userRepository.GetAgencyUsersByIdAsync(bookedHotel.HotelAgentId);
+
+                        if (agentHotel != null)
+                        {
+                            agentNameHotel = agentHotel.FullName;
+                            agentEmailHotel = agentHotel.Email;
+                            agentPhoneHotel = agentHotel.PhoneNumber1;
+                        }
+
+                        var maratukAgentHotel = await _userRepository.GetUserByIdAsync(bookedHotel.MaratukHotelAgentId);
+                        if (maratukAgentHotel != null)
+                        {
+                            maratukAgentEmailHotel = maratukAgentHotel.Email;
+                        }
+
+                        // Book Hotel
                         await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);
 
                         var hotel = await _hotelRepository.GetHotelByCodeAsync(bookedFlightAndHotel.HotelCode);
@@ -254,31 +281,65 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             hotelCity = hotel.hotelCityNameEng;
                         }
 
-                        totalPay = (totalPayFlight + bookedHotel.HotelTotalPrice).ToString();
+                        //totalPay = (totalPayFlight + bookedHotel.HotelTotalPrice).ToString();
+                        totalPay = totalPayFlight.ToString();
+                        totalPayHotel = bookedHotel.HotelTotalPrice.ToString();
 
 
                         await _transactionRepository.CommitTransAsync();                                            // Commit transaction
-                                                                                                                    //await transaction.CommitAsync();
+                        //await transaction.CommitAsync();
                     }
                 });
                 string listOfArrivalsString = string.Join(", ", listOfArrivals);
+                string listOfGuestsString = string.Join(", ", listOfGuests);
                 string date = DateTime.Now.ToString();
-                string textBody = $@"
+                //string textBody = $@"
+                //                    {orderNumber}
+                //                    Agent: {companyName} 
+                //                    Creator: {agentName}
+                //                    Phone Number: {agentPhone}
+                //                    Email: {agentEmail}
+                //                    Full list of arrivals: {listOfArrivalsString}
+                //                    {Fligthname1} / {FligthNumber1} / 08:15-09:15
+                //                    {Fligthname2} / {FligthNumber2} / 22:15-23:15
+                //                    Hotel: {hotelName}
+                //                    City/Country: {hotelCity} / {hotelCountry}
+                //                    Country: {hotelCountry}
+                //                    Total payable: {totalPay} 
+                //                    Date of sale: {date}";
+                string textBodyFlight = $@"
                                     {orderNumber}
                                     Agent: {companyName} 
                                     Creator: {agentName}
                                     Phone Number: {agentPhone}
                                     Email: {agentEmail}
                                     Full list of arrivals: {listOfArrivalsString}
-                                    {Fligthname1} / {FligthNumber1} / 08:15-09:15
-                                    {Fligthname2} / {FligthNumber2} / 22:15-23:15
-                                    Hotel: {hotelName}
-                                    City/Country: {hotelCity} / {hotelCountry}
-                                    Country: {hotelCountry}
+                                    {Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay}
+                                    {Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay}
                                     Total payable: {totalPay} 
                                     Date of sale: {date}";
 
-                MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBody);
+
+                MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBodyFlight);
+
+                string textBodyHotel = $@"
+                                    {orderNumber}
+                                    Agent: {companyName} 
+                                    Creator: {agentNameHotel}
+                                    Phone Number: {agentPhoneHotel}
+                                    Email: {agentEmailHotel}
+                                    Hotel: {hotelName}
+                                    City/Country: {hotelCity} / {hotelCountry}
+                                    Country: {hotelCountry}
+                                    Accomodation dates: {accomodationDateBegin} / {accomodationDateEnd}
+                                    Late checkout: {strLateCheckout}
+                                    Days count: {accomodationDaysCount}
+                                    List of guests: {listOfGuestsString}
+                                    Total payable: {totalPayHotel} 
+                                    Date of sale: {date}";
+
+
+                MailService.SendEmail(maratukAgentEmailHotel, $"New Request {orderNumber}", textBodyHotel);
             }
             catch (Exception)
             {
