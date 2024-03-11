@@ -168,7 +168,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                 }
                 string listOfArrivalsString = string.Join(", ", listOfArrivals);
-                string date = DateTime.Now.ToString();////TODO
+                string date = DateTime.Now.ToString();////TODO avelacnel fligth orer and correct time + saleDate utf
                 string textBody = $@"
                                     {orderNumber}
                                     Agent: {companyName} 
