@@ -132,14 +132,22 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 string listOfGuestsString = string.Join(", ", listOfGuests);
                 string date = DateTime.Now.ToString();
                 string textBody = $@"
-                                    {orderNumber}
-                                    Agent: {companyName} 
-                                    Creator: {agentName}
-                                    Phone Number: {agentPhone}
-                                    Email: {agentEmail}
-                                    Full list of guests: {listOfGuestsString}
-                                    Total payable: {totalPay} 
-                                    Date of sale: {date}";
+<html>
+<head>
+  <title>Order Details</title>
+</head>
+<body>
+  <p>{orderNumber}</p>
+  <p>Agent: {companyName}</p>
+  <p>Creator: {agentName}</p>
+  <p>Phone Number: {agentPhone}</p>
+  <p>Email: {agentEmail}</p>
+  <p>Full list of guests: {listOfGuestsString}</p>
+  <p>Total payable: {totalPay}</p>
+  <p>Date of sale: {date}</p>
+</body>
+</html>";
+
                 //{Fligthname1} / {FligthNumber1} / 08:15-09:15
                 //{Fligthname2} / {FligthNumber2} / 22:15-23:15
 

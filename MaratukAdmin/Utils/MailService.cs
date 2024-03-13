@@ -16,10 +16,9 @@ namespace MaratukAdmin.Utils
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Your Name", smtpUsername));
             message.To.Add(new MailboxAddress("", recipientEmail)); // You can add a name here as the first parameter
-
             message.Subject = subject;
 
-            message.Body = new TextPart("plain")
+            message.Body = new TextPart("html")
             {
                 Text = body
             };

@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Dto.Request;
+﻿using Azure.Storage.Blobs.Models;
+using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
@@ -9,9 +10,12 @@ using MaratukAdmin.Services;
 using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MaratukAdmin.Managers.Concrete
 {
@@ -82,7 +86,29 @@ namespace MaratukAdmin.Managers.Concrete
             string hash = PasswordHasher.GenerateHashForEmail(email);
             try
             {
-                MailService.SendEmail(email, "Forgot Mail", $"please update new password, http://13.51.156.155/user/updatePassword?email={email}&HashId={hash} ");
+
+                string textBody = $@"
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Password Reset</title>
+</head>
+<body>
+    <p>Hello {user.FullName}!</p>
+    <p>We received a request to update the password for Maratuk email: {user.Email}</p>
+    <p>To reset your password, click the link below:</p>
+    <p><a href='http://13.51.156.155/user/updatePassword?email={email}&HashId={hash}'>Reset Password</a></p>
+    <p>If you have any questions or concerns, please contact us at <a href='mailto:info@maratuktours.com'>info@maratuktours.com</a></p>
+    <p>Thank you,<br>The Maratuk Team</p>
+</body>
+</html>
+";
+
+
+                MailService.SendEmail(user.Email, "[Maratuk] Reset password request", textBody);
+
                 return true;
             }
             catch
@@ -278,16 +304,19 @@ namespace MaratukAdmin.Managers.Concrete
                 await _userRepository.CreateAgencyUserAsync(agencyUser);
 
                 string textBody = $@"
-                                    Hello {agencyUser.FullName}!
+<html>
+<head>
+  <title>Maratuk Account Verification</title>
+</head>
+<body>
+  <p>Hello {agencyUser.FullName}!</p>
+  <p>Thanks for joining Maratuk. To finish registration, please click the button below to verify your account:</p>
+  <p><a href='http://16.171.143.175:3000/user/activate?Id={agencyUser.Id}&HashId={agencyUser.HashId}'>Verify Email Address</a></p>
+  <p>If you have any questions or concerns, please contact us at <a href='mailto:info@maratuktours.com'>info@maratuktours.com</a>.</p>
+  <p>Thank you,<br>The Maratuk Team</p>
+</body>
+</html>";
 
-                                    Thanks for joining Maratuk. To finish registration, please click the button below to verify your account.
-
-                                    <a href='http://16.171.143.175:3000/user/activate?Id={agencyUser.Id}&HashId={agencyUser.HashId}'>Verify Email Address</a>
-
-                                    If you have any questions or concerns, please contact us at Info@maratuktours.com.
-
-                                    Thank you,
-                                    The Maratuk Team";
 
 
 
@@ -454,6 +483,53 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<bool> ApproveUserAgency(int Id, int status)
         {
             var ras = await _userRepository.ApproveUserAgency(Id, status);
+
+            string email = string.Empty;
+
+            email = _userRepository.GetAgencyUsersByIdAsync(Id).Result.Email;
+
+            if(status == 1)
+            {
+                string textBody = $@"<html>
+<head>
+  <title>Application Approval</title>
+</head>
+<body>
+  <p>Dear customer,</p>
+  <p>Your application has been approved.</p>
+  <p>Please login <a href=""http://13.51.156.155/"">here</a>.</p>
+  <p>If you have any questions or concerns, please contact us at <a href=""mailto:info@maratuktours.com"">info@maratuktours.com</a>.</p>
+  <p>Thank you,</p>
+  <p>The Maratuk Team</p>
+</body>
+</html>";
+
+
+                MailService.SendEmail(email, "Your application has been approved.", textBody);
+            }
+            else
+            {
+                string textBody = $@"<html>
+<head>
+  <title>Application Rejection</title>
+</head>
+<body>
+  <p>Dear customer,</p>
+  <p>Your application has been rejected.</p>
+  <p>If you have any questions or concerns, please contact us at <a href=""mailto:info@maratuktours.com"">info@maratuktours.com</a>.</p>
+  <p>Thank you,</p>
+  <p>The Maratuk Team</p>
+</body>
+</html>";
+
+
+                MailService.SendEmail(email, "Subject:Your application has been rejected.", textBody);
+            }
+            
+
+
+
+
             return ras;
         }
 

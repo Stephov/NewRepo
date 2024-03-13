@@ -308,35 +308,49 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 //                    Total payable: {totalPay} 
                 //                    Date of sale: {date}";
                 string textBodyFlight = $@"
-                                    {orderNumber}
-                                    Agent: {companyName} 
-                                    Creator: {agentName}
-                                    Phone Number: {agentPhone}
-                                    Email: {agentEmail}
-                                    Full list of arrivals: {listOfArrivalsString}
-                                    {Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay}
-                                    {Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay}
-                                    Total payable: {totalPay} 
-                                    Date of sale: {date}";
+<html>
+<head>
+  <title>Flight Booking Details</title>
+</head>
+<body>
+  <p>{orderNumber}</p>
+  <p>Agent: {companyName}</p>
+  <p>Creator: {agentName}</p>
+  <p>Phone Number: {agentPhone}</p>
+  <p>Email: {agentEmail}</p>
+  <p>Full list of arrivals: {listOfArrivalsString}</p>
+  <p>{Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay}</p>
+  {(schedule2 != null ? $"<p>{Fligthname2} / {FligthNumber2} / {schedule2.Schedules.First().DepartureTime.TimeOfDay}-{schedule2.Schedules.First().ArrivalTime.TimeOfDay}</p>" : "")}
+  <p>Total payable: {totalPay}</p>
+  <p>Date of sale: {date}</p>
+</body>
+</html>";
+
 
 
                 MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBodyFlight);
 
                 string textBodyHotel = $@"
-                                    {orderNumber}
-                                    Agent: {companyName} 
-                                    Creator: {agentNameHotel}
-                                    Phone Number: {agentPhoneHotel}
-                                    Email: {agentEmailHotel}
-                                    Hotel: {hotelName}
-                                    City/Country: {hotelCity} / {hotelCountry}
-                                    Country: {hotelCountry}
-                                    Accomodation dates: {accomodationDateBegin} / {accomodationDateEnd}
-                                    Late checkout: {strLateCheckout}
-                                    Days count: {accomodationDaysCount}
-                                    List of guests: {listOfGuestsString}
-                                    Total payable: {totalPayHotel} 
-                                    Date of sale: {date}";
+<html>
+<head>
+  <title>Hotel Booking Details</title>
+</head>
+<body>
+  <p>{orderNumber}</p>
+  <p>Agent: {companyName}</p>
+  <p>Creator: {agentNameHotel}</p>
+  <p>Phone Number: {agentPhoneHotel}</p>
+  <p>Email: {agentEmailHotel}</p>
+  <p>Hotel: {hotelName}</p>
+  <p>City/Country: {hotelCity} / {hotelCountry}</p>
+  <p>Accommodation dates: {accomodationDateBegin} / {accomodationDateEnd}</p>
+  <p>Late checkout: {strLateCheckout}</p>
+  <p>Days count: {accomodationDaysCount}</p>
+  <p>List of guests: {listOfGuestsString}</p>
+  <p>Total payable: {totalPayHotel}</p>
+  <p>Date of sale: {date}</p>
+</body>
+</html>";
 
 
                 MailService.SendEmail(maratukAgentEmailHotel, $"New Request {orderNumber}", textBodyHotel);

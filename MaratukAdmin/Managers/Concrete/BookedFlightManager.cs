@@ -78,7 +78,7 @@ namespace MaratukAdmin.Managers.Concrete
                 string TotalCurrency = string.Empty;
                 string totalPay = string.Empty;
                 string maratukAgentEmail = string.Empty;
-
+                
                 int countFligth = await _bookedFlightRepository.GetBookedFlightCountAsync();
 
                 Flight fligthRes = null;
@@ -170,16 +170,26 @@ namespace MaratukAdmin.Managers.Concrete
                 string listOfArrivalsString = string.Join(", ", listOfArrivals);
                 string date = DateTime.Now.ToString();////TODO avelacnel fligth orer and correct time + saleDate utf
                 string textBody = $@"
-                                    {orderNumber}
-                                    Agent: {companyName} 
-                                    Creator: {agentName}
-                                    Phone Number: {agentPhone}
-                                    Email: {agentEmail}
-                                    Full list of arrivals: {listOfArrivalsString}
-                                    {Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay}
-                                    {Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay}
-                                    Total payable: {totalPay} 
-                                    Date of sale: {date}";
+<html>
+<head>
+  <title>Flight Booking Details</title>
+</head>
+<body>
+  <p>{orderNumber}</p>
+  <p>Agent: {companyName}</p>
+  <p>Creator: {agentName}</p>
+  <p>Phone Number: {agentPhone}</p>
+  <p>Email: {agentEmail}</p>
+  <p>Full list of arrivals: {listOfArrivalsString}</p>
+  <p>Departure Date: {addBookedFlight?.First().TourStartDate.ToString("yyyy-MM-dd")}</p>
+  <p>Arrival Time: {addBookedFlight?.First().TourEndDate?.ToString("yyyy-MM-dd")}</p>
+  <p>{Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>
+  {(schedule2 != null ? $"<p>{Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>" : "")}
+  <p>Total payable: {totalPay}</p>
+  <p>Date of sale: {date}</p>
+</body>
+</html>";
+
 
                 MailService.SendEmail(maratukAgentEmail, $"New Request {orderNumber}", textBody);
                 return true;
@@ -1632,10 +1642,18 @@ namespace MaratukAdmin.Managers.Concrete
                                 string date = DateTime.Now.ToString();
 
                                 string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Manager Name: {managerName}
-                                    Status: Manager Approved
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Manager Name: {managerName}</p>
+  <p>Status: Manager Approved</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                                 MailService.SendEmail(clientEmail, $"New incaming Request {orderNumber}", textBody);
 
@@ -1652,11 +1670,19 @@ namespace MaratukAdmin.Managers.Concrete
                             string date = DateTime.Now.ToString();
 
                             string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Manager Name: {managerName}
-                                    Status: Manager Declined
-                                    Comment: {comment}
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Manager Name: {managerName}</p>
+  <p>Status: Manager Declined</p>
+  <p>Comment: {comment}</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                             MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
@@ -1672,10 +1698,18 @@ namespace MaratukAdmin.Managers.Concrete
                             string date = DateTime.Now.ToString();
 
                             string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Status: Accountant Approved
-                                    Comment: {comment}
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Status: Accountant Declined</p>
+  <p>Comment: {comment}</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                             MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
@@ -1691,10 +1725,18 @@ namespace MaratukAdmin.Managers.Concrete
                             string date = DateTime.Now.ToString();
 
                             string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Status: Accountant Declined
-                                    Comment: {comment}
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Status: Accountant Declined</p>
+  <p>Comment: {comment}</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                             MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
@@ -1972,10 +2014,18 @@ namespace MaratukAdmin.Managers.Concrete
                                     string Managerdate = DateTime.Now.ToString();
 
                                     string textBodyManager = $@"
-                                    Order Number: {orderNumber}
-                                    Manager Name: {managerName}
-                                    Status: Manager Approved
-                                    Date: {Managerdate}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Manager Name: {managerName}</p>
+  <p>Status: Manager Approved</p>
+  <p>Date: {Managerdate}</p>
+</body>
+</html>";
+
 
                                     MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBodyManager);
 
@@ -1984,10 +2034,18 @@ namespace MaratukAdmin.Managers.Concrete
                                 string date = DateTime.Now.ToString();
 
                                 string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Manager Name: {managerName}
-                                    Status: Manager Approved
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Manager Name: {managerName}</p>
+  <p>Status: Manager Approved</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                                 MailService.SendEmail(clientEmail, $"New incaming Request {orderNumber}", textBody);
 
@@ -2004,11 +2062,19 @@ namespace MaratukAdmin.Managers.Concrete
                             string date = DateTime.Now.ToString();
 
                             string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Manager Name: {managerName}
-                                    Status: Manager Declined
-                                    Comment: {comment}
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Manager Name: {managerName}</p>
+  <p>Status: Manager Declined</p>
+  <p>Comment: {comment}</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                             MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
@@ -2024,10 +2090,18 @@ namespace MaratukAdmin.Managers.Concrete
                             string date = DateTime.Now.ToString();
 
                             string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Status: Accountant Approved
-                                    Comment: {comment}
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Status: Accountant Declined</p>
+  <p>Comment: {comment}</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                             MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
@@ -2043,10 +2117,18 @@ namespace MaratukAdmin.Managers.Concrete
                             string date = DateTime.Now.ToString();
 
                             string textBody = $@"
-                                    Order Number: {orderNumber}
-                                    Status: Accountant Declined
-                                    Comment: {comment}
-                                    Date: {date}";
+<html>
+<head>
+  <title>Order Status Update</title>
+</head>
+<body>
+  <p>Order Number: {orderNumber}</p>
+  <p>Status: Accountant Declined</p>
+  <p>Comment: {comment}</p>
+  <p>Date: {date}</p>
+</body>
+</html>";
+
 
                             MailService.SendEmail(email, $"New incaming Request {orderNumber}", textBody);
 
