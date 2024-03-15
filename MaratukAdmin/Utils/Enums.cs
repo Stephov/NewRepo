@@ -36,7 +36,9 @@ namespace MaratukAdmin.Utils
             InvoiceSent = 6,
             PartiallyPaid = 7,
             FullyPaid = 8,
-            TicketSent = 9
+            TicketSent = 9,
+            ConfirmedByAccountant = 10,
+            CanceledByAccountant = 11
         }
 
         public enum enumBookStatusForMaratuk
@@ -51,7 +53,9 @@ namespace MaratukAdmin.Utils
             InvoiceSent = 8,
             PaidPartially = 9,
             PaidInFull = 10,
-            TicketSent = 11
+            TicketSent = 11,
+            ConfirmedByAccountant = 12,
+            CanceledByAccountant = 13
         }
 
         public enum enumBookPaymentTypes

@@ -3,6 +3,7 @@
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response.Sansejour;
+using MaratukAdmin.Entities.Sansejour;
 
 namespace MaratukAdmin.Repositories.Abstract.Sansejour
 {
@@ -10,5 +11,9 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
     {
         Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(BookedInfoFlightPartRequest request);
         Task<string> PayForBookedFlightAndHotelAsync(PayForBookedFlightAndHotelRequest payForBookedFlightAndHotel);
+        Task<BookPayment> GetBookPaymentAsync(int? id, string? orderNumber, string? paymentNumber);
+        Task<List<BookPayment>> GetBookPaymentsByOrderNumberAsync(string orderNumber);
+
+        Task UpdateBookPaymentAsync(BookPayment bookPayment);
     }
 }

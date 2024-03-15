@@ -13,6 +13,7 @@ using MaratukAdmin.Repositories.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Utils;
 using Microsoft.EntityFrameworkCore;
+using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
 {
@@ -372,52 +373,159 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             {
                 //var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
                 double paidAMD = 0;
+                double bookPaidAMD = 0;
                 double paidInCurrency = 0;
+                double bookPaidInCurrency = 0;
                 int paymentSign = (payForBookedFlightAndHotel.PaymentType.ToString() == Enums.enumBookPaymentTypes.D.ToString()) ? 1 : (-1);
                 double totalDebt = 0;
+                int paymentStatus = 0;
+                BookPayment existingBookPayment = new();
 
                 var strategy = _transactionRepository.CreateExecutionStrategy();
                 await strategy.ExecuteAsync(async () =>
                 {
                     await _transactionRepository.BeginTransAsync();                                             // Begin transaction
                     {
+
+                        if (!Enum.TryParse(typeof(enumBookPaymentStatuses), payForBookedFlightAndHotel.PaymentStatus, true, out var status))
+                        {
+                            throw new IncorrectDataException("Invalid PaymentStatus value.");
+                        }
+
+                        paymentStatus = (int)status;
+
+                        if (paymentStatus != (int)Enums.enumBookPaymentStatuses.InProcess)
+                        {
+                            // Get BookPayment for given OrderNumber and PaymentNumber
+                            existingBookPayment = await _bookedFlightAndHotelRepository.GetBookPaymentAsync(default, payForBookedFlightAndHotel.OrderNumber, payForBookedFlightAndHotel.PaymentNumber);
+
+                            if (existingBookPayment != null)
+                            {
+                                // Define paid values
+                                //bookPaidAMD = existingBookPayment.SumAMD;
+                                //bookPaidInCurrency = existingBookPayment.SumInCurrency;
+                                bookPaidAMD = (double)payForBookedFlightAndHotel.PaidAMD;
+                                bookPaidInCurrency = (double)payForBookedFlightAndHotel.PaidInCurrency;
+
+                                if (paymentStatus == (int)Enums.enumBookPaymentStatuses.Approved)
+                                {
+                                    existingBookPayment.PaidAMD += bookPaidAMD;
+                                    existingBookPayment.PaidInCurrency += bookPaidInCurrency;
+                                }
+                                // We don't need to update Sums in case of DECLINE or CANCEL the payment
+                                //else if (paymentStatus == (int)Enums.enumBookPaymentStatuses.Declined || paymentStatus == (int)Enums.enumBookPaymentStatuses.Cancelled)
+                                //{
+                                //    existingBookPayment.PaidAMD -= bookPaidAMD;
+                                //    existingBookPayment.PaidInCurrency -= bookPaidInCurrency;
+                                //}
+
+                                existingBookPayment.PaymentStatus = paymentStatus;
+
+                                if (existingBookPayment.PaidAMD > existingBookPayment.SumAMD || existingBookPayment.PaidInCurrency > existingBookPayment.SumInCurrency)
+                                {
+                                    throw new IncorrectDataException("You cannot pay more than the initial amount.");
+                                }
+                            }
+                            else
+                            {
+                                throw new IncorrectDataException("Payment was not found.");
+                            }
+                        }
+
                         List<BookedFlight> bookedFlights = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(payForBookedFlightAndHotel.OrderNumber);
 
                         if (bookedFlights != null && bookedFlights.Count > 0)
                         {
                             foreach (var flight in bookedFlights)
                             {
-                                paidAMD = payForBookedFlightAndHotel.SumAMD * paymentSign;
-                                paidInCurrency = payForBookedFlightAndHotel.SumInCurrency * paymentSign;
+                                //paidAMD = (payForBookedFlightAndHotel.SumAMD == null) ? 0 : (double)payForBookedFlightAndHotel.SumAMD * paymentSign;
+                                //paidInCurrency = (payForBookedFlightAndHotel.SumInCurrency == null) ? 0 : (double)payForBookedFlightAndHotel.SumInCurrency * paymentSign;
+                                paidAMD = bookPaidAMD * paymentSign;
+                                paidInCurrency = bookPaidInCurrency * paymentSign;
                                 flight.Paid += paidInCurrency;
 
-                                totalDebt = (double)(flight.Dept - paidInCurrency);
-                                if (flight.TotalPrice < totalDebt)
+                                if (paymentStatus != (int)Enums.enumBookPaymentStatuses.InProcess)
                                 {
-                                    throw new IncorrectDataException("In result of this operation the Debt will exceed the Total price.");
+
+                                    if (paymentStatus == (int)Enums.enumBookPaymentStatuses.Approved)
+                                    {
+                                        totalDebt = (double)(flight.Dept - paidInCurrency);
+                                    }
+
+                                    if (flight.TotalPrice < totalDebt)
+                                    {
+                                        throw new IncorrectDataException("In result of this operation the Debt will exceed the Total price.");
+                                    }
+                                    if (totalDebt < 0)
+                                    {
+                                        throw new IncorrectDataException("In result of this operation payment(s) will exceed the Total price.");
+                                    }
+                                    else if (totalDebt == 0)
+                                    {
+                                        flight.BookStatusForClient = (int)Enums.enumBookStatusForClient.FullyPaid;
+                                        flight.BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.PaidInFull;
+                                    }
+                                    else if (totalDebt > 0)
+                                    {
+                                        if (paymentStatus == (int)Enums.enumBookPaymentStatuses.Approved)
+                                        {
+                                            flight.BookStatusForClient = (int)Enums.enumBookStatusForClient.PartiallyPaid;
+                                            flight.BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.PaidPartially;
+                                        }
+                                        else if (paymentStatus == (int)Enums.enumBookPaymentStatuses.Cancelled
+                                                || paymentStatus == (int)Enums.enumBookPaymentStatuses.Declined)
+                                        {
+                                            if (flight.TotalPrice == (double)(flight.Dept))                                         // If no payment was made
+                                            {
+                                                flight.BookStatusForClient = (int)Enums.enumBookStatusForClient.ConfirmedByAccountant;
+                                                flight.BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.ConfirmedByAccountant;
+                                            }
+                                            else
+                                            {
+                                                flight.BookStatusForClient = (int)Enums.enumBookStatusForClient.InvoiceSent;
+                                                flight.BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.InvoiceSent;
+                                            }
+                                        }
+                                    }
                                 }
+                                // InProcess
+                                else
+                                {
+                                    flight.BookStatusForClient = (int)Enums.enumBookStatusForClient.InvoiceSent;
+                                    flight.BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.InvoiceSent;
+
+                                    totalDebt = (double)(flight.Dept);
+                                }
+
                                 flight.Dept = totalDebt;
                             }
 
-                            // Update debt in BookedFlights table
-                            await _bookedFlightRepository.UpdateBookedFlightsAsync(bookedFlights);
-
-                            // Add Payment
-                            BookPayment payment = new()
+                            if (paymentStatus == (int)Enums.enumBookPaymentStatuses.Approved)
                             {
-                                OrderNumber = payForBookedFlightAndHotel.OrderNumber,
-                                PaymentNumber = payForBookedFlightAndHotel.PaymentNumber,
-                                SumAMD = payForBookedFlightAndHotel.SumAMD,
-                                Currency = payForBookedFlightAndHotel.Currency,
-                                SumInCurrency = payForBookedFlightAndHotel.SumInCurrency,
-                                PaymentType = payForBookedFlightAndHotel.PaymentType.ToString(),
-                                PaymentStatus = payForBookedFlightAndHotel.PaymentStatus,
-                                PayerId = payForBookedFlightAndHotel.PayerId,
-                                PaymentDate = DateTime.Now
-                            };
-                            await _hotelRepository.AddBookPaymentAsync(payment);
-                        }
+                                // Update debt in BookedFlights table
+                                await _bookedFlightRepository.UpdateBookedFlightsAsync(bookedFlights);
 
+                                // Update Status of payment in BookPayments table
+                                await _bookedFlightAndHotelRepository.UpdateBookPaymentAsync(existingBookPayment);
+                            }
+                            else
+                            {
+                                // Add Payment
+                                BookPayment newBookPayment = new()
+                                {
+                                    OrderNumber = payForBookedFlightAndHotel.OrderNumber,
+                                    PaymentNumber = payForBookedFlightAndHotel.PaymentNumber,
+                                    SumAMD = (double)payForBookedFlightAndHotel.SumAMD,
+                                    Currency = payForBookedFlightAndHotel.Currency,
+                                    SumInCurrency = (double)payForBookedFlightAndHotel.SumInCurrency,
+                                    PaymentType = payForBookedFlightAndHotel.PaymentType.ToString(),
+                                    PaymentStatus = paymentStatus,
+                                    PayerId = (int)payForBookedFlightAndHotel.PayerId,
+                                    PaymentDate = DateTime.Now
+                                };
+                                await _hotelRepository.AddBookPaymentAsync(newBookPayment);
+                            }
+                        }
                         await _transactionRepository.CommitTransAsync();                                            // Commit transaction
                     }
                 });
@@ -434,13 +542,6 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             }
 
             return retValue;
-        }
-
-
-
-        public async Task<List<BookedHotelResponse>> GetBookedFlightsAsync(int Itn)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(BookedInfoFlightPartRequest request)
@@ -500,6 +601,16 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             //throw new NotImplementedException();
             return await Task.FromResult(retValue);
 
+        }
+
+        public async Task<BookPayment> GetBookPaymentAsync(int? id, string? orderNumber, string? paymentNumber)
+        {
+            return await _bookedFlightAndHotelRepository.GetBookPaymentAsync(id, orderNumber, paymentNumber);
+        }
+
+        public async Task<List<BookPayment>> GetBookPaymentsByOrderNumberAsync(string orderNumber)
+        {
+            return await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(orderNumber);
         }
     }
 }
