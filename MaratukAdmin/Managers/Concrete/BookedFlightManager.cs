@@ -30,6 +30,7 @@ namespace MaratukAdmin.Managers.Concrete
         private readonly IMainRepository<BookedFlight> _mainRepository;
         private readonly IBookedFlightRepository _bookedFlightRepository;
         private readonly IBookedHotelRepository _bookedHotelRepository;
+        private readonly IBookedFlightAndHotelRepository _bookedFlightAndHotelRepository;
         private readonly IHotelManager _hotelManager;
         private readonly ICountryManager _countryManager;
         private readonly IFlightRepository _flightRepository;
@@ -41,6 +42,7 @@ namespace MaratukAdmin.Managers.Concrete
 
         public BookedFlightManager(IMapper mapper, IBookedFlightRepository bookedFlightRepository,
             IBookedHotelRepository bookedHotelRepository,
+            IBookedFlightAndHotelRepository bookedFlightAndHotelRepository,
             IHotelManager hotelManager,
             ICountryManager countryManager,
             IUserRepository userRepository,
@@ -51,6 +53,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             _bookedFlightRepository = bookedFlightRepository;
             _bookedHotelRepository = bookedHotelRepository;
+            _bookedFlightAndHotelRepository = bookedFlightAndHotelRepository;
             _countryManager = countryManager;
             _userRepository = userRepository;
             _mapper = mapper;
@@ -542,10 +545,13 @@ namespace MaratukAdmin.Managers.Concrete
                 }).ToList();
 
                 var firstFlightInGroup = group.First();
+
+                var completedPayments = await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(firstFlightInGroup.OrderNumber);
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponseForMaratuk
                 {
                     bookedUsers = bookedUsers,
+                    completedPayments = completedPayments,
                     Id = firstFlightInGroup.Id,
                     OrderNumber = firstFlightInGroup.OrderNumber,
                     DateOfOrder = firstFlightInGroup.DateOfOrder,
@@ -976,11 +982,15 @@ namespace MaratukAdmin.Managers.Concrete
                     PassengerTypeId = flight.PassengerTypeId
                 }).ToList();
 
+
                 var firstFlightInGroup = group.First();
+
+                var completedPayments = await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(firstFlightInGroup.OrderNumber);
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponseForMaratuk
                 {
                     bookedUsers = bookedUsers,
+                    completedPayments = completedPayments,
                     Id = firstFlightInGroup.Id,
                     OrderNumber = firstFlightInGroup.OrderNumber,
                     DateOfOrder = firstFlightInGroup.DateOfOrder,
@@ -2222,9 +2232,12 @@ namespace MaratukAdmin.Managers.Concrete
 
                     var firstFlightInGroup = group.First();
 
+                    var completedPayments = await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(firstFlightInGroup.OrderNumber);
+
                     var bookedFlightResponse = new BookedFlightResponseForMaratuk
                     {
                         bookedUsers = bookedUsers,
+                        completedPayments = completedPayments,
                         Id = firstFlightInGroup.Id,
                         OrderNumber = firstFlightInGroup.OrderNumber,
                         DateOfOrder = firstFlightInGroup.DateOfOrder,
@@ -2373,9 +2386,12 @@ namespace MaratukAdmin.Managers.Concrete
 
                         var firstFlightInGroup = group.First();
 
+                        var completedPayments = await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(firstFlightInGroup.OrderNumber);
+
                         var bookedFlightResponse = new BookedFlightResponseForMaratuk
                         {
                             bookedUsers = bookedUsers,
+                            completedPayments = completedPayments,
                             Id = firstFlightInGroup.Id,
                             OrderNumber = firstFlightInGroup.OrderNumber,
                             DateOfOrder = firstFlightInGroup.DateOfOrder,
@@ -2705,9 +2721,12 @@ namespace MaratukAdmin.Managers.Concrete
 
                     var firstFlightInGroup = group.First();
 
+                    var completedPayments = await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(firstFlightInGroup.OrderNumber);
+
                     var bookedFlightResponse = new BookedFlightResponseForMaratuk
                     {
                         bookedUsers = bookedUsers,
+                        completedPayments = completedPayments,
                         Id = firstFlightInGroup.Id,
                         OrderNumber = firstFlightInGroup.OrderNumber,
                         DateOfOrder = firstFlightInGroup.DateOfOrder,
@@ -2857,9 +2876,12 @@ namespace MaratukAdmin.Managers.Concrete
 
                         var firstFlightInGroup = group.First();
 
+                        var completedPayments = await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(firstFlightInGroup.OrderNumber);
+
                         var bookedFlightResponse = new BookedFlightResponseForMaratuk
                         {
                             bookedUsers = bookedUsers,
+                            completedPayments = completedPayments,
                             Id = firstFlightInGroup.Id,
                             OrderNumber = firstFlightInGroup.OrderNumber,
                             DateOfOrder = firstFlightInGroup.DateOfOrder,

@@ -1,4 +1,6 @@
-﻿namespace MaratukAdmin.Dto.Response
+﻿using MaratukAdmin.Entities.Sansejour;
+
+namespace MaratukAdmin.Dto.Response
 {
     public class BookedFlightResponse
     { 
@@ -45,6 +47,7 @@
     public class BookedFlightResponseForMaratuk
     {
         public List<BookedUserInfoForMaratuk> bookedUsers { get; set; }
+        public List<BookPayment> completedPayments { get; set; }
         public int Id { get; set; }
         public string OrderNumber { get; set; }
         public DateTime DateOfOrder { get; set; }

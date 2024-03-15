@@ -32,7 +32,7 @@ namespace MaratukAdmin.Controllers.admin
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         //public async Task<ActionResult> BookFlight([FromBody] List<AddBookedFlight> addBookedFlight ) //, AddBookHotelRequest addBookHotelRequest)
-        public async Task<ActionResult> BookFlight([FromBody] BookedFlightAndHotel bookedFlightAndHotel) //, AddBookHotelRequest addBookHotelRequest)
+        public async Task<ActionResult> BookFlightAndHotel([FromBody] BookedFlightAndHotel bookedFlightAndHotel) //, AddBookHotelRequest addBookHotelRequest)
         {
             try
             {
@@ -69,13 +69,13 @@ namespace MaratukAdmin.Controllers.admin
             { return BadRequest("Something went wrong"); }
         }
 
-        [HttpGet("GetBookedFlight/{Itn:int}")]
-        [AllowAnonymous]
-        public async Task<List<BookedHotelResponse>> GetAllBookedFlightsAndHotelsAsync(int Itn)
-        {
-            var res = await _bookedFlightAndHotelManager.GetBookedFlightsAsync(Itn);
-            return res;
-        }
+        //[HttpGet("GetBookedFlight/{Itn:int}")]
+        //[AllowAnonymous]
+        //public async Task<List<BookedHotelResponse>> GetAllBookedFlightsAndHotelsAsync(int Itn)
+        //{
+        //    var res = await _bookedFlightAndHotelManager.GetBookedFlightsAsync(Itn);
+        //    return res;
+        //}
 
         [HttpGet("GetBookedInfoFlighPart")]
         [AllowAnonymous]
