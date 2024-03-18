@@ -10,8 +10,8 @@ namespace MaratukAdmin.Utils
             // Replace these with your actual SMTP server details
             string smtpHost = "smtp.gmail.com";
             int smtpPort = 587; // Or the appropriate port for your SMTP server
-            string smtpUsername = "sevakhayriyan07@gmail.com";
-            string smtpPassword = "cnjpmeslxdgjfmza";
+            string smtpUsername = "reservationsmaratuk@gmail.com";
+            string smtpPassword = "dvzymjyowqdluvkg";
 
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Your Name", smtpUsername));
