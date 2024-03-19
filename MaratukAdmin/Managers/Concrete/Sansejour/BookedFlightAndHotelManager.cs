@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bogus.DataSets;
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response.Sansejour;
@@ -13,6 +14,8 @@ using MaratukAdmin.Repositories.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Utils;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Numerics;
 using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Managers.Concrete.Sansejour
@@ -185,14 +188,15 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             if (booked.EndFlightId != null)
                             {
                                 var fligth2 = await _flightRepository.GetFlightByIdAsync(booked.EndFlightId);
-                                Fligthname2 = fligth.Name;
-                                FligthNumber2 = fligth.FlightValue;
+                                Fligthname2 = fligth2.Name;
+                                FligthNumber2 = fligth2.FlightValue;
                             }
 
                             var agent = await _userRepository.GetAgencyUsersByIdAsync(booked.AgentId);
 
                             if (agent != null)
                             {
+                                companyName = agent.FullCompanyName;
                                 agentName = agent.FullName;
                                 agentEmail = agent.Email;
                                 agentPhone = agent.PhoneNumber1;
@@ -293,7 +297,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 });
                 string listOfArrivalsString = string.Join(", ", listOfArrivals);
                 string listOfGuestsString = string.Join(", ", listOfGuests);
-                string date = DateTime.Now.ToString();
+                string date = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
                 //string textBody = $@"
                 //                    {orderNumber}
                 //                    Agent: {companyName} 
@@ -320,12 +324,15 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
   <p>Phone Number: {agentPhone}</p>
   <p>Email: {agentEmail}</p>
   <p>Full list of arrivals: {listOfArrivalsString}</p>
-  <p>{Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay}</p>
-  {(schedule2 != null ? $"<p>{Fligthname2} / {FligthNumber2} / {schedule2.Schedules.First().DepartureTime.TimeOfDay}-{schedule2.Schedules.First().ArrivalTime.TimeOfDay}</p>" : "")}
+  <p>Departure Date: {addBookedFlight?.First().TourStartDate.ToString("yyyy-MM-dd")}</p>
+  <p>Arrival Time: {addBookedFlight?.First().TourEndDate?.ToString("yyyy-MM-dd")}</p>
+  <p>{Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString("hh\\:mm")}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay.ToString("hh\\:mm")}</p>
+  {(schedule2 != null ? $"<p>{Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay.ToString("hh\\:mm")}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay.ToString("hh\\:mm")}</p>" : "")}
   <p>Total payable: {totalPay}</p>
   <p>Date of sale: {date}</p>
 </body>
 </html>";
+
 
 
 
@@ -342,17 +349,28 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
   <p>Creator: {agentNameHotel}</p>
   <p>Phone Number: {agentPhoneHotel}</p>
   <p>Email: {agentEmailHotel}</p>
+  <p>Departure Date: {addBookedFlight?.First().TourStartDate.ToString("dd.MM.yyyy")}</p>
+  <p>Arrival Time: {addBookedFlight?.First().TourEndDate?.ToString("dd.MM.yyyy")}</p>
+  <p>{Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString("hh\\:mm")}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay.ToString("hh\\:mm")}</p>
+  {(schedule2 != null ? $"<p>{Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay.ToString("hh\\:mm")}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay.ToString("hh\\:mm")}</p>" : "")}
   <p>Hotel: {hotelName}</p>
+  <p>Room type: {bookedFlightAndHotel.RoomType}</p>
+  <p>Room code: {bookedFlightAndHotel.Room}</p>
   <p>City/Country: {hotelCity} / {hotelCountry}</p>
-  <p>Accommodation dates: {accomodationDateBegin} / {accomodationDateEnd}</p>
+  <p>Accommodation dates: {accomodationDateBegin.ToString("dd.MM.yyyy")} / {accomodationDateEnd.ToString("dd.MM.yyyy")}</p>
   <p>Late checkout: {strLateCheckout}</p>
   <p>Days count: {accomodationDaysCount}</p>
   <p>List of guests: {listOfGuestsString}</p>
-  <p>Total payable: {totalPayHotel}</p>
+  <p>Total payable: {totalPay}</p>
   <p>Date of sale: {date}</p>
 </body>
 </html>";
 
+
+/*
+<p>Room type: {(string)bookedFlightAndHotel.RoomType}</p>
+<p>Room code: {(string)bookedFlightAndHotel.Room}</p>
+*/
 
                 MailService.SendEmail(maratukAgentEmailHotel, $"New Request {orderNumber}", textBodyHotel);
             }
