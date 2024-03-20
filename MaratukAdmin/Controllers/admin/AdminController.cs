@@ -369,9 +369,9 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("SearchFligthByTripType")]
-        public async Task<ActionResult> FligthCountryInfo(int TripTypeId)
+        public async Task<ActionResult> FligthCountryInfo(int TripTypeId,bool isOnlyFligth = true)
         {
-            var result = await _priceBlockManager.GetSearchInfoAsync(TripTypeId);
+            var result = await _priceBlockManager.GetSearchInfoAsync(TripTypeId, isOnlyFligth);
 
             return Ok(result);
         }

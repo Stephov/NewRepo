@@ -56,12 +56,12 @@ namespace MaratukAdmin.Repositories.Concrete
             return null;
         }
 
-        public async Task<List<FlightInfoFunction>> GetFligthInfoFunctionAsync(int TripTypeId)
+        public async Task<List<FlightInfoFunction>> GetFligthInfoFunctionAsync(int TripTypeId,bool isOnlyFligth)
         {
             try
             {
                 var results = await _context.FlightInfoResults
-           .FromSqlRaw("EXEC GetFlightInfoByTripType @p0", TripTypeId)
+           .FromSqlRaw("EXEC GetFlightInfoByTripType @p0, @p1", TripTypeId, isOnlyFligth)
            .ToListAsync();
                 return results;
 

@@ -329,9 +329,9 @@ namespace MaratukAdmin.Managers.Concrete
             return await _priceBlockRepository.GetServicesPricingPolicyByPriceBlockServicesIdAsync(id);
         }
 
-        public async Task<List<GroupedFlight>> GetSearchInfoAsync(int TripTypeId)
+        public async Task<List<GroupedFlight>> GetSearchInfoAsync(int TripTypeId,bool isOnlyFligth)
         {
-            var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId);
+            var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId, isOnlyFligth);
             int identity = 0;
 
 
