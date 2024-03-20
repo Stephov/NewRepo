@@ -362,10 +362,10 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
   <p>Days count: {accomodationDaysCount}</p>
   <p>List of guests: {listOfGuestsString}</p>
   <p>Total payable: {totalPay}</p>
-  <p>Date of sale: {date}</p>
 </body>
 </html>";
-
+/*    <p>Date of sale: {date}</p> 
+*/
 
 /*
 <p>Room type: {(string)bookedFlightAndHotel.RoomType}</p>
