@@ -24,6 +24,7 @@ namespace MaratukAdmin.Dto.Response
         public string BookStatusForClientName { get; set; }
         public string AgentName { get; set; }
 
+        public string AgentCompanyName { get; set; }
         public double TotalPriceAmd { get; set; }
         public int PassengerTypeId { get; set; }
 
@@ -40,8 +41,17 @@ namespace MaratukAdmin.Dto.Response
         public string? CountryName { get; set; }
         public double? Dept { get; set; }
         public int StartFlightId { get; set; }
+        public string StartFlightNumber { get; set; }
+        public string StartFligthName { get; set; }
+        public string StartFligtDuration { get; set; }
+        public string StartDepartureArrivalTime { get; set; }
         public int? EndFlightId { get; set; }
+        public string EndFlightNumber { get; set; }
+        public string EndFligthName { get; set; }
+        public string EndFligtDuration { get; set; }
         public string? Comments { get; set; } = string.Empty;
+
+
     }
 
     public class BookedFlightResponseForMaratuk
@@ -65,7 +75,7 @@ namespace MaratukAdmin.Dto.Response
         public int BookStatusForClient { get; set; }
         public string BookStatusForClientName { get; set; }
         public string AgentName { get; set; }
-
+        public string AgentCompanyName { get; set; }
         public double TotalPriceAmd { get; set; }
         public int PassengersCount { get; set; }
         public int PassengerTypeId { get; set; }
@@ -82,7 +92,14 @@ namespace MaratukAdmin.Dto.Response
         public string? CountryName { get; set; }
         public double? Dept { get; set; }
         public int StartFlightId { get; set; }
+        public string StartFlightNumber { get; set; }
+        public string StartFligthName { get; set; }
+        public string StartFligtDuration { get; set; }
+        public string StartDepartureArrivalTime { get; set; }
         public int? EndFlightId { get; set; }
+        public string EndFlightNumber { get; set; }
+        public string EndFligthName { get; set; }
+        public string EndFligtDuration { get; set; }
         public string? Comments { get; set; } = string.Empty;
     }
     public class BookedFlightResponseFinal
@@ -92,6 +109,7 @@ namespace MaratukAdmin.Dto.Response
 
         public List<BookedFlightResponse> bookedFlightResponses { get; set; }
     }
+
 
     public class BookedFlightResponseFinalForMaratukAgent
     {
