@@ -6,6 +6,7 @@ using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Managers.Abstract;
+using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
@@ -51,6 +52,7 @@ namespace MaratukAdmin.Managers.Concrete
             IFlightRepository flightRepository, IMainRepository<BookedFlight> mainRepository)
         {
 
+
             _bookedFlightRepository = bookedFlightRepository;
             _bookedHotelRepository = bookedHotelRepository;
             _bookedFlightAndHotelRepository = bookedFlightAndHotelRepository;
@@ -70,14 +72,18 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
                 string agentName = string.Empty;
+                string agentcompanyName = string.Empty;
                 string companyName = string.Empty;
                 string agentPhone = string.Empty;
                 string agentEmail = string.Empty;
                 List<string> listOfArrivals = new List<string>();
-                string Fligthname1 = string.Empty;
-                string FligthNumber1 = string.Empty;
-                string Fligthname2 = string.Empty;
-                string FligthNumber2 = string.Empty;
+                string StartFligthName = string.Empty;
+                string StartFlightNumber = string.Empty;
+                string StartFlightDuration = string.Empty;
+                string StartDepartureArrivalTime = string.Empty;
+                string EndFligthName = string.Empty;
+                string EndFlightNumber = string.Empty;
+                string EndFlightDuration = string.Empty;
                 string TotalCurrency = string.Empty;
                 string totalPay = string.Empty;
                 string maratukAgentEmail = string.Empty;
@@ -98,6 +104,7 @@ namespace MaratukAdmin.Managers.Concrete
                 string AirCode = _airportManager.GetAirportNameByIdAsync(fligthRes.DepartureAirportId).Result.Code;
 
                 var schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(addBookedFlight.First().StartFlightId);
+                
 
                 Flight schedule2 = null;
 
@@ -141,15 +148,17 @@ namespace MaratukAdmin.Managers.Concrete
                     booked.BookStatusForMaratuk = (int)Enums.enumBookStatusForClient.Waiting;
 
                     var fligth = await _flightRepository.GetFlightByIdAsync(booked.StartFlightId);
-                    Fligthname1 = fligth.Name;
-                    FligthNumber1 = fligth.FlightValue;
+                    StartFligthName = fligth.Name;
+                    StartFlightNumber = fligth.FlightValue;
+                   // StartFlightDuration = (fligth.DurationHours + ":" + fligth.DurationMinutes);
                     totalPay = booked.TotalPrice.ToString();
 
                     if (booked.EndFlightId != null)
                     {
                         var fligth2 = await _flightRepository.GetFlightByIdAsync(booked.EndFlightId);
-                        Fligthname2 = fligth.Name;
-                        FligthNumber2 = fligth.FlightValue;
+                        EndFligthName = fligth.Name;
+                        EndFlightNumber = fligth.FlightValue;
+
                     }
 
                     var agent = await _userRepository.GetAgencyUsersByIdAsync(booked.AgentId);
@@ -157,6 +166,7 @@ namespace MaratukAdmin.Managers.Concrete
                     if (agent != null)
                     {
                         agentName = agent.FullName;
+                        agentcompanyName = agent.AgencyName;
                         agentEmail = agent.Email;
                         agentPhone = agent.PhoneNumber1;
                     }
@@ -179,15 +189,15 @@ namespace MaratukAdmin.Managers.Concrete
 </head>
 <body>
   <p>{orderNumber}</p>
-  <p>Agent: {companyName}</p>
+  <p>Agent: {agentcompanyName}</p>
   <p>Creator: {agentName}</p>
   <p>Phone Number: {agentPhone}</p>
   <p>Email: {agentEmail}</p>
   <p>Full list of arrivals: {listOfArrivalsString}</p>
   <p>Departure Date: {addBookedFlight?.First().TourStartDate.ToString("yyyy-MM-dd")}</p>
   <p>Arrival Time: {addBookedFlight?.First().TourEndDate?.ToString("yyyy-MM-dd")}</p>
-  <p>{Fligthname1} / {FligthNumber1} / {schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>
-  {(schedule2 != null ? $"<p>{Fligthname2} / {FligthNumber2} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>" : "")}
+  <p>{StartFligthName} / {StartFlightNumber} / {schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>
+  {(schedule2 != null ? $"<p>{EndFligthName} / {EndFlightNumber} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>" : "")}
   <p>Total payable: {totalPay}</p>
   <p>Date of sale: {date}</p>
 </body>
@@ -258,6 +268,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }).ToList();
 
                 var firstFlightInGroup = group.First();
+
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponse
                 {
@@ -273,6 +284,7 @@ namespace MaratukAdmin.Managers.Concrete
                     AgentId = firstFlightInGroup.AgentId,//add agentName
                     BookStatusForClient = firstFlightInGroup.BookStatusForClient,
                     AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                    AgentCompanyName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.AgencyName,
                     TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
@@ -287,8 +299,16 @@ namespace MaratukAdmin.Managers.Concrete
                     PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
+                    StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                    StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                    StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
+                 //   StartDepartureArrivalTime = _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId).Result..DepartureTime.TimeOfDay.ToString("HH:mm"),// + "-" + _flightRepository.GetFlightSchedulesByIdAsync(addBookedFlight.First().StartFlightId).Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm"),
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                    EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                    EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
                     Comments = firstFlightInGroup.Comment,
+                    
                 };
 
 
@@ -563,6 +583,7 @@ namespace MaratukAdmin.Managers.Concrete
                     AgentId = firstFlightInGroup.AgentId,//add agentName
                     BookStatusForClient = firstFlightInGroup.BookStatusForClient,
                     AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                    AgentCompanyName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.AgencyName,
                     TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
@@ -577,7 +598,13 @@ namespace MaratukAdmin.Managers.Concrete
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
+                    StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                    StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                    StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                    EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                    EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
                     Comments = firstFlightInGroup.Comment,
                 };
 
@@ -1002,6 +1029,7 @@ namespace MaratukAdmin.Managers.Concrete
                     AgentId = firstFlightInGroup.AgentId,//add agentName
                     BookStatusForClient = firstFlightInGroup.BookStatusForClient,
                     AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                    AgentCompanyName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.AgencyName,
                     TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
@@ -1016,7 +1044,13 @@ namespace MaratukAdmin.Managers.Concrete
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
+                    StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                    StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                    StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                    EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                    EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
                     Comments = firstFlightInGroup.Comment
                 };
 
@@ -1325,6 +1359,7 @@ namespace MaratukAdmin.Managers.Concrete
                     Rate = firstFlightInGroup.Rate,
                     AgentId = firstFlightInGroup.AgentId,//add agentName
                     AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                    AgentCompanyName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.AgencyName,
                     TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
@@ -1338,7 +1373,13 @@ namespace MaratukAdmin.Managers.Concrete
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
+                    StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                    StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                    StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
                     EndFlightId = firstFlightInGroup.EndFlightId,
+                    EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                    EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                    EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
                     Comments = firstFlightInGroup.Comment
                 };
 
@@ -2403,6 +2444,7 @@ namespace MaratukAdmin.Managers.Concrete
                             AgentId = firstFlightInGroup.AgentId,//add agentName
                             BookStatusForClient = firstFlightInGroup.BookStatusForClient,
                             AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                            AgentCompanyName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.AgencyName,
                             TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                             PassengersCount = firstFlightInGroup.PassengersCount,
                             TourStartDate = firstFlightInGroup.TourStartDate,
@@ -2417,7 +2459,13 @@ namespace MaratukAdmin.Managers.Concrete
                             PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                             Dept = firstFlightInGroup.Dept,
                             StartFlightId = firstFlightInGroup.StartFlightId,
+                            StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                            StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                            StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
                             EndFlightId = firstFlightInGroup.EndFlightId,
+                            EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                            EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                            EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
                             Comments = firstFlightInGroup.Comment
                         };
                         if (bookedFlightResponse.HotelId != null)
@@ -2738,6 +2786,7 @@ namespace MaratukAdmin.Managers.Concrete
                         AgentId = firstFlightInGroup.AgentId,//add agentName
                         BookStatusForClient = firstFlightInGroup.BookStatusForClient,
                         AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                        AgentCompanyName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.AgencyName,
                         TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                         PassengersCount = firstFlightInGroup.PassengersCount,
                         TourStartDate = firstFlightInGroup.TourStartDate,
@@ -2752,7 +2801,13 @@ namespace MaratukAdmin.Managers.Concrete
                         PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                         Dept = firstFlightInGroup.Dept,
                         StartFlightId = firstFlightInGroup.StartFlightId,
+                        StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                        StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                        StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
                         EndFlightId = firstFlightInGroup.EndFlightId,
+                        EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                        EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                        EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
                         Comments = firstFlightInGroup.Comment
                     };
 
@@ -2893,6 +2948,7 @@ namespace MaratukAdmin.Managers.Concrete
                             AgentId = firstFlightInGroup.AgentId,//add agentName
                             BookStatusForClient = firstFlightInGroup.BookStatusForClient,
                             AgentName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.FullName,
+                            AgentCompanyName = _userRepository.GetAgencyUsersByIdAsync(firstFlightInGroup.AgentId).Result.AgencyName,
                             TotalPriceAmd = firstFlightInGroup.TotalPriceAmd,
                             PassengersCount = firstFlightInGroup.PassengersCount,
                             TourStartDate = firstFlightInGroup.TourStartDate,
@@ -2907,7 +2963,13 @@ namespace MaratukAdmin.Managers.Concrete
                             PassengerTypeId = firstFlightInGroup.PassengerTypeId,
                             Dept = firstFlightInGroup.Dept,
                             StartFlightId = firstFlightInGroup.StartFlightId,
+                            StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                            StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                            StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
                             EndFlightId = firstFlightInGroup.EndFlightId,
+                            EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                            EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                            EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
                             Comments = firstFlightInGroup.Comment
                         };
                         if (bookedFlightResponse.HotelId != null)
