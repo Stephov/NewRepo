@@ -85,14 +85,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
-        [HttpGet("GetHotelsByCountryAndCity/")]
+        [HttpGet("GetHotelsByCountryAndCityId/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetHotelsByCountryAndCity(int? countryId = null, int? cityId = null)
+        public async Task<IActionResult> GetHotelsByCountryAndCityId(bool includeImages = true, int? countryId = null, int? cityId = null)
         {
             try
             {
-                var result = await _hotelManager.GetHotelsByCountryIdAndCityIdAsync(countryId, cityId);
+                var result = await _hotelManager.GetHotelsByCountryIdAndCityIdAsync(includeImages, countryId, cityId);
 
                 return Ok(result);
             }
@@ -100,11 +100,43 @@ namespace MaratukAdmin.Controllers.admin
             {
                 return Forbid(ex.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest("Something went wrong");
             }
         }
+
+
+        [HttpPost("GetHotelsByCountryAndCityList/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetHotelsByCountryIdListAndCityIdList([FromBody] GetHotelsByCountryAndCityListRequest request)
+        {
+            try
+            {
+                var result = await _hotelManager.GetHotelsByCountryIdListAndCityIdListAsync(request);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
+
+        //[HttpGet("GetHotelByCountryAndCityName/")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<ActionResult> GetHotelByCountryAndCityName(List<string> countryNames, List<string> cityNames)
+        //{
+        //    var result = await _hotelManager.GetHotelsByCountryAndCityNameAsync(countryNames, cityNames);
+
+        //    return Ok(result);
+        //}
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]

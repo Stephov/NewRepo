@@ -1,0 +1,11 @@
+﻿namespace MaratukAdmin.Entities.Sansejour
+{
+    public class BookedFlightAndHotelInvoiceData
+    {
+        public string? InvoiceOption { get; set; }
+        public string? FirstName { get; set;}
+        public string? LastName { get; set;}
+        public string? PassportType { get; set;}
+        public string? PassportNumber { get; set;}
+    }
+}
