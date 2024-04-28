@@ -50,7 +50,7 @@ namespace MaratukAdmin.Dto.Response
         public string EndFligthName { get; set; }
         public string EndFligtDuration { get; set; }
         public string? Comments { get; set; } = string.Empty;
-
+        public BookInvoiceData? InvoiceData { get; set; }
 
     }
 
@@ -101,6 +101,7 @@ namespace MaratukAdmin.Dto.Response
         public string EndFligthName { get; set; }
         public string EndFligtDuration { get; set; }
         public string? Comments { get; set; } = string.Empty;
+        public BookInvoiceData? InvoiceData { get; set; }
     }
     public class BookedFlightResponseFinal
     {
