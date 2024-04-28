@@ -277,6 +277,21 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         // Book Hotel
                         await _bookedHotelRepository.CreateBookedHotelAsync(bookedHotel);
 
+                        // Add InvoiceData
+                        if (bookedFlightAndHotel.BookInvoiceData != null && bookedFlightAndHotel.BookInvoiceData.InvoiceOption != null)
+                        {
+                            BookInvoiceData invoiceData = new()
+                            {
+                                OrderNumber = orderNumber,
+                                FirstName = bookedFlightAndHotel.BookInvoiceData.FirstName,
+                                LastName = bookedFlightAndHotel.BookInvoiceData.LastName,
+                                InvoiceOption = bookedFlightAndHotel.BookInvoiceData.InvoiceOption,
+                                PassportType = bookedFlightAndHotel.BookInvoiceData.PassportType,
+                                PassportNumber = bookedFlightAndHotel.BookInvoiceData.PassportNumber
+                            };
+                            await _bookedHotelRepository.AddBookedHotelInvoiceDataAsync(invoiceData);
+                        }
+
                         var hotel = await _hotelRepository.GetHotelByCodeAsync(bookedFlightAndHotel.HotelCode);
 
                         if (hotel != null && hotel.hotel != null)

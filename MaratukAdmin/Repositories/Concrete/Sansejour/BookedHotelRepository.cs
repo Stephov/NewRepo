@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Dto.Response.Sansejour;
+﻿using MailKit.Search;
+using MaratukAdmin.Dto.Response.Sansejour;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
@@ -34,6 +35,29 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return bookedHotel;
         }
 
+        public async Task<BookInvoiceData> AddBookedHotelInvoiceDataAsync(BookInvoiceData invoiceData)
+        {
+            try
+            {
+                await _dbContext.BookInvoiceData.AddAsync(invoiceData);
+
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return invoiceData;
+        }
+
+        public async Task<BookInvoiceData>? GetBookInvoiceDataAsync(string orderNumber)
+        {
+
+            return await _dbContext.BookInvoiceData
+                        .Where(o => o.OrderNumber == orderNumber)
+                        .FirstOrDefaultAsync();
+        }
         public async Task<List<BookedHotelResponse>> GetAllBookedHotelsAsync(List<AgencyUser> agencyUsers)
         {
             var agentIds = agencyUsers.Select(au => au.Id).ToList();
@@ -58,7 +82,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             //List<int> orderStatusIds = new List<int> { 2, 4, 5 };
 
-                
+
             return await _dbContext.BookedHotel
                 .Where(o => o.OrderNumber == orderID)
                 .FirstOrDefaultAsync();

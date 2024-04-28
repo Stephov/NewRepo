@@ -206,21 +206,34 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         {
             var entity = await _hotelRepository.GetHotelsByCountryIdAndCityIdAsync(countryIds, cityIds);
 
-            if (entity == null)
-            {
-                throw new ApiBaseException(StatusCodes.Status404NotFound);
-            }
+            //if (entity == null)
+            //{
+            //    throw new ApiBaseException(StatusCodes.Status404NotFound);
+            //}
 
             return entity;
         }
-        public async Task<List<HotelResponseModel>?> GetHotelsByCountryIdAndCityIdAsync(int? countryId = null, int? cityId = null)
-        {
-            var entity = await _hotelRepository.GetHotelsByCountryIdAndCityIdAsync(countryId, cityId);
 
-            if (entity == null)
-            {
-                throw new ApiBaseException(StatusCodes.Status404NotFound);
-            }
+        public async Task<List<HotelResponseModel>?> GetHotelsByCountryIdAndCityIdAsync(bool includeImages, int? countryId = null, int? cityId = null)
+        {
+            var entity = await _hotelRepository.GetHotelsByCountryIdAndCityIdAsync(includeImages, countryId, cityId);
+
+            //if (entity == null)
+            //{
+            //    throw new ApiBaseException(StatusCodes.Status404NotFound);
+            //}
+
+            return entity;
+        }
+
+        public async Task<List<HotelResponseModel>?> GetHotelsByCountryIdListAndCityIdListAsync(GetHotelsByCountryAndCityListRequest request)
+        {
+            var entity = await _hotelRepository.GetHotelsByCountryIdListAndCityIdListAsync(request);
+
+            //if (entity == null)
+            //{
+            //    throw new ApiBaseException(StatusCodes.Status404NotFound);
+            //}
 
             return entity;
         }
