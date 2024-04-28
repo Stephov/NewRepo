@@ -128,15 +128,6 @@ namespace MaratukAdmin.Controllers.admin
             }
         }
 
-        //[HttpGet("GetHotelByCountryAndCityName/")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<ActionResult> GetHotelByCountryAndCityName(List<string> countryNames, List<string> cityNames)
-        //{
-        //    var result = await _hotelManager.GetHotelsByCountryAndCityNameAsync(countryNames, cityNames);
-
-        //    return Ok(result);
-        //}
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]

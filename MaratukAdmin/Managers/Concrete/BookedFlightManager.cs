@@ -850,7 +850,9 @@ namespace MaratukAdmin.Managers.Concrete
             BookedFlightResponseFinalForMaratukAgent responseFinal = new BookedFlightResponseFinalForMaratukAgent();
             List<BookedFlight> filtredByStatus = new List<BookedFlight>();
 
-            var listBookedFlightsAll = roleId == 1 ? await _bookedFlightRepository.GetBookedFlightByMaratukAgentIdAsync(maratukAgent) : await _bookedFlightRepository.GetBookedFlightForHotelManagerAsync(maratukAgent);
+            var listBookedFlightsAll = roleId == 1 
+                ? await _bookedFlightRepository.GetBookedFlightByMaratukAgentIdAsync(maratukAgent) 
+                : await _bookedFlightRepository.GetBookedFlightForHotelManagerAsync(maratukAgent);
 
 
             if (status != null)
@@ -951,9 +953,9 @@ namespace MaratukAdmin.Managers.Concrete
 
 
             var listBookedFlights = groupedBookedFlights
-    .Skip((pageNumber - 1) * pageSize)
-    .Take(pageSize)
-    .ToList();
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
 
 
