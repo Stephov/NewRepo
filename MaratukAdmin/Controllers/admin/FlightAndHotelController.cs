@@ -17,7 +17,7 @@ namespace MaratukAdmin.Controllers.admin
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    //[Authorize(AuthenticationSchemes = "AdminScheme")]
     public class FlightAndHotelController : BaseController
     {
         private readonly IBookedFlightAndHotelManager _bookedFlightAndHotelManager;
