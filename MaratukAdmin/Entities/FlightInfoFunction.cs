@@ -2,6 +2,8 @@
 {
     public class FlightInfoFunction
     {
+        private double _price;
+
         public int FlightId { get; set; }
         public int PriceBlockId { get; set; }
         public string DepartureCountryName { get; set; }
@@ -20,7 +22,12 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string DayOfWeek { get; set; }
-        public double? Price { get; set;}
+        //public double? Price { get; set;}
+        public double? Price
+        {
+            get => _price;
+            set => _price = (value == null) ? 0 : Math.Ceiling((double)value);
+        }
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
     }

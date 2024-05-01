@@ -12,7 +12,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(BookedInfoFlightPartRequest request);
         Task<string> PayForBookedFlightAndHotelAsync(PayForBookedFlightAndHotelRequest payForBookedFlightAndHotel);
         Task<BookPayment> GetBookPaymentAsync(int? id, string? orderNumber, string? paymentNumber);
-        Task<List<BookPayment>> GetBookPaymentsByOrderNumberAsync(string orderNumber);
+        Task<List<BookPayment>> GetBookPaymentsByOrderNumberAndPaymentStatusAsync(string orderNumber, int? paymentStatus = null);
 
         Task UpdateBookPaymentAsync(BookPayment bookPayment);
     }
