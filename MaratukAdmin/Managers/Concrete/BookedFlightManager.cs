@@ -568,6 +568,15 @@ namespace MaratukAdmin.Managers.Concrete
                 var firstFlightInGroup = group.First();
 
                 var completedPayments = await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(firstFlightInGroup.OrderNumber);
+
+                string startFlightNumber = (firstFlightInGroup.StartFlightId ==null) ? "" : _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue;
+                string startFligthName = (firstFlightInGroup.StartFlightId == null) ? "" : _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name;
+                string startFligtDuration = (firstFlightInGroup.StartFlightId == null) ? "" : _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m";
+                int? endFlightId = (firstFlightInGroup.EndFlightId == null) ? 0 : firstFlightInGroup.EndFlightId;
+                string endFlightNumber = (firstFlightInGroup.EndFlightId == null) ? "" : _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue;
+                string endFligthName = (firstFlightInGroup.EndFlightId == null) ? "" : _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name;
+                string endFligtDuration = (firstFlightInGroup.EndFlightId == null) ? "" : _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m";
+
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponseForMaratuk
                 {
@@ -599,13 +608,20 @@ namespace MaratukAdmin.Managers.Concrete
                     CountryName = _countryManager.GetCountryNameByIdAsync(firstFlightInGroup.CountryId).Result.NameENG,
                     Dept = firstFlightInGroup.Dept,
                     StartFlightId = firstFlightInGroup.StartFlightId,
-                    StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
-                    StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
-                    StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
-                    EndFlightId = firstFlightInGroup.EndFlightId,
-                    EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
-                    EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
-                    EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
+                    //StartFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.FlightValue,
+                    //StartFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.Name,
+                    //StartFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.StartFlightId).Result.DurationMinutes + "m",
+                    //EndFlightId = firstFlightInGroup.EndFlightId,
+                    //EndFlightNumber = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.FlightValue,
+                    //EndFligthName = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.Name,
+                    //EndFligtDuration = _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationHours + "h " + _flightRepository.GetFlightByIdAsync(firstFlightInGroup.EndFlightId).Result.DurationMinutes + "m",
+                    StartFlightNumber = startFlightNumber,
+                    StartFligthName = startFligthName,
+                    StartFligtDuration = startFligtDuration,
+                    EndFlightId = endFlightId,
+                    EndFlightNumber = endFlightNumber,
+                    EndFligthName = endFligthName,
+                    EndFligtDuration = endFligtDuration,
                     Comments = firstFlightInGroup.Comment,
                     InvoiceData = _bookedHotelRepository.GetBookInvoiceDataAsync(firstFlightInGroup.OrderNumber).Result
                 };
