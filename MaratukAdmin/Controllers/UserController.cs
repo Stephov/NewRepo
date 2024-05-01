@@ -23,7 +23,7 @@ namespace MaratukAdmin.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    //[Authorize(AuthenticationSchemes = "AdminScheme")]
+    ////[Authorize(AuthenticationSchemes = "AdminScheme")]
     public class UserController : BaseController
     {
         private readonly IUserManager _userManager;
