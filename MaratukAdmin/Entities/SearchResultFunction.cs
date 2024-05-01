@@ -21,6 +21,7 @@
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
         public int CurrencyId { get; set; }
+        public decimal? Comission { get; set; }
 
     }
 
@@ -46,5 +47,6 @@
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
         public int CurrencyId { get; set; }
+        public decimal? Comission { get; set; }
     }
 }
