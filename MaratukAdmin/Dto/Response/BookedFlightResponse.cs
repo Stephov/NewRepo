@@ -51,6 +51,7 @@ namespace MaratukAdmin.Dto.Response
         public string EndFligtDuration { get; set; }
         public string? Comments { get; set; } = string.Empty;
         public BookInvoiceData? InvoiceData { get; set; }
+        public List<BookPayment>? CompletedPayments { get; set; }
 
     }
 

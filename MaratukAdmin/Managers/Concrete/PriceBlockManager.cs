@@ -79,6 +79,7 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockDb.TripTypeId = priceBlockRequest.TripTypeId;
             priceBlockDb.TripDays = priceBlockRequest.TripDays;
             priceBlockDb.OnlyFligth = priceBlockRequest.OnlyFligth;
+            priceBlockDb.Comission = priceBlockRequest.Comission;
 
 
 
@@ -107,11 +108,12 @@ namespace MaratukAdmin.Managers.Concrete
             entity.TripTypeId = price.TripTypeId;
             entity.TripDays = price.TripDays;
             entity.OnlyFligth = price.OnlyFligth;
+            entity.Comission = price.Comission;
 
-            // map the ScheduleRequests to Schedules
+        // map the ScheduleRequests to Schedules
 
 
-            var result = await _mainRepository.UpdateAsync(entity);
+        var result = await _mainRepository.UpdateAsync(entity);
 
             return result;
         }
@@ -157,6 +159,7 @@ namespace MaratukAdmin.Managers.Concrete
                         TripTypeId = (priceBlock.TripTypeId == 1) ? "One Way" : (priceBlock.TripTypeId == 2) ? "Round Trip" : "Manual",
                         TripDays = priceBlock.TripDays,
                         OnlyFligth = priceBlock.OnlyFligth,
+                        Comission = priceBlock.Comission
                     };
                     priceBlockResponses.Add(priceBlockRespons);
                 }
@@ -577,7 +580,7 @@ namespace MaratukAdmin.Managers.Concrete
             {
                 if (resultFunction.AgeFrom == 12)
                 {
-                    totalPrice = totalPrice + (adult * resultFunction.Bruto);
+                    totalPrice += (adult * resultFunction.Bruto);
                 }
                 if (resultFunction.AgeFrom == 2)
                 {

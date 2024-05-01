@@ -7,5 +7,7 @@
         public string? LastName { get; set;}
         public string? PassportType { get; set;}
         public string? PassportNumber { get; set;}
+        public string? Citizenship { get; set; }
+        public string? ResidentialAddress { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
+using MaratukAdmin.Utils;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -26,7 +27,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         public async Task<List<BookedInfoFlightPartResponse>> GetBookedInfoFlighPartAsync(BookedInfoFlightPartRequest request)
         {
 
-        try
+            try
             {
                 var result = await _dbContext.BookedInfoFlightPartResponse.FromSqlRaw("EXEC dbo.GetBookedInfoFlightPart " +
                                                                     "@CountryId, @CityId , @StartDate, @EndDate," +
@@ -55,18 +56,37 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
 
         public async Task<BookPayment> GetBookPaymentAsync(int? id, string? orderNumber, string? paymentNumber)
         {
-            return await _dbContext.BookPayments.Where(c => c.Id == (id ?? c.Id) 
-                                                        && c.OrderNumber == (orderNumber ?? c.OrderNumber) 
+            return await _dbContext.BookPayments.Where(c => c.Id == (id ?? c.Id)
+                                                        && c.OrderNumber == (orderNumber ?? c.OrderNumber)
                                                         && c.PaymentNumber == (paymentNumber ?? c.PaymentNumber)
                                                         ).FirstOrDefaultAsync();
         }
 
-        public async Task<List<BookPayment>> GetBookPaymentsByOrderNumberAsync(string orderNumber)
+
+        public async Task<List<BookPayment>> GetBookPaymentsByOrderNumberAndPaymentStatusAsync(string orderNumber, int? paymentStatus = null)
         {
-            return await _dbContext.BookPayments.Where(c => c.OrderNumber == orderNumber).ToListAsync();
+            //return await _dbContext.BookPayments.Where(c => c.OrderNumber == orderNumber
+            //                                            && c.PaymentStatus != (int)Enums.enumBookPaymentStatuses.Declined
+            //                                            && c.PaymentStatus != (int)Enums.enumBookPaymentStatuses.Cancelled
+            //                                            && c.PaymentStatus == (paymentStatus ?? c.PaymentStatus)
+            //                                            ).ToListAsync();
+
+            IQueryable<BookPayment> query = _dbContext.BookPayments.Where(c => c.OrderNumber == orderNumber);
+
+            if (paymentStatus == null)
+            {
+                query = query.Where(c => c.PaymentStatus != (int)Enums.enumBookPaymentStatuses.Declined
+                                      && c.PaymentStatus != (int)Enums.enumBookPaymentStatuses.Cancelled);
+            }
+            else
+            {
+                query = query.Where(c => c.PaymentStatus == paymentStatus);
+            }
+
+            return await query.ToListAsync();
         }
 
-        public async Task UpdateBookPaymentAsync (BookPayment bookPayment)
+        public async Task UpdateBookPaymentAsync(BookPayment bookPayment)
         {
             _dbContext.BookPayments.Update(bookPayment);
             await _dbContext.SaveChangesAsync();

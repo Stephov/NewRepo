@@ -4,6 +4,11 @@ namespace MaratukAdmin.Dto.Response.Sansejour
 {
     public class RoomSearchResponse //: RoomSearchResponseLowestPrices
     {
+        private double _price;
+        private double _priceTotal;
+
+
+
         public int Id { get; set; }
         public DateTime SyncDate { get; set; }
         public int HotelId { get; set; }
@@ -28,8 +33,18 @@ namespace MaratukAdmin.Dto.Response.Sansejour
         public string? AccmdMenTypeName { get; set; }
         public int? ReleaseDay { get; set; }
         public string? PriceType { get; set; }
-        public double? Price { get; set; }
-        public double? PriceTotal { get; set; }
+        //public double? Price { get; set; }
+        //public double? PriceTotal { get; set; }
+        public double? Price
+        {
+            get => _price;
+            set => _price = (value == null) ? 0 : Math.Ceiling((double)value);
+        }
+        public double? PriceTotal
+        {
+            get => _priceTotal;
+            set => _priceTotal = (value == null) ? 0 : Math.Ceiling((double)value);
+        }
         public int DaysCount { get; set; }
         public string? WeekendPrice { get; set; }
         public double? WeekendPercent { get; set; }

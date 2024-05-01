@@ -52,7 +52,7 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("PriceBlockServices/{id:int}")]
-        public async Task<ActionResult> GetPriceBlockServiceByProceBlockId(int id)
+        public async Task<ActionResult> GetPriceBlockServiceByPriceBlockId(int id)
         {
             var result = await _priceBlockManager.GetServicesByPriceBlockIdAsync(id);
 

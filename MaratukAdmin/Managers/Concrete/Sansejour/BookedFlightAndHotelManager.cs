@@ -643,7 +643,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
         public async Task<List<BookPayment>> GetBookPaymentsByOrderNumberAsync(string orderNumber)
         {
-            return await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAsync(orderNumber);
+            return await _bookedFlightAndHotelRepository.GetBookPaymentsByOrderNumberAndPaymentStatusAsync(orderNumber);
         }
     }
 }
