@@ -112,6 +112,9 @@ namespace MaratukAdmin.Managers.Concrete
                             case (int)Enums.enumBookStatusForMaratuk.TicketSent:
                                 newInfo.TicketSentCount = pData.StatusesCount;
                                 break;
+                            case (int)Enums.enumBookStatusForMaratuk.TicketIsConfirmed:
+                                newInfo.TicketConfirmedCount = pData.StatusesCount;
+                                break;
                         }
                         newInfo.Currency = pData.Currency;
                         newInfo.TotalPrice = totalPriceSum;
