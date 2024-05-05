@@ -41,6 +41,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<IOrderStatusRepository, OrderStatusRepository>()
             .AddScoped<IPricePackageRepository, PricePackageRepository>()
             .AddScoped<IFunctionRepository, FunctionRepository>()
+            .AddScoped<IReportRepository, ReportRepository>()
             .AddScoped(typeof(IMainRepository<>), typeof(MainRepository<>));
         }
     }
