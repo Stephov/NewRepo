@@ -108,7 +108,7 @@ namespace MaratukAdmin.Managers.Concrete
             entity.TripTypeId = price.TripTypeId;
             entity.TripDays = price.TripDays;
             entity.OnlyFligth = price.OnlyFligth;
-            entity.Comission = price.Comission;
+            entity.Comission = (price.Comission / 100);
 
         // map the ScheduleRequests to Schedules
 
@@ -206,6 +206,7 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockEditResponse.TripTypeId = entity.TripTypeId;
             priceBlockEditResponse.TripDays = entity.TripDays;
             priceBlockEditResponse.OnlyFligth = entity.OnlyFligth;
+            priceBlockEditResponse.Comission = entity.Comission;
 
 
             return priceBlockEditResponse;
