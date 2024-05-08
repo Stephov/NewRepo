@@ -902,7 +902,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             int flightChildCount = searchFlightAndRoomRequest.RoomChildCount ?? 0;
             //int flightInfantCount = 0;
             int flightInfantCount = searchFlightAndRoomRequest.FlightInfant;
-            decimal? comission;
+            decimal? commission;
             List<SearchFligtAndRoomLowestPricesResponse> retValue = new();
 
             //// Define child counts and ages for Flight seach
@@ -956,8 +956,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             // Get ROOMS
             var resultRoomSearch = await _contractExportRepository.SearchRoomLowestPricesAsync(searchRoomRequest);
 
-            // Apply comission
-            //resultFlightSearch.ForEach(flight => flight.TotalPrice += flight.TotalPrice * (flight.Comission == null ? 0 : (double)flight.Comission));
+            // Apply commission
+            //resultFlightSearch.ForEach(flight => flight.TotalPrice += flight.TotalPrice * (flight.Commission == null ? 0 : (double)flight.Commission));
             // Round
             //resultFlightSearch.ForEach(flight => flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice));
 
@@ -967,8 +967,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             // Combine results
             foreach (var flight in resultFlightSearch)
             {
-                // Add comission
-                flight.TotalPrice += flight.TotalPrice * (flight.Comission == null ? 0 : (double)flight.Comission);
+                // Add Commission
+                flight.TotalPrice += flight.TotalPrice * (flight.Commission == null ? 0 : (double)flight.Commission);
                 // Round
                 flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice);
                 //flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice);
@@ -976,8 +976,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 {
                     // Round
                     room.Price = Math.Ceiling((double)room.Price);
-                    // Add comission
-                    room.PriceTotal += room.PriceTotal * (flight.Comission == null ? 0 : (double)flight.Comission);
+                    // Add Commission
+                    room.PriceTotal += room.PriceTotal * (flight.Commission == null ? 0 : (double)flight.Commission);
                     // Round
                     room.PriceTotal = Math.Ceiling((double)room.PriceTotal);
 

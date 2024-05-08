@@ -18,7 +18,7 @@ namespace MaratukAdmin.Dto.Request
         public int TripTypeId { get; set; }
         public int TripDays { get; set; }
         public bool OnlyFligth { get; set; }
-        public decimal Comission { get; set; }
+        public decimal Commission { get; set; }
 
     }
 }

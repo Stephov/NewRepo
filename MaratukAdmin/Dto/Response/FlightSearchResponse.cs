@@ -45,6 +45,6 @@
         public string CurrencyName { get; set; }
         public FlightSearchResponse ReturnedFlight { get; set; }
         public bool IsTwoWay { get; set; }
-        public decimal? Comission { get; set; }
+        public decimal? Commission { get; set; }
     }
 }

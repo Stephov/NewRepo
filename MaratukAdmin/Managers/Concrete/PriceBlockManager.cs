@@ -79,7 +79,7 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockDb.TripTypeId = priceBlockRequest.TripTypeId;
             priceBlockDb.TripDays = priceBlockRequest.TripDays;
             priceBlockDb.OnlyFligth = priceBlockRequest.OnlyFligth;
-            priceBlockDb.Comission = priceBlockRequest.Comission;
+            priceBlockDb.Commission = priceBlockRequest.Commission;
 
 
 
@@ -108,7 +108,7 @@ namespace MaratukAdmin.Managers.Concrete
             entity.TripTypeId = price.TripTypeId;
             entity.TripDays = price.TripDays;
             entity.OnlyFligth = price.OnlyFligth;
-            entity.Comission = (price.Comission / 100);
+            entity.Commission = (price.Commission / 100);
 
         // map the ScheduleRequests to Schedules
 
@@ -159,7 +159,7 @@ namespace MaratukAdmin.Managers.Concrete
                         TripTypeId = (priceBlock.TripTypeId == 1) ? "One Way" : (priceBlock.TripTypeId == 2) ? "Round Trip" : "Manual",
                         TripDays = priceBlock.TripDays,
                         OnlyFligth = priceBlock.OnlyFligth,
-                        Comission = priceBlock.Comission
+                        Commission = priceBlock.Commission
                     };
                     priceBlockResponses.Add(priceBlockRespons);
                 }
@@ -206,7 +206,7 @@ namespace MaratukAdmin.Managers.Concrete
             priceBlockEditResponse.TripTypeId = entity.TripTypeId;
             priceBlockEditResponse.TripDays = entity.TripDays;
             priceBlockEditResponse.OnlyFligth = entity.OnlyFligth;
-            priceBlockEditResponse.Comission = entity.Comission;
+            priceBlockEditResponse.Commission = entity.Commission;
 
 
             return priceBlockEditResponse;
@@ -504,7 +504,7 @@ namespace MaratukAdmin.Managers.Concrete
                 CurrencyId = group.First().CurrencyId,
                 IsTwoWay = false,
                 CurrencyName = _currencyManager.GetCurrencyNameByIdAsync(group.First().CurrencyId).Result.Name,
-                Comission = group.First().Comission
+                Commission = group.First().Commission
             }).ToList();
 
                 return groupedFlights;
@@ -535,7 +535,7 @@ namespace MaratukAdmin.Managers.Concrete
                 CurrencyId = group.First().CurrencyId,
                 CurrencyName = _currencyManager.GetCurrencyNameByIdAsync(group.First().CurrencyId).Result.Name,
                 IsTwoWay = true,
-                Comission = group.First().Comission,
+                Commission = group.First().Commission,
                 ReturnedFlight = new FlightSearchResponse()
                 {
                     FlightId = group.FirstOrDefault(res => res.FlightId != group.First().FlightId).FlightId,
