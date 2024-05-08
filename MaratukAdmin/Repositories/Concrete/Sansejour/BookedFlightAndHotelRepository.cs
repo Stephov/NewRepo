@@ -83,7 +83,10 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 query = query.Where(c => c.PaymentStatus == paymentStatus);
             }
 
-            return await query.ToListAsync();
+            var retValue = await query.ToListAsync();
+            
+            //return await query.ToListAsync();
+            return retValue;
         }
 
         public async Task UpdateBookPaymentAsync(BookPayment bookPayment)

@@ -24,7 +24,7 @@ namespace MaratukAdmin.Dto.Response
         public string BookStatusForClientName { get; set; }
         public string AgentName { get; set; }
 
-        public string AgentCompanyName { get; set; }
+        public string? AgentCompanyName { get; set; }
         public double TotalPriceAmd { get; set; }
         public int PassengerTypeId { get; set; }
 

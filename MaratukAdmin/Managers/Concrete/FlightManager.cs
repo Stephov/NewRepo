@@ -190,7 +190,8 @@ namespace MaratukAdmin.Managers.Concrete
             var entity = await _mainRepository.GetAsync(id, "Schedules");
             if (entity == null)
             {
-                throw new ApiBaseException(StatusCodes.Status404NotFound);
+                //throw new ApiBaseException(StatusCodes.Status404NotFound);
+                throw new Exception("Flight was not found");
             }
 
             var flightEditResponse = new FlightEditResponse();
