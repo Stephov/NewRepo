@@ -7,5 +7,6 @@ namespace MaratukAdmin.Repositories.Abstract
         //Task<BookUniqueDepartureDatesByFlights> GetBookUniqueDepartureDates();
         Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates();
         Task<List<FlightReportPreparedData>> GetFlightReportPreparedData();
+        Task<List<ReportTouristInfo>> GetTouristInfoPreparedData();
     }
 }

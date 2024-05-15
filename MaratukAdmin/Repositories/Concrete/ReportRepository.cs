@@ -4,6 +4,7 @@ using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MaratukAdmin.Repositories.Concrete
 {
@@ -79,7 +80,15 @@ namespace MaratukAdmin.Repositories.Concrete
 
             return flightReportDataList;
         }
-        
+
+        public async Task<List<ReportTouristInfo>> GetTouristInfoPreparedData()
+        {
+
+            //List<ReportTouristInfo> touristReportDataList = await query.ToListAsync();
+            List<ReportTouristInfo> touristReportDataList = new();
+
+            return touristReportDataList;
+        }
 
     }
 }
