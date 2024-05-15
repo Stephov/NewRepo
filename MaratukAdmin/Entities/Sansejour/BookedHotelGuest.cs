@@ -4,6 +4,7 @@
     {
         public string OrderNumber { get; set; }
         public int IsAdult { get; set; }
+        public int GuestType { get; set; }
         public int GenderId { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }

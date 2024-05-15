@@ -22,6 +22,7 @@
         public double? TotalPriceMax { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public int? PriceBlockId { get; set; }
 
 
         // IN CASE OF PageNumber AND PageSize are NULL or 0 - their values will be set in SQL procedure

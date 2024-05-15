@@ -35,6 +35,19 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return bookedHotel;
         }
 
+        public async Task AddBookedHotelGuestsAsync(List<BookedHotelGuest> bookedHotelGuests)
+        {
+            try
+            {
+                await _dbContext.BookedHotelGuest.AddRangeAsync(bookedHotelGuests);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<BookInvoiceData> AddBookedHotelInvoiceDataAsync(BookInvoiceData invoiceData)
         {
             try

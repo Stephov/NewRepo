@@ -28,5 +28,15 @@ namespace MaratukAdmin.Controllers.admin
             //return Ok(result);
             return result;
         }
+
+        
+        [HttpGet("GetTouristInfo")]
+        public async Task<List<ReportTouristInfo>> GetTouristInfo(int priceBlockId)
+        {
+            var result = await _reportManager.GetTouristInfoPreparedData(priceBlockId);
+
+            //return Ok(result);
+            return result;
+        }
     }
 }

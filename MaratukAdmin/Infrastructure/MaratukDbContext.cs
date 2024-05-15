@@ -83,6 +83,7 @@ namespace MaratukAdmin.Infrastructure
         public DbSet<Currency> Currency { get; set; } = null!;
         public DbSet<CurrencyRates> CurrencyRates { get; set; } = null!;
         public DbSet<RoomCategory> RoomCategories { get; set; } = null!;
+        public DbSet<PassengerTypes> PassengerTypes { get; set; } = null!;
 
 
 
@@ -239,6 +240,9 @@ namespace MaratukAdmin.Infrastructure
            .HasKey(r => r.Id);
 
             modelBuilder.Entity<RoomCategory>()
+                .HasKey(r => r.Id);
+            
+            modelBuilder.Entity<PassengerTypes>()
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<FlightInfoFunction>().HasNoKey().ToView("GetFlightInfoByTripType");

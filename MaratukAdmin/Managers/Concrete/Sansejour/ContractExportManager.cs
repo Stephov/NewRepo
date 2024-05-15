@@ -684,7 +684,28 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         {
             try
             {
-                return await _contractExportRepository.SearchRoomAsync(searchRequest);
+                if (searchRequest.PriceBlockId != null)
+                {
+                    double? commission = await _contractExportRepository.GetFlightCommission((int)searchRequest.PriceBlockId);
+
+                    var resultRoomSearch =  await _contractExportRepository.SearchRoomAsync(searchRequest);
+
+                    foreach (var room in resultRoomSearch)
+                    {
+                        // Round
+                        room.Price = Math.Ceiling((double)room.Price);
+                        // Add Commission
+                        room.PriceTotal += room.PriceTotal * (commission == null ? 0 : commission);
+                        // Round
+                        room.PriceTotal = Math.Ceiling((double)room.PriceTotal);
+                    }
+
+                    return resultRoomSearch;
+                }
+                else
+                {
+                    return await _contractExportRepository.SearchRoomAsync(searchRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -773,8 +794,20 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             // Combine results
             foreach (var flight in resultFlightSearch)
             {
+                // Add Commission
+                flight.TotalPrice += flight.TotalPrice * (flight.Commission == null ? 0 : (double)flight.Commission);
+                // Round
+                flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice);
+
                 foreach (var room in resultRoomSearch)
                 {
+                    // Round
+                    room.Price = Math.Ceiling((double)room.Price);
+                    // Add Commission
+                    room.PriceTotal += room.PriceTotal * (flight.Commission == null ? 0 : (double)flight.Commission);
+                    // Round
+                    room.PriceTotal = Math.Ceiling((double)room.PriceTotal);
+
                     retValue.Add(new SearchFligtAndRoomResponse()
                     {
                         flightSearchResponse = flight,

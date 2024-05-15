@@ -73,6 +73,16 @@ namespace MaratukAdmin.Utils
             Declined = 3,
             Cancelled = 4
         }
+
+        public enum enumPassengerTypes
+        {
+            [EnumMember(Value = "ADL")]
+            Adult = 1,
+            [EnumMember(Value = "CHD")]
+            Child = 2,
+            [EnumMember(Value = "INF")]
+            Infant =3
+        }
         //public class EnumTypeSchemaFilter : ISchemaFilter
         //{
         //    public void Apply(OpenApiSchema schema, SchemaFilterContext context)

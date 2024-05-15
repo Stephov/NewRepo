@@ -1,6 +1,8 @@
 ﻿using MaratukAdmin.Entities.Report;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
+using MaratukAdmin.Repositories.Abstract.Sansejour;
+using MaratukAdmin.Repositories.Concrete.Sansejour;
 using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Routing.Constraints;
 using System.Collections.Generic;
@@ -11,10 +13,13 @@ namespace MaratukAdmin.Managers.Concrete
     public class ReportManager : IReportManager
     {
         private readonly IReportRepository _reportRepository;
+        private readonly IContractExportRepository _contractExportRepository;
 
-        public ReportManager(IReportRepository reportRepository)
+        public ReportManager(IReportRepository reportRepository,
+                            IContractExportRepository contractExportRepository)
         {
             _reportRepository = reportRepository;
+            _contractExportRepository = contractExportRepository;
         }
 
 
@@ -23,14 +28,10 @@ namespace MaratukAdmin.Managers.Concrete
         {
             return await _reportRepository.GetFlightReportPreparedData();
         }
-
-        //public async Task<BookUniqueDepartureDatesByFlights> GetBookUniqueDepartureDates()
         public async Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates()
         {
             return await _reportRepository.GetBookUniqueDepartureDates();
         }
-
-        //public async Task<List<ReportFlightInfo>> GetReportFlightInfo()
         public async Task<List<ReportFlightInfo>> GetReportFlightInfo()
         {
             List<ReportFlightInfo> retValue = new();
@@ -154,5 +155,11 @@ namespace MaratukAdmin.Managers.Concrete
             return retValue;
         }
 
+        public async Task<List<ReportTouristInfo>> GetTouristInfoPreparedData(int priceBlockId)
+        {
+            var commission = _contractExportRepository.GetFlightCommission(priceBlockId);
+
+            return await _reportRepository.GetTouristInfoPreparedData();
+        }
     }
 }

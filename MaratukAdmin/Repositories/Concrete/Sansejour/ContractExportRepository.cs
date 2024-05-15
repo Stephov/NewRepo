@@ -1059,6 +1059,22 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return retValue;
         }
 
+        public async Task<double?> GetFlightCommission(int priceBlockId)
+        {
+            double retValue = 0;
+            try
+            {
+                var result = await _dbContext.PriceBlocks.Where(p => p.Id == priceBlockId).FirstOrDefaultAsync();
+
+                if (result != null)
+                { retValue = (double)result.Commission; }
+            }
+            catch (Exception)
+            {
+                retValue = 0;
+            }
+            return retValue;
+        }
 
         public async Task<List<SyncSejourRate>> SearchRoomOldAsync(SearchRoomRequest searchRequest)
         {

@@ -17,7 +17,8 @@ namespace MaratukAdmin.Dto.Request
         
         [DefaultValue((int)Enums.enumBookPaymentStatuses.InProcess)] 
         //public int PaymentStatus { get; set; } = (int)Enums.enumBookPaymentStatuses.InProcess;
-        public string PaymentStatus { get; set; } = Enums.enumBookPaymentStatuses.InProcess.ToString();
+        //public string PaymentStatus { get; set; } = Enums.enumBookPaymentStatuses.InProcess.ToString();
+        public int PaymentStatus { get; set; } = (int)Enums.enumBookPaymentStatuses.InProcess;
         
         public int? PayerId { get; set; }
         public DateTime? PaymentDate { get; set; }

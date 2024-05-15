@@ -13,6 +13,7 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
         Task<BookedHotel> GetAllBookedHotelsAsync(string orderID);
         //Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel, List<BookedHotelGuest> bookedHotelGuests);
         Task<BookedHotel> CreateBookedHotelAsync(BookedHotel bookedHotel);
+        Task AddBookedHotelGuestsAsync(List<BookedHotelGuest> bookedHotelGuests);
         Task<BookInvoiceData> AddBookedHotelInvoiceDataAsync(BookInvoiceData invoiceData);
         Task<BookInvoiceData>? GetBookInvoiceDataAsync(string orderNumber);
 
