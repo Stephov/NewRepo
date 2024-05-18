@@ -3,7 +3,9 @@ using MaratukAdmin.Entities.Report;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using static MaratukAdmin.Utils.Enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MaratukAdmin.Repositories.Concrete
@@ -38,14 +40,14 @@ namespace MaratukAdmin.Repositories.Concrete
             //};
 
             var result = await (from bf in _dbContext.BookedFlights
-                        join f in _dbContext.Flight on bf.StartFlightId equals f.Id
-                        where bf.TourStartDate != null
-                        orderby bf.TourStartDate
-                        select new BookUniqueDepartureDatesByFlights
-                        {
-                            DepartureDate = bf.TourStartDate.Date,
-                            FlightNumber = f.FlightValue
-                        })
+                                join f in _dbContext.Flight on bf.StartFlightId equals f.Id
+                                where bf.TourStartDate != null
+                                orderby bf.TourStartDate
+                                select new BookUniqueDepartureDatesByFlights
+                                {
+                                    DepartureDate = bf.TourStartDate.Date,
+                                    FlightNumber = f.FlightValue
+                                })
                         .Distinct()
                         .ToListAsync();
 
@@ -81,13 +83,75 @@ namespace MaratukAdmin.Repositories.Concrete
             return flightReportDataList;
         }
 
-        public async Task<List<ReportTouristInfo>> GetTouristInfoPreparedData()
+        //public async Task<List<ReportTouristInfoHotel>> GetTouristInfoPreparedDataAsync(enumTouristReportType reportType)
+        public async Task<List<T>?> GetTouristInfoPreparedDataAsync<T>(enumTouristReportType reportType) where T : class
         {
-
             //List<ReportTouristInfo> touristReportDataList = await query.ToListAsync();
-            List<ReportTouristInfo> touristReportDataList = new();
+            List<ReportTouristInfoHotel> touristReportDataList = new();
 
-            return touristReportDataList;
+            try
+            {
+                switch (reportType)
+                {
+                    case enumTouristReportType.Flight:
+                        {
+                            //ReportTouristInfoFlight reportFlight = new();
+                            var reportFlight = from bf in _dbContext.BookedFlights
+                                               join u in _dbContext.Users on bf.MaratukFlightAgentId equals u.Id
+                                               join pt in _dbContext.PassengerTypes on bf.PassengerTypeId equals pt.Id
+                                               join bsc in _dbContext.AgentStatus on bf.BookStatusForClient equals bsc.Id
+                                               join bsm in _dbContext.MaratukAgentStatus on bf.BookStatusForMaratuk equals bsm.Id
+                                               join sh in _dbContext.Schedule on bf.StartFlightId equals sh.Id
+                                               //left join sh1 in _db.Schedule on bf.EndFlightId equals sh1.Id into gj
+                                               //from subsh in gj.DefaultIfEmpty()
+                                               where bf.ToureTypeId == "Flight"
+                                               select new ReportTouristInfoFlight()
+                                               {
+                                                   Date = bf.DateOfOrder,
+                                                   SurName = bf.Surname,
+                                                   Name = bf.Name,
+                                                   FlightManager = u.Name,
+                                                   BookStatus = bsm.Name,
+                                                   DepartureDate = bf.TourStartDate,
+                                                   DepartureTime = sh.DepartureTime,
+                                                   ArrivalDate = bf.TourEndDate,
+                                                   ArrivalTime = sh.ArrivalTime,
+                                                   Tiitle = pt.TypeDescription,
+                                                   Dob = bf.BirthDay,
+                                                   Paid = bf.Paid,
+                                                   Currency = bf.Rate,
+                                                   // EndFlightTourStartDate = bf.TourStartDate,
+                                                   // EndFlightDepartureTime = sh.DepartureTime,
+                                                   // EndFlightTourEndDate = bf.TourEndDate,
+                                                   // EndFlightArrivalTime = sh.ArrivalTime
+                                               };
+
+                            //var reportFlight = from bf in _dbContext.BookedFlights
+                            //                   select new ReportTouristInfoFlight()
+                            //                   {
+                            //                       Dob = bf.BirthDay
+                            //                   };
+
+                            var result = await reportFlight.ToListAsync();
+
+
+                            //return result as T;
+                            return result as List<T>;
+                        }
+
+                    //case enumTouristReportType.Hotel:
+                    //    var reportB = new ReportTouristInfoHotel { DataB = "Data for Report B" };
+                    //    return await Task.FromResult(reportB as T);
+
+                    default:
+                        throw new ArgumentException("Invalid report type", nameof(reportType));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            //return touristReportDataList;
         }
 
     }

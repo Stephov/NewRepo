@@ -286,6 +286,20 @@ namespace MaratukAdmin.Managers.Concrete
                 string? endFligthName = (endFlight == null) ? "" : endFlight.Name;
                 string? endFligtDuration = ((endFlight == null) ? "" : endFlight.DurationHours) + "h " + ((endFlight == null) ? "" : endFlight.DurationMinutes) + "m";
 
+                // Get Departure & Arrival times by FlightId
+                Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule1?.Schedules.First().ArrivalTime;
+                string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                dateTime = schedule2?.Schedules.First().DepartureTime;
+                string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule2?.Schedules.First().ArrivalTime;
+                string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponse
                 {
@@ -308,6 +322,12 @@ namespace MaratukAdmin.Managers.Concrete
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
                     TourEndDate = firstFlightInGroup.TourEndDate,
+
+                    StartFlightDepartureTime = startFlightDepartureTime,
+                    StartFlightArrivalTime = startFlightArrivalTime,
+                    EndFlightDepartureTime = endFlightDepartureTime,
+                    EndFlightArrivalTime = endFlightArrivalTime,
+
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -342,7 +362,7 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     if (bookedFlightResponse.HotelId != null)
                     {
-                        var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                        var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(bookedFlightResponse.OrderNumber);
                         if (bookedHotel != null)
                         {
 
@@ -456,7 +476,7 @@ namespace MaratukAdmin.Managers.Concrete
                     bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
                 }*/
 
-                bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk); 
+                bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
 
                 //////////////////////////////////////
                 /*if (bookedFlightResponse.BookStatusForClient == 1)
@@ -616,6 +636,23 @@ namespace MaratukAdmin.Managers.Concrete
                 string? endFligtDuration = ((endFlight == null) ? "" : endFlight.DurationHours) + "h " + ((endFlight == null) ? "" : endFlight.DurationMinutes) + "m";
                 // ***
 
+                // Get Departure & Arrival times by FlightId
+                Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule1?.Schedules.First().ArrivalTime;
+                string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                dateTime = schedule2?.Schedules.First().DepartureTime;
+                string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule2?.Schedules.First().ArrivalTime;
+                string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                //string? departureTimeStartFlight = schedule1 == null ? null : schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString(@"HH:mm");
+                //string? departureTimeEndFlight = schedule2 == null ? null : schedule2.Schedules.First().DepartureTime.TimeOfDay.ToString(@"HH:mm");
+
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponseForMaratuk
                 {
@@ -639,6 +676,10 @@ namespace MaratukAdmin.Managers.Concrete
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
                     TourEndDate = firstFlightInGroup.TourEndDate,
+                    StartFlightDepartureTime = startFlightDepartureTime,
+                    StartFlightArrivalTime = startFlightArrivalTime,
+                    EndFlightDepartureTime = endFlightDepartureTime,
+                    EndFlightArrivalTime = endFlightArrivalTime,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -672,7 +713,7 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     if (bookedFlightResponse.HotelId != null)
                     {
-                        var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                        var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(bookedFlightResponse.OrderNumber);
                         if (bookedHotel != null)
                         {
                             if (roleId == 3)
@@ -894,7 +935,7 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
                     }*/
-                    
+
                     bookedFlightResponse.BookStatusForClientName = Enum.GetName(typeof(Enums.enumBookStatusForClient), bookedFlightResponse.BookStatusForClient);
                 }
 
@@ -1090,6 +1131,21 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     agentIdToGetAgentName = firstFlightInGroup.MaratukFlightAgentId;
                 }
+
+                // Get Departure & Arrival times by FlightId
+                Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule1?.Schedules.First().ArrivalTime;
+                string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                dateTime = schedule2?.Schedules.First().DepartureTime;
+                string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule2?.Schedules.First().ArrivalTime;
+                string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponseForMaratuk
                 {
@@ -1111,6 +1167,10 @@ namespace MaratukAdmin.Managers.Concrete
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
                     TourEndDate = firstFlightInGroup.TourEndDate,
+                    StartFlightDepartureTime = startFlightDepartureTime,
+                    StartFlightArrivalTime = startFlightArrivalTime,
+                    EndFlightDepartureTime = endFlightDepartureTime,
+                    EndFlightArrivalTime = endFlightArrivalTime,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -1139,12 +1199,12 @@ namespace MaratukAdmin.Managers.Concrete
 
                 if (bookedFlightResponse.HotelId != null)
                 {
-                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                    var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(bookedFlightResponse.OrderNumber);
                     if (bookedHotel != null)
                     {
                         if (roleId == 3)
                         {
-                            if (bookedHotel.BookStatusForMaratuk == 1)
+                            /*if (bookedHotel.BookStatusForMaratuk == 1)
                             {
                                 bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                             }
@@ -1195,10 +1255,9 @@ namespace MaratukAdmin.Managers.Concrete
                             else if (bookedHotel.BookStatusForMaratuk == 13)
                             {
                                 bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
-                            }
+                            }*/
+                            bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
                         }
-
-
 
                         var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
@@ -1255,7 +1314,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
                 if (roleId == 1)
                 {
-                    if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                    /*if (bookedFlightResponse.BookStatusForMaratuk == 1)
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                     }
@@ -1306,9 +1365,10 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForMaratuk == 13)
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
-                    }
+                    }*/
+                    bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
                     //////////////////////////////////////
-                    if (bookedFlightResponse.BookStatusForClient == 1)
+                    /*if (bookedFlightResponse.BookStatusForClient == 1)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Waiting";
                     }
@@ -1351,7 +1411,8 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForClient == 11)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
-                    }
+                    }*/
+                    bookedFlightResponse.BookStatusForClientName = Enum.GetName(typeof(Enums.enumBookStatusForClient), bookedFlightResponse.BookStatusForClient);
                 }
 
 
@@ -1425,6 +1486,21 @@ namespace MaratukAdmin.Managers.Concrete
                 }).ToList();
 
                 var firstFlightInGroup = group.First(); // You can take any flight from the group to extract common properties
+
+                // Get Departure & Arrival times by FlightId
+                Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule1?.Schedules.First().ArrivalTime;
+                string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                dateTime = schedule2?.Schedules.First().DepartureTime;
+                string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                dateTime = schedule2?.Schedules.First().ArrivalTime;
+                string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
                 var bookedFlightResponse = new BookedFlightResponse
                 {
                     bookedUsers = bookedUsers,
@@ -1443,6 +1519,10 @@ namespace MaratukAdmin.Managers.Concrete
                     PassengersCount = firstFlightInGroup.PassengersCount,
                     TourStartDate = firstFlightInGroup.TourStartDate,
                     TourEndDate = firstFlightInGroup.TourEndDate,
+                    StartFlightDepartureTime = startFlightDepartureTime,
+                    StartFlightArrivalTime = startFlightArrivalTime,
+                    EndFlightDepartureTime = endFlightDepartureTime,
+                    EndFlightArrivalTime = endFlightArrivalTime,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -1466,7 +1546,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                 if (bookedFlightResponse.HotelId != null)
                 {
-                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                    var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(bookedFlightResponse.OrderNumber);
 
                     var hotel = _hotelManager.GetHotelByIdAsync((int)bookedFlightResponse.HotelId).Result;
 
@@ -1522,7 +1602,7 @@ namespace MaratukAdmin.Managers.Concrete
                 }
 
 
-                if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                /*if (bookedFlightResponse.BookStatusForMaratuk == 1)
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                 }
@@ -1573,9 +1653,11 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForMaratuk == 13)
                 {
                     bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
-                }
+                }*/
+                bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
+
                 //////////////////////////////////////
-                if (bookedFlightResponse.BookStatusForClient == 1)
+                /*if (bookedFlightResponse.BookStatusForClient == 1)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Waiting";
                 }
@@ -1618,7 +1700,8 @@ namespace MaratukAdmin.Managers.Concrete
                 else if (bookedFlightResponse.BookStatusForClient == 11)
                 {
                     bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
-                }
+                }*/
+                bookedFlightResponse.BookStatusForClientName = Enum.GetName(typeof(Enums.enumBookStatusForClient), bookedFlightResponse.BookStatusForClient);
 
                 bookedFlightResponses.Add(bookedFlightResponse);
             }
@@ -1664,7 +1747,7 @@ namespace MaratukAdmin.Managers.Concrete
                 {
                     var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
 
-                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
+                    var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(orderNumber);
 
                     if (status == 3)//Ticket is confirmed
                     {
@@ -1895,7 +1978,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                     var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
 
-                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
+                    var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(orderNumber);
 
                     if (status == 5)//Hotel is confirmed
                     {
@@ -2075,7 +2158,7 @@ namespace MaratukAdmin.Managers.Concrete
                 try
                 {
                     var booked = await _bookedFlightRepository.GetBookedFlightByOrderNumberAsync(orderNumber);
-                    var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(orderNumber);
+                    var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(orderNumber);
 
                     if (status == 12)//Confirmed by Accountant
                     {
@@ -2334,7 +2417,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             foreach (var group in listBookedFlights)
             {
-                var bookedHotels = await _bookedHotelRepository.GetAllBookedHotelsAsync(group.Key);
+                var bookedHotels = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(group.Key);
 
                 if (bookedHotels == null)
                 {
@@ -2365,6 +2448,20 @@ namespace MaratukAdmin.Managers.Concrete
                         agentIdToGetAgentName = firstFlightInGroup.MaratukFlightAgentId;
                     }
 
+                    // Get Departure & Arrival times by FlightId
+                    Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                    Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                    DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                    string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                    dateTime = schedule1?.Schedules.First().ArrivalTime;
+                    string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                    dateTime = schedule2?.Schedules.First().DepartureTime;
+                    string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                    dateTime = schedule2?.Schedules.First().ArrivalTime;
+                    string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
                     var bookedFlightResponse = new BookedFlightResponseForMaratuk
                     {
                         bookedUsers = bookedUsers,
@@ -2383,6 +2480,10 @@ namespace MaratukAdmin.Managers.Concrete
                         PassengersCount = firstFlightInGroup.PassengersCount,
                         TourStartDate = firstFlightInGroup.TourStartDate,
                         TourEndDate = firstFlightInGroup.TourEndDate,
+                        StartFlightDepartureTime = startFlightDepartureTime,
+                        StartFlightArrivalTime = startFlightArrivalTime,
+                        EndFlightDepartureTime = endFlightDepartureTime,
+                        EndFlightArrivalTime = endFlightArrivalTime,
                         DeadLine = firstFlightInGroup.DeadLine,
                         Paid = firstFlightInGroup.Paid,
                         MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -2399,7 +2500,7 @@ namespace MaratukAdmin.Managers.Concrete
                         InvoiceData = _bookedHotelRepository.GetBookInvoiceDataAsync(firstFlightInGroup.OrderNumber).Result
                     };
 
-                    if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                    /*if (bookedFlightResponse.BookStatusForMaratuk == 1)
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                     }
@@ -2450,9 +2551,11 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForMaratuk == 13)
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
-                    }
+                    }*/
+                    bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
+
                     //////////////////////////////////////
-                    if (bookedFlightResponse.BookStatusForClient == 1)
+                    /*if (bookedFlightResponse.BookStatusForClient == 1)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Waiting";
                     }
@@ -2495,7 +2598,8 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForClient == 11)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
-                    }
+                    }*/
+                    bookedFlightResponse.BookStatusForClientName = Enum.GetName(typeof(Enums.enumBookStatusForClient), bookedFlightResponse.BookStatusForClient);
 
                     bookedFlightResponses.Add(bookedFlightResponse);
                 }
@@ -2529,6 +2633,21 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             agentIdToGetAgentName = firstFlightInGroup.MaratukFlightAgentId;
                         }
+
+                        // Get Departure & Arrival times by FlightId
+                        Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                        Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                        DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                        string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                        dateTime = schedule1?.Schedules.First().ArrivalTime;
+                        string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                        dateTime = schedule2?.Schedules.First().DepartureTime;
+                        string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                        dateTime = schedule2?.Schedules.First().ArrivalTime;
+                        string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
                         var bookedFlightResponse = new BookedFlightResponseForMaratuk
                         {
                             bookedUsers = bookedUsers,
@@ -2549,6 +2668,10 @@ namespace MaratukAdmin.Managers.Concrete
                             PassengersCount = firstFlightInGroup.PassengersCount,
                             TourStartDate = firstFlightInGroup.TourStartDate,
                             TourEndDate = firstFlightInGroup.TourEndDate,
+                            StartFlightDepartureTime = startFlightDepartureTime,
+                            StartFlightArrivalTime = startFlightArrivalTime,
+                            EndFlightDepartureTime = endFlightDepartureTime,
+                            EndFlightArrivalTime = endFlightArrivalTime,
                             DeadLine = firstFlightInGroup.DeadLine,
                             Paid = firstFlightInGroup.Paid,
                             MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -2571,7 +2694,7 @@ namespace MaratukAdmin.Managers.Concrete
                         };
                         if (bookedFlightResponse.HotelId != null)
                         {
-                            var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                            var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(bookedFlightResponse.OrderNumber);
 
                             if (bookedHotel != null)
                             {
@@ -2632,7 +2755,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                         }
 
-                        if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                        /*if (bookedFlightResponse.BookStatusForMaratuk == 1)
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                         }
@@ -2683,9 +2806,11 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForMaratuk == 13)
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
-                        }
+                        }*/
+                        bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
+
                         //////////////////////////////////////
-                        if (bookedFlightResponse.BookStatusForClient == 1)
+                        /*if (bookedFlightResponse.BookStatusForClient == 1)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Waiting";
                         }
@@ -2728,8 +2853,8 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 11)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
-                        }
-
+                        }*/
+                        bookedFlightResponse.BookStatusForClientName = Enum.GetName(typeof(Enums.enumBookStatusForClient), bookedFlightResponse.BookStatusForClient);
 
                         bookedFlightResponses.Add(bookedFlightResponse);
                     }
@@ -2850,7 +2975,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             foreach (var group in listBookedFlights)
             {
-                var bookedHotels = await _bookedHotelRepository.GetAllBookedHotelsAsync(group.Key);
+                var bookedHotels = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(group.Key);
 
                 if (bookedHotels == null)
                 {
@@ -2880,6 +3005,21 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         agentIdToGetAgentName = firstFlightInGroup.MaratukFlightAgentId;
                     }
+
+                    // Get Departure & Arrival times by FlightId
+                    Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                    Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                    DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                    string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                    dateTime = schedule1?.Schedules.First().ArrivalTime;
+                    string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                    dateTime = schedule2?.Schedules.First().DepartureTime;
+                    string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                    dateTime = schedule2?.Schedules.First().ArrivalTime;
+                    string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
                     var bookedFlightResponse = new BookedFlightResponseForMaratuk
                     {
                         bookedUsers = bookedUsers,
@@ -2900,6 +3040,10 @@ namespace MaratukAdmin.Managers.Concrete
                         PassengersCount = firstFlightInGroup.PassengersCount,
                         TourStartDate = firstFlightInGroup.TourStartDate,
                         TourEndDate = firstFlightInGroup.TourEndDate,
+                        StartFlightDepartureTime = startFlightDepartureTime,
+                        StartFlightArrivalTime = startFlightArrivalTime,
+                        EndFlightDepartureTime = endFlightDepartureTime,
+                        EndFlightArrivalTime = endFlightArrivalTime,
                         DeadLine = firstFlightInGroup.DeadLine,
                         Paid = firstFlightInGroup.Paid,
                         MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -2922,7 +3066,7 @@ namespace MaratukAdmin.Managers.Concrete
                         InvoiceData = _bookedHotelRepository.GetBookInvoiceDataAsync(firstFlightInGroup.OrderNumber).Result
                     };
 
-                    if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                    /*if (bookedFlightResponse.BookStatusForMaratuk == 1)
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                     }
@@ -2973,9 +3117,11 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForMaratuk == 13)
                     {
                         bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
-                    }
+                    }*/
+                    bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
+
                     //////////////////////////////////////
-                    if (bookedFlightResponse.BookStatusForClient == 1)
+                    /*if (bookedFlightResponse.BookStatusForClient == 1)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Waiting";
                     }
@@ -3018,7 +3164,8 @@ namespace MaratukAdmin.Managers.Concrete
                     else if (bookedFlightResponse.BookStatusForClient == 11)
                     {
                         bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
-                    }
+                    }*/
+                    bookedFlightResponse.BookStatusForClientName = Enum.GetName(typeof(Enums.enumBookStatusForClient), bookedFlightResponse.BookStatusForClient);
 
                     bookedFlightResponses.Add(bookedFlightResponse);
                 }
@@ -3052,6 +3199,21 @@ namespace MaratukAdmin.Managers.Concrete
                         {
                             agentIdToGetAgentName = firstFlightInGroup.MaratukFlightAgentId;
                         }
+
+                        // Get Departure & Arrival times by FlightId
+                        Flight? schedule1 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.StartFlightId);
+                        Flight? schedule2 = await _flightRepository.GetFlightSchedulesByIdAsync(firstFlightInGroup.EndFlightId);
+
+                        DateTime? dateTime = schedule1?.Schedules.First().DepartureTime;
+                        string? startFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                        dateTime = schedule1?.Schedules.First().ArrivalTime;
+                        string? startFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
+                        dateTime = schedule2?.Schedules.First().DepartureTime;
+                        string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
+                        dateTime = schedule2?.Schedules.First().ArrivalTime;
+                        string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+
                         var bookedFlightResponse = new BookedFlightResponseForMaratuk
                         {
                             bookedUsers = bookedUsers,
@@ -3072,6 +3234,10 @@ namespace MaratukAdmin.Managers.Concrete
                             PassengersCount = firstFlightInGroup.PassengersCount,
                             TourStartDate = firstFlightInGroup.TourStartDate,
                             TourEndDate = firstFlightInGroup.TourEndDate,
+                            StartFlightDepartureTime = startFlightDepartureTime,
+                            StartFlightArrivalTime = startFlightArrivalTime,
+                            EndFlightDepartureTime = endFlightDepartureTime,
+                            EndFlightArrivalTime = endFlightArrivalTime,
                             DeadLine = firstFlightInGroup.DeadLine,
                             Paid = firstFlightInGroup.Paid,
                             MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -3094,7 +3260,7 @@ namespace MaratukAdmin.Managers.Concrete
                         };
                         if (bookedFlightResponse.HotelId != null)
                         {
-                            var bookedHotel = await _bookedHotelRepository.GetAllBookedHotelsAsync(bookedFlightResponse.OrderNumber);
+                            var bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(bookedFlightResponse.OrderNumber);
 
                             if (bookedHotel != null)
                             {
@@ -3155,7 +3321,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                         }
 
-                        if (bookedFlightResponse.BookStatusForMaratuk == 1)
+                        /*if (bookedFlightResponse.BookStatusForMaratuk == 1)
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Waiting";
                         }
@@ -3206,9 +3372,11 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForMaratuk == 13)
                         {
                             bookedFlightResponse.BookStatusForMaratukName = "Canceled by Accountant";
-                        }
+                        }*/
+                        bookedFlightResponse.BookStatusForMaratukName = Enum.GetName(typeof(Enums.enumBookStatusForMaratuk), bookedFlightResponse.BookStatusForMaratuk);
+
                         //////////////////////////////////////
-                        if (bookedFlightResponse.BookStatusForClient == 1)
+                        /*if (bookedFlightResponse.BookStatusForClient == 1)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Waiting";
                         }
@@ -3251,7 +3419,9 @@ namespace MaratukAdmin.Managers.Concrete
                         else if (bookedFlightResponse.BookStatusForClient == 11)
                         {
                             bookedFlightResponse.BookStatusForClientName = "Canceled by Accountant";
-                        }
+                        }*/
+                        bookedFlightResponse.BookStatusForClientName = Enum.GetName(typeof(Enums.enumBookStatusForClient), bookedFlightResponse.BookStatusForClient);
+
 
                         bookedFlightResponses.Add(bookedFlightResponse);
                     }

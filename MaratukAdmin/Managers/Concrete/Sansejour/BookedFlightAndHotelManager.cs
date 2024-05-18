@@ -16,6 +16,7 @@ using MaratukAdmin.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 using static MaratukAdmin.Utils.Enums;
 
@@ -274,7 +275,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             BookStatusForClient = (int)Enums.enumBookStatusForClient.Waiting,
                             //MaratukHotelAgentId = bookedFlightAndHotel.MaratukHotelAgentId,
                             MaratukHotelAgentId = maratukHotelAgentId,
-                            BookStatusForMaratuk = (int)Enums.enumBookStatusForClient.Waiting
+                            BookStatusForMaratuk = (int)Enums.enumBookStatusForMaratuk.Waiting
                         };
 
                         var agentHotel = await _userRepository.GetAgencyUsersByIdAsync(bookedHotel.HotelAgentId);
@@ -456,7 +457,6 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
 
                             if (existingBookPayment != null)
                             {
-
                                 if (newPaymentStatus == (int)Enums.enumBookPaymentStatuses.Approved)
                                 // Status is APPROVED
                                 {
@@ -594,6 +594,15 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                                 await _hotelRepository.AddBookPaymentAsync(newBookPayment);
                             }
                         }
+
+                        BookedHotel bookedHotel = await _bookedHotelRepository.GetBookedHotelByOrderNumberAsync(payForBookedFlightAndHotel.OrderNumber);
+
+                        if (bookedHotel != null)
+                        {
+
+                            //todo _bookedHotelRepository -ic petk e stanam book arvac Hotely u statusnery poxem yst bookedFlights-i
+                        }
+
                         await _transactionRepository.CommitTransAsync();                                            // Commit transaction
                     }
                 });
