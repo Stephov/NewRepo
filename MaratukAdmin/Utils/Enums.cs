@@ -83,6 +83,16 @@ namespace MaratukAdmin.Utils
             [EnumMember(Value = "INF")]
             Infant =3
         }
+
+        public enum enumTouristReportType
+        {
+            [EnumMember(Value = "Flight")]
+            Flight = 1,
+            [EnumMember(Value = "Hotel")]
+            Hotel = 2,
+            [EnumMember(Value = "Accountant")]
+            Accountant = 3
+        }
         //public class EnumTypeSchemaFilter : ISchemaFilter
         //{
         //    public void Apply(OpenApiSchema schema, SchemaFilterContext context)

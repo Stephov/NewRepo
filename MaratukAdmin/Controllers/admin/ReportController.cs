@@ -3,6 +3,7 @@ using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Mvc;
+using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Controllers.admin
 {
@@ -29,14 +30,24 @@ namespace MaratukAdmin.Controllers.admin
             return result;
         }
 
-        
+
         [HttpGet("GetTouristInfo")]
-        public async Task<List<ReportTouristInfo>> GetTouristInfo(int priceBlockId)
+        //public async Task<List<ReportTouristInfoHotel>> GetTouristInfo(enumTouristReportType reportType, int priceBlockId)
+        //public async Task<IActionResult> GetTouristInfo(enumTouristReportType reportType, int priceBlockId)
+        public async Task<IActionResult> GetTouristInfo(enumTouristReportType reportType)
         {
-            var result = await _reportManager.GetTouristInfoPreparedData(priceBlockId);
+            if (reportType == enumTouristReportType.Flight)
+            {
+                //var result = await _reportManager.GetReportTouristInfoAsync<ReportTouristInfoFlight> (reportType, priceBlockId);
+                var result = await _reportManager.GetReportTouristInfoAsync<ReportTouristInfoFlight> (reportType);
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest("Invalid report type");
+            }
 
             //return Ok(result);
-            return result;
         }
     }
 }

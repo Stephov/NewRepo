@@ -31,6 +31,10 @@ namespace MaratukAdmin.Dto.Response
         public int PassengersCount { get; set; }
         public DateTime TourStartDate { get; set; }
         public DateTime? TourEndDate { get; set; }
+        public string? StartFlightDepartureTime { get; set; }
+        public string? StartFlightArrivalTime { get; set; }
+        public string? EndFlightDepartureTime { get; set; }
+        public string? EndFlightArrivalTime { get; set; }
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukFlightAgentId { get; set; }
@@ -82,6 +86,10 @@ namespace MaratukAdmin.Dto.Response
         public int PassengerTypeId { get; set; }
         public DateTime TourStartDate { get; set; }
         public DateTime? TourEndDate { get; set; }
+        public string? StartFlightDepartureTime {get; set;}
+        public string? StartFlightArrivalTime {get; set;}
+        public string? EndFlightDepartureTime { get; set;}
+        public string? EndFlightArrivalTime { get; set;}
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
         public int MaratukAgentId { get; set; }

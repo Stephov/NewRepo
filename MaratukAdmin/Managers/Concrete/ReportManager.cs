@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Entities.Report;
+﻿using MaratukAdmin.Entities;
+using MaratukAdmin.Entities.Report;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
@@ -7,6 +8,7 @@ using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Routing.Constraints;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Managers.Concrete
 {
@@ -14,12 +16,15 @@ namespace MaratukAdmin.Managers.Concrete
     {
         private readonly IReportRepository _reportRepository;
         private readonly IContractExportRepository _contractExportRepository;
+        private readonly ICurrencyRatesManager _currencyRatesManager;
 
         public ReportManager(IReportRepository reportRepository,
-                            IContractExportRepository contractExportRepository)
+                            IContractExportRepository contractExportRepository,
+                            ICurrencyRatesManager currencyRatesManager)
         {
             _reportRepository = reportRepository;
             _contractExportRepository = contractExportRepository;
+            _currencyRatesManager = currencyRatesManager;
         }
 
 
@@ -43,6 +48,7 @@ namespace MaratukAdmin.Managers.Concrete
             bool infoChanged = true;
             ReportFlightInfo newInfo = new();
 
+            var commission = _contractExportRepository.GetFlightCommission(308);
             List<FlightReportPreparedData> flightReportPreparedData = await GetFlightReportPreparedData();
 
             if (flightReportPreparedData != null)
@@ -155,11 +161,29 @@ namespace MaratukAdmin.Managers.Concrete
             return retValue;
         }
 
-        public async Task<List<ReportTouristInfo>> GetTouristInfoPreparedData(int priceBlockId)
+        //public async Task<List<ReportTouristInfoHotel>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId)
+        //public async Task<List<IReportTouristInfo>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId)
+        //public async Task<T> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, int priceBlockId) where T : class
+        public async Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType) where T : class
         {
-            var commission = _contractExportRepository.GetFlightCommission(priceBlockId);
+            //var commission = await _contractExportRepository.GetFlightCommission(priceBlockId);
 
-            return await _reportRepository.GetTouristInfoPreparedData();
+            //if (reportType == enumTouristReportType.Flight)
+            //{
+            var touristReportPreparedData = await _reportRepository.GetTouristInfoPreparedDataAsync<T>(reportType);
+
+            if (touristReportPreparedData != null)
+            {
+                foreach (var item in touristReportPreparedData as List<ReportTouristInfoFlight>)
+                {
+                    var currRate = await _currencyRatesManager.GetCurrencyRatesAsync(item.Date, item.Currency);
+                    item.CurrencyRate = (currRate == null || currRate.Count == 0) ? 0 : currRate.FirstOrDefault().OfficialRate;
+                }
+            }
+
+            //}
+
+            return touristReportPreparedData;
         }
     }
 }

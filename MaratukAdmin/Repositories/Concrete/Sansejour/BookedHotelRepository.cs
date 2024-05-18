@@ -91,7 +91,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
             return new List<BookedHotelResponse>();
         }
 
-        public async Task<BookedHotel> GetAllBookedHotelsAsync(string orderID)
+        public async Task<BookedHotel> GetBookedHotelByOrderNumberAsync(string orderID)
         {
             //List<int> orderStatusIds = new List<int> { 2, 4, 5 };
 

@@ -1,4 +1,5 @@
 ﻿using MaratukAdmin.Entities.Report;
+using static MaratukAdmin.Utils.Enums;
 
 namespace MaratukAdmin.Managers.Abstract
 {
@@ -9,7 +10,9 @@ namespace MaratukAdmin.Managers.Abstract
         //Task<BookUniqueDepartureDatesByFlights> GetBookUniqueDepartureDates();
         Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates();
         Task<List<FlightReportPreparedData>> GetFlightReportPreparedData();
-        Task<List<ReportTouristInfo>> GetTouristInfoPreparedData(int priceBlockId);
+        //Task<List<ReportTouristInfoHotel>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId);
+        //Task<T> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, int priceBlockId) where T : class;
+        Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType) where T : class;
 
     }
 }

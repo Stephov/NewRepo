@@ -245,6 +245,14 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
         }
 
+        [HttpGet("GetCurrencyRate")]
+        public async Task<ActionResult> GetCurrencyRate(DateTime? date = null, string? currency = null)
+        {
+            var result = await _currencyRatesManager.GetCurrencyRatesAsync(date, currency);
+
+            return Ok(result);
+        }
+
         [HttpDelete("Currency")]
         public async Task<ActionResult> DeleteCurrency(int id)
         {
@@ -369,7 +377,7 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("SearchFligthByTripType")]
-        public async Task<ActionResult> FligthCountryInfo(int TripTypeId,bool isOnlyFligth = true)
+        public async Task<ActionResult> FligthCountryInfo(int TripTypeId, bool isOnlyFligth = true)
         {
             var result = await _priceBlockManager.GetSearchInfoAsync(TripTypeId, isOnlyFligth);
 
@@ -377,7 +385,7 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("FligthReturnedDateInfo")]
-        public async Task<ActionResult> FligthDateInfo(int FlightId,int PriceBlockId,int DepartureCountryId,int DepartureCityId,int DestinationCountryId,int DestinationCityId,DateTime FromDate)
+        public async Task<ActionResult> FligthDateInfo(int FlightId, int PriceBlockId, int DepartureCountryId, int DepartureCityId, int DestinationCountryId, int DestinationCityId, DateTime FromDate)
         {
             var result = await _priceBlockManager.GetFligthDateInfoAsync(FlightId, PriceBlockId, DepartureCountryId, DepartureCityId, DestinationCountryId, DestinationCityId, FromDate);
 
