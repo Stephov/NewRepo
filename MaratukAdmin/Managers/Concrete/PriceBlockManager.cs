@@ -504,6 +504,7 @@ namespace MaratukAdmin.Managers.Concrete
                 CurrencyId = group.First().CurrencyId,
                 IsTwoWay = false,
                 CurrencyName = _currencyManager.GetCurrencyNameByIdAsync(group.First().CurrencyId).Result.Name,
+                PriceBlockId = group.First().PriceBlockId,
                 Commission = group.First().Commission
             }).ToList();
 
@@ -535,6 +536,7 @@ namespace MaratukAdmin.Managers.Concrete
                 CurrencyId = group.First().CurrencyId,
                 CurrencyName = _currencyManager.GetCurrencyNameByIdAsync(group.First().CurrencyId).Result.Name,
                 IsTwoWay = true,
+                PriceBlockId = group.First().PriceBlockId,
                 Commission = group.First().Commission,
                 ReturnedFlight = new FlightSearchResponse()
                 {
