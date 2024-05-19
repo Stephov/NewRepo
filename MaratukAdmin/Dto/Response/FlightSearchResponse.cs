@@ -1,13 +1,15 @@
-﻿namespace MaratukAdmin.Dto.Response
+﻿using System.Text.Json.Serialization;
+
+namespace MaratukAdmin.Dto.Response
 {
     public class FlightSearchResponse
     {
         public int FlightId { get; set; }
         public double CostPerTickets { get; set; }
-        public double TotalPrice { get; set; }     
+        public double TotalPrice { get; set; }
         public int NumberOfTravelers { get; set; }
-        public string DepartureAirportCode { get; set;}
-        public string DestinationAirportCode { get; set;}
+        public string DepartureAirportCode { get; set; }
+        public string DestinationAirportCode { get; set; }
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
 
@@ -45,6 +47,8 @@
         public string CurrencyName { get; set; }
         public FlightSearchResponse ReturnedFlight { get; set; }
         public bool IsTwoWay { get; set; }
+        public int PriceBlockId { get; set; }
+        [JsonIgnore]
         public decimal? Commission { get; set; }
     }
 }

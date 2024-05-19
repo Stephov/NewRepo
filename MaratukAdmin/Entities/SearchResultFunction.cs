@@ -21,6 +21,7 @@
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
         public int CurrencyId { get; set; }
+        public int PriceBlockId { get; set; }
         public decimal? Commission { get; set; }
 
     }
