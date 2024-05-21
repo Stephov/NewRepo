@@ -93,6 +93,15 @@ namespace MaratukAdmin.Utils
             [EnumMember(Value = "Accountant")]
             Accountant = 3
         }
+
+        public enum enumTourType
+        {
+            [EnumMember(Value = "Flight")]
+            Flight = 1,
+            [EnumMember(Value = "Flight + Hotel")]
+            FlightAndHotel = 2,
+        }
+
         //public class EnumTypeSchemaFilter : ISchemaFilter
         //{
         //    public void Apply(OpenApiSchema schema, SchemaFilterContext context)

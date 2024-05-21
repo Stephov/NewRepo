@@ -147,7 +147,7 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("SearchBookFlight")]
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlighttAsync(int userId,int roleId, string? searchText,int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightAsync(int userId,int roleId, string? searchText,int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
         {
             var res = await _bookedFlightManager.SearchBookedFlightAsync(userId, roleId, searchText, status, pageNumber, pageSize, startDate, endDate);
             return res;

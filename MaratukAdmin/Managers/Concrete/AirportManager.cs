@@ -10,16 +10,16 @@ namespace MaratukAdmin.Managers.Concrete
     {
 
         private readonly IMainRepository<Airport> _mainRepository;
+        private readonly IAirportRepository _airportRepository;
         private readonly IMapper _mapper;
 
 
-        public AirportManager(IMainRepository<Airport> mainRepository, IMapper mapper)
+        public AirportManager(IMainRepository<Airport> mainRepository,  IMapper mapper, IAirportRepository airportRepository)
         {
             _mainRepository = mainRepository;
             _mapper = mapper;
+            _airportRepository = airportRepository;
         }
-
-
 
         public async Task<Airport> AddAirportAsync(AddAirport aircraft)
         {
@@ -31,6 +31,11 @@ namespace MaratukAdmin.Managers.Concrete
         public async Task<Airport> GetAirportNameByIdAsync(int id)
         {
             return await _mainRepository.GetAsync(id);
+        }
+
+        public async Task<Airport?> GetAirportNameByCodeAsync(string code)
+        {
+            return await _airportRepository.GetAirportNameByCodeAsync(code);
         }
     }
 }

@@ -300,6 +300,9 @@ namespace MaratukAdmin.Managers.Concrete
                 dateTime = schedule2?.Schedules.First().ArrivalTime;
                 string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
 
+                var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                string? airportName = airport == null ? string.Empty : airport.Name;
+
                 int agentIdToGetAgentName = 0;
                 if (firstFlightInGroup.ToureTypeId == "Flight + Hotel")
                 {
@@ -336,7 +339,7 @@ namespace MaratukAdmin.Managers.Concrete
                     StartFlightArrivalTime = startFlightArrivalTime,
                     EndFlightDepartureTime = endFlightDepartureTime,
                     EndFlightArrivalTime = endFlightArrivalTime,
-
+                    AirportName = "",
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -659,6 +662,8 @@ namespace MaratukAdmin.Managers.Concrete
                 string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
                 dateTime = schedule2?.Schedules.First().ArrivalTime;
                 string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+                var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                string? airportName = airport == null ? string.Empty : airport.Name;
 
                 //string? departureTimeStartFlight = schedule1 == null ? null : schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString(@"HH:mm");
                 //string? departureTimeEndFlight = schedule2 == null ? null : schedule2.Schedules.First().DepartureTime.TimeOfDay.ToString(@"HH:mm");
@@ -690,6 +695,7 @@ namespace MaratukAdmin.Managers.Concrete
                     StartFlightArrivalTime = startFlightArrivalTime,
                     EndFlightDepartureTime = endFlightDepartureTime,
                     EndFlightArrivalTime = endFlightArrivalTime,
+                    AirportName = airportName,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -1155,6 +1161,8 @@ namespace MaratukAdmin.Managers.Concrete
                 string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
                 dateTime = schedule2?.Schedules.First().ArrivalTime;
                 string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+                var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                string? airportName = airport == null ? string.Empty : airport.Name;
 
                 // You can take any flight from the group to extract common properties
                 var bookedFlightResponse = new BookedFlightResponseForMaratuk
@@ -1181,6 +1189,7 @@ namespace MaratukAdmin.Managers.Concrete
                     StartFlightArrivalTime = startFlightArrivalTime,
                     EndFlightDepartureTime = endFlightDepartureTime,
                     EndFlightArrivalTime = endFlightArrivalTime,
+                    AirportName = airportName,
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -1510,6 +1519,8 @@ namespace MaratukAdmin.Managers.Concrete
                 string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
                 dateTime = schedule2?.Schedules.First().ArrivalTime;
                 string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+                var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                string? airportName = airport == null ? string.Empty : airport.Name;
 
                 int agentIdToGetAgentName = 0;
                 if (firstFlightInGroup.ToureTypeId == "Flight + Hotel")
@@ -1542,6 +1553,7 @@ namespace MaratukAdmin.Managers.Concrete
                     StartFlightArrivalTime = startFlightArrivalTime,
                     EndFlightDepartureTime = endFlightDepartureTime,
                     EndFlightArrivalTime = endFlightArrivalTime,
+                    AirportName = "",
                     DeadLine = firstFlightInGroup.DeadLine,
                     Paid = firstFlightInGroup.Paid,
                     MaratukFlightAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -2482,6 +2494,9 @@ namespace MaratukAdmin.Managers.Concrete
                     dateTime = schedule2?.Schedules.First().ArrivalTime;
                     string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
 
+                    var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                    string? airportName = airport == null ? string.Empty : airport.Name;
+
                     var bookedFlightResponse = new BookedFlightResponseForMaratuk
                     {
                         bookedUsers = bookedUsers,
@@ -2504,6 +2519,7 @@ namespace MaratukAdmin.Managers.Concrete
                         StartFlightArrivalTime = startFlightArrivalTime,
                         EndFlightDepartureTime = endFlightDepartureTime,
                         EndFlightArrivalTime = endFlightArrivalTime,
+                        AirportName = airportName,
                         DeadLine = firstFlightInGroup.DeadLine,
                         Paid = firstFlightInGroup.Paid,
                         MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -2668,6 +2684,9 @@ namespace MaratukAdmin.Managers.Concrete
                         dateTime = schedule2?.Schedules.First().ArrivalTime;
                         string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
 
+                        var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                        string? airportName = airport == null ? string.Empty : airport.Name;
+
                         var bookedFlightResponse = new BookedFlightResponseForMaratuk
                         {
                             bookedUsers = bookedUsers,
@@ -2692,6 +2711,7 @@ namespace MaratukAdmin.Managers.Concrete
                             StartFlightArrivalTime = startFlightArrivalTime,
                             EndFlightDepartureTime = endFlightDepartureTime,
                             EndFlightArrivalTime = endFlightArrivalTime,
+                            AirportName = airportName,
                             DeadLine = firstFlightInGroup.DeadLine,
                             Paid = firstFlightInGroup.Paid,
                             MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -3039,6 +3059,8 @@ namespace MaratukAdmin.Managers.Concrete
                     string? endFlightDepartureTime = dateTime?.ToString(@"HH:mm");
                     dateTime = schedule2?.Schedules.First().ArrivalTime;
                     string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
+                    var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                    string? airportName = airport == null ? string.Empty : airport.Name;
 
                     var bookedFlightResponse = new BookedFlightResponseForMaratuk
                     {
@@ -3064,6 +3086,7 @@ namespace MaratukAdmin.Managers.Concrete
                         StartFlightArrivalTime = startFlightArrivalTime,
                         EndFlightDepartureTime = endFlightDepartureTime,
                         EndFlightArrivalTime = endFlightArrivalTime,
+                        AirportName = airportName,
                         DeadLine = firstFlightInGroup.DeadLine,
                         Paid = firstFlightInGroup.Paid,
                         MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,
@@ -3234,6 +3257,9 @@ namespace MaratukAdmin.Managers.Concrete
                         dateTime = schedule2?.Schedules.First().ArrivalTime;
                         string? endFlightArrivalTime = dateTime?.ToString(@"HH:mm");
 
+                        var airport = await _airportManager.GetAirportNameByCodeAsync(firstFlightInGroup.OrderNumber.Substring(1, 3));
+                        string? airportName = airport == null ? string.Empty : airport.Name;
+
                         var bookedFlightResponse = new BookedFlightResponseForMaratuk
                         {
                             bookedUsers = bookedUsers,
@@ -3258,6 +3284,7 @@ namespace MaratukAdmin.Managers.Concrete
                             StartFlightArrivalTime = startFlightArrivalTime,
                             EndFlightDepartureTime = endFlightDepartureTime,
                             EndFlightArrivalTime = endFlightArrivalTime,
+                            AirportName = airportName,
                             DeadLine = firstFlightInGroup.DeadLine,
                             Paid = firstFlightInGroup.Paid,
                             MaratukAgentId = firstFlightInGroup.MaratukFlightAgentId,

@@ -7,5 +7,6 @@ namespace MaratukAdmin.Managers.Abstract
     {
         Task<Airport> AddAirportAsync(AddAirport airport);
         Task<Airport> GetAirportNameByIdAsync(int id);
+        Task<Airport?> GetAirportNameByCodeAsync(string code);
     }
 }

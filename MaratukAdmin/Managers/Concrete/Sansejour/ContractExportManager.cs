@@ -795,7 +795,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             foreach (var flight in resultFlightSearch)
             {
                 // Add Commission
-                flight.TotalPrice += flight.TotalPrice * (flight.Commission == null ? 0 : (double)flight.Commission);
+                //flight.TotalPrice += flight.TotalPrice * (flight.Commission == null ? 0 : (double)flight.Commission);
+                // Commented bacause in resultFlightSearch object we receive already applied COMMISSION
+
                 // Round
                 flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice);
 
@@ -1001,7 +1003,9 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             foreach (var flight in resultFlightSearch)
             {
                 // Add Commission
-                flight.TotalPrice += flight.TotalPrice * (flight.Commission == null ? 0 : (double)flight.Commission);
+                //flight.TotalPrice += flight.TotalPrice * (flight.Commission == null ? 0 : (double)flight.Commission);  
+                // Commented bacause in resultFlightSearch object we receive already applied COMMISSION
+
                 // Round
                 flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice);
                 //flight.TotalPrice = Math.Ceiling((double)flight.TotalPrice);
