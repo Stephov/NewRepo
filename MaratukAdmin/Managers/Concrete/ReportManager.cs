@@ -164,7 +164,7 @@ namespace MaratukAdmin.Managers.Concrete
         //public async Task<List<ReportTouristInfoHotel>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId)
         //public async Task<List<IReportTouristInfo>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId)
         //public async Task<T> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, int priceBlockId) where T : class
-        public async Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType) where T : class
+        public async Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, bool includeRate = false) where T : class
         {
             //var commission = await _contractExportRepository.GetFlightCommission(priceBlockId);
 
@@ -172,7 +172,7 @@ namespace MaratukAdmin.Managers.Concrete
             //{
             var touristReportPreparedData = await _reportRepository.GetTouristInfoPreparedDataAsync<T>(reportType);
 
-            if (touristReportPreparedData != null)
+            if (touristReportPreparedData != null && includeRate)
             {
                 foreach (var item in touristReportPreparedData as List<ReportTouristInfoFlight>)
                 {

@@ -1,10 +1,15 @@
-﻿using MaratukAdmin.Entities;
+﻿using AutoMapper.Internal;
+using Bogus.DataSets;
+using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Report;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Repositories.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
 using static MaratukAdmin.Utils.Enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -86,7 +91,6 @@ namespace MaratukAdmin.Repositories.Concrete
         //public async Task<List<ReportTouristInfoHotel>> GetTouristInfoPreparedDataAsync(enumTouristReportType reportType)
         public async Task<List<T>?> GetTouristInfoPreparedDataAsync<T>(enumTouristReportType reportType) where T : class
         {
-            //List<ReportTouristInfo> touristReportDataList = await query.ToListAsync();
             List<ReportTouristInfoHotel> touristReportDataList = new();
 
             try
@@ -95,59 +99,192 @@ namespace MaratukAdmin.Repositories.Concrete
                 {
                     case enumTouristReportType.Flight:
                         {
-                            //ReportTouristInfoFlight reportFlight = new();
+                            enumTourType tourType = enumTourType.Flight;
+                            FieldInfo fieldInfo = typeof(enumTourType).GetField(tourType.ToString());
+                            EnumMemberAttribute enumMemberAttribute = fieldInfo.GetCustomAttribute<EnumMemberAttribute>();
+                            string tourTypeString = enumMemberAttribute.Value;
+
+                            var reportFlight = //await (
+                                                      from bf in _dbContext.BookedFlights
+                                                      join u in _dbContext.Users on bf.MaratukFlightAgentId equals u.Id
+                                                      join pt in _dbContext.PassengerTypes on bf.PassengerTypeId equals pt.Id
+                                                      join bsc in _dbContext.AgentStatus on bf.BookStatusForClient equals bsc.Id
+                                                      join bsm in _dbContext.MaratukAgentStatus on bf.BookStatusForMaratuk equals bsm.Id
+                                                      join sh in _dbContext.Schedule on bf.StartFlightId equals sh.FlightId
+                                                      join shd1 in _dbContext.Schedule on bf.EndFlightId equals shd1.FlightId into gj
+                                                      from subsh1 in gj.DefaultIfEmpty()
+                                                      where bf.ToureTypeId == tourTypeString
+                                                      select new ReportTouristInfoFlight()
+                                                      {
+                                                          ToureTypeId = bf.ToureTypeId,
+                                                          Date = bf.DateOfOrder,
+                                                          SurName = bf.Surname,
+                                                          Name = bf.Name,
+                                                          Manager = u.Name,
+                                                          BookStatus = bsm.Name,
+                                                          DepartureDate = bf.TourStartDate,
+                                                          ArrivalDate = bf.TourEndDate,
+                                                          DepartureTime = sh.DepartureTime != null ? sh.DepartureTime.ToString("HH:mm") : string.Empty,
+                                                          ArrivalTime = sh.ArrivalTime != null ? sh.ArrivalTime.ToString("HH:mm") : string.Empty,
+                                                          EndFlightDepartureTime = subsh1 != null && subsh1.DepartureTime != null ? subsh1.DepartureTime.ToString("HH:mm") : string.Empty,
+                                                          EndFlightArrivalTime = subsh1 != null && subsh1.ArrivalTime != null ? subsh1.ArrivalTime.ToString("HH:mm") : string.Empty,
+                                                          Tiitle = pt.TypeDescription,
+                                                          Dob = bf.BirthDay,
+                                                          Paid = bf.Paid,
+                                                          Currency = bf.Rate
+                                                      }
+                                                      //).ToListAsync()
+                                                      ;
+
+                            var result = await reportFlight.ToListAsync();
+                            //var result = reportFlight;
+
+                            return result as List<T>;
+                        }
+                    case enumTouristReportType.Hotel:
+                        {
+                            enumTourType tourType = enumTourType.FlightAndHotel;
+                            FieldInfo fieldInfo = typeof(enumTourType).GetField(tourType.ToString());
+                            EnumMemberAttribute enumMemberAttribute = fieldInfo.GetCustomAttribute<EnumMemberAttribute>();
+                            string tourTypeString = enumMemberAttribute.Value;
+
+                            var reportHotel = //await (
+                                                     from bf in _dbContext.BookedFlights
+                                                     join bh in _dbContext.BookedHotel on bf.OrderNumber equals bh.OrderNumber
+                                                     join bhg in _dbContext.BookedHotelGuest on bf.OrderNumber equals bhg.OrderNumber
+                                                     join u in _dbContext.Users on bf.MaratukHotelAgentId equals u.Id
+                                                     join pt in _dbContext.PassengerTypes on bf.PassengerTypeId equals pt.Id
+                                                     join bsc in _dbContext.AgentStatus on bf.BookStatusForClient equals bsc.Id
+                                                     join bsm in _dbContext.MaratukAgentStatus on bf.BookStatusForMaratuk equals bsm.Id
+                                                     join sh in _dbContext.Schedule on bf.StartFlightId equals sh.FlightId into startFlights
+                                                     from startFlight in startFlights.DefaultIfEmpty()
+                                                     join sh1 in _dbContext.Schedule on bf.EndFlightId equals sh1.FlightId into endFlights
+                                                     from endFlight in endFlights.DefaultIfEmpty()
+                                                     where bf.ToureTypeId == tourTypeString
+
+                                                     select new ReportTouristInfoFlight()
+                                                     {
+                                                         ToureTypeId = bf.ToureTypeId,
+                                                         Date = bf.DateOfOrder,
+                                                         SurName = bhg.Surname,
+                                                         Name = bhg.Name,
+                                                         Manager = u.Name,
+                                                         BookStatus = bsm.Name,
+                                                         DepartureDate = bf.TourStartDate,
+                                                         ArrivalDate = bf.TourEndDate,
+                                                         DepartureTime = string.Empty,
+                                                         ArrivalTime = string.Empty,
+                                                         EndFlightDepartureTime = string.Empty,
+                                                         EndFlightArrivalTime = string.Empty,
+                                                         Tiitle = pt.TypeDescription,
+                                                         Dob = bf.BirthDay,
+                                                         Paid = bf.Paid,
+                                                         Currency = bf.Rate
+                                                     }
+                                                     //).ToListAsync()
+                                                     ;
+
+                            var result = await reportHotel.ToListAsync();
+                            return result as List<T>;
+                        }
+                    case enumTouristReportType.Accountant:
+                        {
                             var reportFlight = from bf in _dbContext.BookedFlights
                                                join u in _dbContext.Users on bf.MaratukFlightAgentId equals u.Id
                                                join pt in _dbContext.PassengerTypes on bf.PassengerTypeId equals pt.Id
                                                join bsc in _dbContext.AgentStatus on bf.BookStatusForClient equals bsc.Id
                                                join bsm in _dbContext.MaratukAgentStatus on bf.BookStatusForMaratuk equals bsm.Id
-                                               join sh in _dbContext.Schedule on bf.StartFlightId equals sh.Id
-                                               //left join sh1 in _db.Schedule on bf.EndFlightId equals sh1.Id into gj
-                                               //from subsh in gj.DefaultIfEmpty()
-                                               where bf.ToureTypeId == "Flight"
-                                               select new ReportTouristInfoFlight()
+                                               join sh in _dbContext.Schedule on bf.StartFlightId equals sh.FlightId
+                                               join shd1 in _dbContext.Schedule on bf.EndFlightId equals shd1.FlightId into gj
+                                               from subsh1 in gj.DefaultIfEmpty()
+                                                   //where bf.ToureTypeId == tourTypeString
+                                                   // Get all types of books
+                                               select new
                                                {
+                                                   ToureTypeId = bf.ToureTypeId,
                                                    Date = bf.DateOfOrder,
                                                    SurName = bf.Surname,
                                                    Name = bf.Name,
-                                                   FlightManager = u.Name,
+                                                   Manager = u.Name,
                                                    BookStatus = bsm.Name,
                                                    DepartureDate = bf.TourStartDate,
-                                                   DepartureTime = sh.DepartureTime,
                                                    ArrivalDate = bf.TourEndDate,
-                                                   ArrivalTime = sh.ArrivalTime,
+                                                   DepartureTime = (DateTime?)sh.DepartureTime,
+                                                   ArrivalTime = (DateTime?)sh.ArrivalTime,
+                                                   EndFlightDepartureTime = (DateTime?)subsh1.DepartureTime,
+                                                   //EndFlightArrivalTime = subsh1 != null && subsh1.ArrivalTime != null ? subsh1.ArrivalTime.TimeOfDay.ToString("HH:mm") : null,
+                                                   EndFlightArrivalTime = (DateTime?)subsh1.ArrivalTime,
                                                    Tiitle = pt.TypeDescription,
                                                    Dob = bf.BirthDay,
                                                    Paid = bf.Paid,
-                                                   Currency = bf.Rate,
-                                                   // EndFlightTourStartDate = bf.TourStartDate,
-                                                   // EndFlightDepartureTime = sh.DepartureTime,
-                                                   // EndFlightTourEndDate = bf.TourEndDate,
-                                                   // EndFlightArrivalTime = sh.ArrivalTime
+                                                   Currency = bf.Rate
                                                };
+                            var reportHotel = from bf in _dbContext.BookedFlights
+                                              join bh in _dbContext.BookedHotel on bf.OrderNumber equals bh.OrderNumber
+                                              join bhg in _dbContext.BookedHotelGuest on bf.OrderNumber equals bhg.OrderNumber
+                                              join u in _dbContext.Users on bf.MaratukHotelAgentId equals u.Id
+                                              join pt in _dbContext.PassengerTypes on bf.PassengerTypeId equals pt.Id
+                                              join bsc in _dbContext.AgentStatus on bf.BookStatusForClient equals bsc.Id
+                                              join bsm in _dbContext.MaratukAgentStatus on bf.BookStatusForMaratuk equals bsm.Id
+                                              join sh in _dbContext.Schedule on bf.StartFlightId equals sh.FlightId into startFlights
+                                              from startFlight in startFlights.DefaultIfEmpty()
+                                              join sh1 in _dbContext.Schedule on bf.EndFlightId equals sh1.FlightId into endFlights
+                                              from endFlight in endFlights.DefaultIfEmpty()
+                                                  //where bf.ToureTypeId == tourTypeString
+                                                  // Get all types of books
+                                              select new
+                                              {
+                                                  ToureTypeId = bf.ToureTypeId,
+                                                  Date = bf.DateOfOrder,
+                                                  SurName = bhg.Surname,
+                                                  Name = bhg.Name,
+                                                  Manager = u.Name,
+                                                  BookStatus = bsm.Name,
+                                                  DepartureDate = bf.TourStartDate,
+                                                  ArrivalDate = bf.TourEndDate,
+                                                  DepartureTime = (DateTime?)null,
+                                                  ArrivalTime = (DateTime?)null,
+                                                  EndFlightDepartureTime = (DateTime?)null,
+                                                  EndFlightArrivalTime = (DateTime?)null,
+                                                  Tiitle = pt.TypeDescription,
+                                                  Dob = bf.BirthDay,
+                                                  Paid = bf.Paid,
+                                                  Currency = bf.Rate
+                                              };
 
-                            //var reportFlight = from bf in _dbContext.BookedFlights
-                            //                   select new ReportTouristInfoFlight()
-                            //                   {
-                            //                       Dob = bf.BirthDay
-                            //                   };
+                            // *** UNION ALL ***
+                            var combinedQuery = reportFlight.Union(reportHotel)
+                                .Select(x => new ReportTouristInfoFlight
+                                {
+                                    ToureTypeId = x.ToureTypeId,
+                                    Date = x.Date,
+                                    SurName = x.SurName,
+                                    Name = x.Name,
+                                    Manager = x.Manager,
+                                    BookStatus = x.BookStatus,
+                                    DepartureDate = x.DepartureDate,
+                                    ArrivalDate = x.ArrivalDate,
+                                    DepartureTime = x.DepartureTime != null ? ((DateTime)x.DepartureTime).ToString(@"HH:mm") : string.Empty,
+                                    ArrivalTime = x.ArrivalTime != null ? ((DateTime)x.ArrivalTime).ToString(@"HH:mm") : string.Empty,
+                                    EndFlightDepartureTime = x.EndFlightDepartureTime != null ? ((DateTime)x.EndFlightDepartureTime).ToString(@"HH:mm") : string.Empty,
+                                    EndFlightArrivalTime = x.EndFlightArrivalTime != null ? ((DateTime)x.EndFlightArrivalTime).ToString(@"HH:mm") : string.Empty,
+                                    Tiitle = x.Tiitle,
+                                    Dob = x.Dob,
+                                    Paid = x.Paid,
+                                    Currency = x.Currency
+                                });
 
-                            var result = await reportFlight.ToListAsync();
+                            var resultList = await combinedQuery.ToListAsync();
 
+                            //******************
 
-                            //return result as T;
-                            return result as List<T>;
+                            return resultList as List<T>;
                         }
-
-                    //case enumTouristReportType.Hotel:
-                    //    var reportB = new ReportTouristInfoHotel { DataB = "Data for Report B" };
-                    //    return await Task.FromResult(reportB as T);
-
                     default:
                         throw new ArgumentException("Invalid report type", nameof(reportType));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

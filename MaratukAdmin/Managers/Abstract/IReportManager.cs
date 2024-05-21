@@ -12,7 +12,7 @@ namespace MaratukAdmin.Managers.Abstract
         Task<List<FlightReportPreparedData>> GetFlightReportPreparedData();
         //Task<List<ReportTouristInfoHotel>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId);
         //Task<T> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, int priceBlockId) where T : class;
-        Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType) where T : class;
+        Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, bool includeRate = false) where T : class;
 
     }
 }
