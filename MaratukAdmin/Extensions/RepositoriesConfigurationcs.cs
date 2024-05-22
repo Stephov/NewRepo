@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Repositories.Abstract;
+﻿using MaratukAdmin.Managers.Abstract;
+using MaratukAdmin.Repositories.Abstract;
 using MaratukAdmin.Repositories.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Concrete;
 using MaratukAdmin.Repositories.Concrete.Sansejour;
@@ -37,6 +38,7 @@ namespace MaratukAdmin.Extensions
             .AddScoped<ICurrencyRepository, CurrencyRepository>()
             .AddScoped<ICurrencyRatesRepository, CurrencyRatesRepository>()
             .AddScoped<IAircraftRepository, AircraftRepository>()
+            .AddScoped<IAirportRepository, AirportRepository>()
             .AddScoped<IAirServiceRepository, AirServiceRepository>()
             .AddScoped<IOrderStatusRepository, OrderStatusRepository>()
             .AddScoped<IPricePackageRepository, PricePackageRepository>()
