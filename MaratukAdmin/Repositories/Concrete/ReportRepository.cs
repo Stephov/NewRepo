@@ -116,6 +116,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                                       where bf.ToureTypeId == tourTypeString
                                                       select new ReportTouristInfoFlight()
                                                       {
+                                                          OrderNumber = bf.OrderNumber,
                                                           ToureTypeId = bf.ToureTypeId,
                                                           Date = bf.DateOfOrder,
                                                           SurName = bf.Surname,
@@ -131,6 +132,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                                           Tiitle = pt.TypeDescription,
                                                           Dob = bf.BirthDay,
                                                           Paid = bf.Paid,
+                                                          TotalPrice = bf.TotalPrice,
                                                           Currency = bf.Rate
                                                       }
                                                       //).ToListAsync()
@@ -164,6 +166,7 @@ namespace MaratukAdmin.Repositories.Concrete
 
                                                      select new ReportTouristInfoFlight()
                                                      {
+                                                         OrderNumber = bf.OrderNumber,
                                                          ToureTypeId = bf.ToureTypeId,
                                                          Date = bf.DateOfOrder,
                                                          SurName = bhg.Surname,
@@ -179,6 +182,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                                          Tiitle = pt.TypeDescription,
                                                          Dob = bf.BirthDay,
                                                          Paid = bf.Paid,
+                                                         TotalPrice = bf.TotalPrice,
                                                          Currency = bf.Rate
                                                      }
                                                      //).ToListAsync()
@@ -189,6 +193,12 @@ namespace MaratukAdmin.Repositories.Concrete
                         }
                     case enumTouristReportType.Accountant:
                         {
+                            enumTourType tourType = enumTourType.Flight;
+                            FieldInfo fieldInfo = typeof(enumTourType).GetField(tourType.ToString());
+                            EnumMemberAttribute enumMemberAttribute = fieldInfo.GetCustomAttribute<EnumMemberAttribute>();
+                            string tourTypeFlightString = enumMemberAttribute.Value;
+                            string sss = tourTypeFlightString;
+
                             var reportFlight = from bf in _dbContext.BookedFlights
                                                join u in _dbContext.Users on bf.MaratukFlightAgentId equals u.Id
                                                join pt in _dbContext.PassengerTypes on bf.PassengerTypeId equals pt.Id
@@ -197,10 +207,10 @@ namespace MaratukAdmin.Repositories.Concrete
                                                join sh in _dbContext.Schedule on bf.StartFlightId equals sh.FlightId
                                                join shd1 in _dbContext.Schedule on bf.EndFlightId equals shd1.FlightId into gj
                                                from subsh1 in gj.DefaultIfEmpty()
-                                                   //where bf.ToureTypeId == tourTypeString
-                                                   // Get all types of books
+                                               where bf.ToureTypeId == tourTypeFlightString
                                                select new
                                                {
+                                                   OrderNumber = bf.OrderNumber,
                                                    ToureTypeId = bf.ToureTypeId,
                                                    Date = bf.DateOfOrder,
                                                    SurName = bf.Surname,
@@ -217,11 +227,17 @@ namespace MaratukAdmin.Repositories.Concrete
                                                    Tiitle = pt.TypeDescription,
                                                    Dob = bf.BirthDay,
                                                    Paid = bf.Paid,
+                                                   TotalPrice = bf.TotalPrice,
                                                    Currency = bf.Rate
                                                };
+                            tourType = enumTourType.FlightAndHotel;
+                            fieldInfo = typeof(enumTourType).GetField(tourType.ToString());
+                            enumMemberAttribute = fieldInfo.GetCustomAttribute<EnumMemberAttribute>();
+                            string tourTypeHotelString = enumMemberAttribute.Value;
+                            string sss1 = tourTypeHotelString;
                             var reportHotel = from bf in _dbContext.BookedFlights
                                               join bh in _dbContext.BookedHotel on bf.OrderNumber equals bh.OrderNumber
-                                              join bhg in _dbContext.BookedHotelGuest on bf.OrderNumber equals bhg.OrderNumber
+                                              //join bhg in _dbContext.BookedHotelGuest on bf.OrderNumber equals bhg.OrderNumber        // this join makes duplicates
                                               join u in _dbContext.Users on bf.MaratukHotelAgentId equals u.Id
                                               join pt in _dbContext.PassengerTypes on bf.PassengerTypeId equals pt.Id
                                               join bsc in _dbContext.AgentStatus on bf.BookStatusForClient equals bsc.Id
@@ -230,14 +246,16 @@ namespace MaratukAdmin.Repositories.Concrete
                                               from startFlight in startFlights.DefaultIfEmpty()
                                               join sh1 in _dbContext.Schedule on bf.EndFlightId equals sh1.FlightId into endFlights
                                               from endFlight in endFlights.DefaultIfEmpty()
-                                                  //where bf.ToureTypeId == tourTypeString
-                                                  // Get all types of books
+                                              where bf.ToureTypeId == tourTypeHotelString
                                               select new
                                               {
+                                                  OrderNumber = bf.OrderNumber,
                                                   ToureTypeId = bf.ToureTypeId,
                                                   Date = bf.DateOfOrder,
-                                                  SurName = bhg.Surname,
-                                                  Name = bhg.Name,
+                                                  //SurName = bhg.Surname,          // use name and surname from BookedFlights
+                                                  //Name = bhg.Name,
+                                                  SurName = bf.Surname,
+                                                  Name = bf.Name,
                                                   Manager = u.Name,
                                                   BookStatus = bsm.Name,
                                                   DepartureDate = bf.TourStartDate,
@@ -249,6 +267,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                                   Tiitle = pt.TypeDescription,
                                                   Dob = bf.BirthDay,
                                                   Paid = bf.Paid,
+                                                  TotalPrice = bf.TotalPrice,
                                                   Currency = bf.Rate
                                               };
 
@@ -256,6 +275,7 @@ namespace MaratukAdmin.Repositories.Concrete
                             var combinedQuery = reportFlight.Union(reportHotel)
                                 .Select(x => new ReportTouristInfoFlight
                                 {
+                                    OrderNumber = x.OrderNumber,
                                     ToureTypeId = x.ToureTypeId,
                                     Date = x.Date,
                                     SurName = x.SurName,
@@ -271,10 +291,11 @@ namespace MaratukAdmin.Repositories.Concrete
                                     Tiitle = x.Tiitle,
                                     Dob = x.Dob,
                                     Paid = x.Paid,
+                                    TotalPrice = x.TotalPrice,
                                     Currency = x.Currency
                                 });
 
-                            var resultList = await combinedQuery.ToListAsync();
+                            var resultList = await combinedQuery.OrderBy(c => c.Date).OrderBy(c1 => c1.ToureTypeId).ToListAsync();
 
                             //******************
 

@@ -3,6 +3,7 @@
     public class ReportTouristInfoFlight : IReportTouristInfo
     {
         public string? ToureTypeId { get; set; }
+        public string? OrderNumber { get; set; }
         public DateTime? Date { get; set; }
         public string? Name { get; set; }
         public string? SurName { get; set; }
@@ -17,6 +18,7 @@
         public string? Tiitle { get; set; }
         public DateTime? Dob {  get; set; }
         public double Paid { get; set; }
+        public double TotalPrice { get; set; }
         public string? Currency { get; set; }
         public double? CurrencyRate { get; set; }
         public string? BookStatus { get; set; }
