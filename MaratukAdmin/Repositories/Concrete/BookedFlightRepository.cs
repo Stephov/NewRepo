@@ -1,4 +1,6 @@
-﻿using MaratukAdmin.Entities;
+﻿using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Dto.Response;
+using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
 using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Infrastructure;
@@ -10,7 +12,7 @@ using System.Linq;
 
 namespace MaratukAdmin.Repositories.Concrete
 {
-    public class BookedFlightRepository :  IBookedFlightRepository
+    public class BookedFlightRepository : IBookedFlightRepository
     {
         protected readonly MaratukDbContext _dbContext;
 
@@ -123,9 +125,38 @@ namespace MaratukAdmin.Repositories.Concrete
             //{
             //    _dbContext.Entry(bookedFlight).State = EntityState.Modified;
             //}
-            
+
             _dbContext.BookedFlights.UpdateRange(bookedFlights);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<ReturnStatusResponse> SetTicketNumberToBookAsync(SetTicketNumberToBookRequest request)
+        {
+            ReturnStatusResponse retValue = new()
+            {
+                StatusCode = StatusCodes.Status200OK,
+                StatusMessage = "OK"
+            };
+
+            try
+            {
+                foreach (var ticket in request.Tikets)
+                {
+                    var bookedFlight = await GetBookedFlightByIdAsync(ticket.BookId);
+                    if (bookedFlight != null)
+                    {
+                        bookedFlight.TicketNumber = ticket.TicketNumber;
+                    }
+                }
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                retValue.StatusCode = StatusCodes.Status400BadRequest;
+                retValue.StatusMessage = ex.Message;
+            }
+            return retValue;
+        }
+
     }
 }

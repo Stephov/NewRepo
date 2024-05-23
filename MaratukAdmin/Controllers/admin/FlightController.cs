@@ -1,5 +1,6 @@
 ﻿using Bogus.DataSets;
 using MaratukAdmin.Dto.Request;
+using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Services;
@@ -46,7 +47,7 @@ namespace MaratukAdmin.Controllers.admin
         [HttpGet("FlightByIds/")]
         public async Task<ActionResult> GetFlightByIds(int departureCountryId, int departureCityId, int destinationCountryId, int destinationCityId)
         {
-            var result = await _flightManager.GetFlightByIdsAsync(departureCountryId,departureCityId, destinationCountryId, destinationCityId);
+            var result = await _flightManager.GetFlightByIdsAsync(departureCountryId, departureCityId, destinationCountryId, destinationCityId);
 
             return Ok(result);
         }
@@ -140,23 +141,23 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("GetBookFlightByMaratukAgentId/{maratukAgentId:int}")]
-        public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookFlightForMaratukAgentAsync(int roleId,int maratukAgentId, int pageNumber = 1, int pageSize = 10)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> GetBookFlightForMaratukAgentAsync(int roleId, int maratukAgentId, int pageNumber = 1, int pageSize = 10)
         {
             var res = await _bookedFlightManager.GetBookedFlightByMaratukAgentIdAsync(roleId, maratukAgentId, pageNumber, pageSize);
             return res;
         }
 
         [HttpGet("SearchBookFlight")]
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightAsync(int userId,int roleId, string? searchText,int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightAsync(int userId, int roleId, string? searchText, int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
         {
             var res = await _bookedFlightManager.SearchBookedFlightAsync(userId, roleId, searchText, status, pageNumber, pageSize, startDate, endDate);
             return res;
         }
 
         [HttpGet("SearchBookFlightByMaratukAgentId/{maratukAgentId:int}")]
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(int roleId,int maratukAgentId, string? searchText, int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(int roleId, int maratukAgentId, string? searchText, int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
         {
-            var res = await _bookedFlightManager.SearchBookedFlightByMaratukAgentIdAsync(roleId,maratukAgentId, searchText, status, pageNumber, pageSize, startDate, endDate);
+            var res = await _bookedFlightManager.SearchBookedFlightByMaratukAgentIdAsync(roleId, maratukAgentId, searchText, status, pageNumber, pageSize, startDate, endDate);
             return res;
         }
 
@@ -168,7 +169,7 @@ namespace MaratukAdmin.Controllers.admin
         }
 
         [HttpGet("SearchBookFlightForAccountat")]
-        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(string? searchText,int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<BookedFlightResponseFinalForMaratukAgent> SearchBookFlightForMaratukAgentAsync(string? searchText, int? status, DateTime? startDate = null, DateTime? endDate = null, int pageNumber = 1, int pageSize = 10)
         {
             var res = await _bookedFlightManager.SearchBookedFlightForAccAsync(pageNumber, pageSize, searchText, status, startDate, endDate);
             return res;
@@ -192,10 +193,38 @@ namespace MaratukAdmin.Controllers.admin
 
         [HttpPut("UpdateBookFlightStatus")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateBookFlightStatusAsync(string orderNumber,int statusId,int role,double? totalPrice, string? comment)
+        public async Task<IActionResult> UpdateBookFlightStatusAsync(string orderNumber, int statusId, int role, double? totalPrice, string? comment)
         {
             var result = await _bookedFlightManager.UpdateBookedStatusAsync(orderNumber, statusId, role, totalPrice, comment);
             return Ok(result);
+        }
+
+        [HttpPost("SetTicketNumberToBook")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> SetTicketNumberToBook([FromBody] SetTicketNumberToBookRequest request)
+        {
+            try
+            {
+                var result = await _bookedFlightManager.SetTicketNumberToBookAsync(request);
+
+                if (result != null && result.StatusCode == 200)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest("Something went wrong");
+                }
+                
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Something went wrong");
+            }
         }
     }
 }

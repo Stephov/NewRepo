@@ -1,4 +1,6 @@
-﻿using MaratukAdmin.Entities;
+﻿using MaratukAdmin.Dto.Request.Sansejour;
+using MaratukAdmin.Dto.Response;
+using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Global;
 
 namespace MaratukAdmin.Repositories.Abstract
@@ -15,5 +17,6 @@ namespace MaratukAdmin.Repositories.Abstract
         Task<List<BookedFlight>> GetBookedFlightByMaratukAgentForAccAsync();
         Task<int> GetBookedFlightCountAsync();
         Task UpdateBookedFlightsAsync(List<BookedFlight> bookedFlights);
+        Task<ReturnStatusResponse> SetTicketNumberToBookAsync(SetTicketNumberToBookRequest request);
     }
 }
