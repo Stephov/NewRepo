@@ -136,6 +136,7 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                                 on hotel.City equals cty.Id
                                 where (countryId == null || (int)hotel.Country == countryId)
                                    && (cityId == null || (int)hotel.City == cityId)
+                                orderby cty.NameEng
                                 select new HotelResponseModel()
                                 {
                                     hotel = hotel,

@@ -110,10 +110,10 @@ namespace MaratukAdmin.Managers.Concrete
             entity.OnlyFligth = price.OnlyFligth;
             entity.Commission = (price.Commission >= 1) ? (price.Commission / 100) : price.Commission;
 
-        // map the ScheduleRequests to Schedules
+            // map the ScheduleRequests to Schedules
 
 
-        var result = await _mainRepository.UpdateAsync(entity);
+            var result = await _mainRepository.UpdateAsync(entity);
 
             return result;
         }
@@ -285,6 +285,7 @@ namespace MaratukAdmin.Managers.Concrete
             servicesPricingPolicyDB.AgeUpTo = addServicesPricingPolicy.AgeUpTo;
             servicesPricingPolicyDB.CountFrom = addServicesPricingPolicy.CountFrom;
             servicesPricingPolicyDB.CountUpTo = addServicesPricingPolicy.CountUpTo;
+            servicesPricingPolicyDB.StopSale = addServicesPricingPolicy.StopSale;
 
 
 
@@ -311,6 +312,7 @@ namespace MaratukAdmin.Managers.Concrete
             res.AgeUpTo = editServicesPricingPolicy.AgeUpTo;
             res.CountFrom = editServicesPricingPolicy.CountFrom;
             res.CountUpTo = editServicesPricingPolicy.CountUpTo;
+            res.StopSale = editServicesPricingPolicy.StopSale;
 
 
 
@@ -333,7 +335,7 @@ namespace MaratukAdmin.Managers.Concrete
             return await _priceBlockRepository.GetServicesPricingPolicyByPriceBlockServicesIdAsync(id);
         }
 
-        public async Task<List<GroupedFlight>> GetSearchInfoAsync(int TripTypeId,bool isOnlyFligth)
+        public async Task<List<GroupedFlight>> GetSearchInfoAsync(int TripTypeId, bool isOnlyFligth)
         {
             var result = await _functionRepository.GetFligthInfoFunctionAsync(TripTypeId, isOnlyFligth);
             int identity = 0;

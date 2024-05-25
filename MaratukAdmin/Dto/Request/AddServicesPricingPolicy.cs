@@ -16,6 +16,7 @@ namespace MaratukAdmin.Dto.Request
         public int AgeUpTo { get; set; }
         public int CountFrom { get; set; }
         public int CountUpTo { get; set; }
+        public bool StopSale { get; set; }
 
     }
 }
