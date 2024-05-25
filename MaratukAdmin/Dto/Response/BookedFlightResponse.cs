@@ -36,9 +36,13 @@ namespace MaratukAdmin.Dto.Response
         public string? EndFlightDepartureTime { get; set; }
         public string? EndFlightArrivalTime { get; set; }
         public string? StartFlightDepartureCity { get; set; }
+        public string? StartFlightDepartureAirport { get; set; }
         public string? StartFlightArrivalCity { get; set; }
+        public string? StartFlightArrivalAirport { get; set; }
         public string? EndFlightDepartureCity { get; set; }
+        public string? EndFlightDepartureAirport { get; set; }
         public string? EndFlightArrivalCity { get; set; }
+        public string? EndFlightArrivalAirport { get; set; }
         public string? AirportName { get; set; }
         public DateTime? DeadLine { get; set; }
         public double Paid { get; set; } = 0;
@@ -97,9 +101,13 @@ namespace MaratukAdmin.Dto.Response
         public string? EndFlightArrivalTime { get; set;}
 
         public string? StartFlightDepartureCity { get; set; }
+        public string? StartFlightDepartureAirport { get; set; }
         public string? StartFlightArrivalCity { get; set; }
+        public string? StartFlightArrivalAirport { get; set; }
         public string? EndFlightDepartureCity { get; set; }
+        public string? EndFlightDepartureAirport { get; set; }
         public string? EndFlightArrivalCity { get; set; }
+        public string? EndFlightArrivalAirport { get; set; }
 
         public string? AirportName { get; set; }
         public DateTime? DeadLine { get; set; }
@@ -167,7 +175,7 @@ namespace MaratukAdmin.Dto.Response
         public DateTime PasportExpiryDate { get; set; }
         public string GenderName { get; set; }
         public int PassengerTypeId { get; set; }
-
+        public string? TicketNumber { get; set; }
 
     }
 
