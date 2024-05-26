@@ -94,6 +94,14 @@ namespace MaratukAdmin.Utils
             Accountant = 3
         }
 
+        public enum enumFlightReportType
+        {
+            [EnumMember(Value = "Departure")]
+            Departure = 1,
+            [EnumMember(Value = "Arrival")]
+            Arrival = 2,
+        }
+
         public enum enumTourType
         {
             [EnumMember(Value = "Flight")]

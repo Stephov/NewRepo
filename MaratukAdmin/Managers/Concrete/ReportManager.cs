@@ -29,15 +29,15 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-        public async Task<List<FlightReportPreparedData>> GetFlightReportPreparedData()
+        public async Task<List<FlightReportPreparedData>> GetFlightReportPreparedData(enumFlightReportType reportType, string flightNumber)
         {
-            return await _reportRepository.GetFlightReportPreparedData();
+            return await _reportRepository.GetFlightReportPreparedData(reportType, flightNumber);
         }
-        public async Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates()
+        public async Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates(enumFlightReportType reportType, string flightNumber)
         {
-            return await _reportRepository.GetBookUniqueDepartureDates();
+            return await _reportRepository.GetBookUniqueDepartureDates(reportType, flightNumber);
         }
-        public async Task<List<ReportFlightInfo>> GetReportFlightInfo()
+        public async Task<List<ReportFlightInfo>> GetReportFlightInfo(enumFlightReportType reportType, string flightNumber)
         {
             List<ReportFlightInfo> retValue = new();
             DateTime prevDepartureDate = DateTime.MinValue;
@@ -48,14 +48,15 @@ namespace MaratukAdmin.Managers.Concrete
             bool infoChanged = true;
             ReportFlightInfo newInfo = new();
 
-            var commission = _contractExportRepository.GetFlightCommission(308);
-            List<FlightReportPreparedData> flightReportPreparedData = await GetFlightReportPreparedData();
+            //var commission = _contractExportRepository.GetFlightCommission(308);
+
+            List<FlightReportPreparedData> flightReportPreparedData = await GetFlightReportPreparedData(reportType, flightNumber);
 
             if (flightReportPreparedData != null)
             {
                 foreach (var pData in flightReportPreparedData)
                 {
-                    if (prevDepartureDate == DateTime.MinValue || (prevDepartureDate != DateTime.MinValue && prevDepartureDate != pData.DepartureDate)
+                    if (prevDepartureDate == DateTime.MinValue || (prevDepartureDate != DateTime.MinValue && prevDepartureDate != pData.FlightDate)
                         || (prevFlightNumber == "NoInfo" || (prevFlightNumber != "NoInfo" && prevFlightNumber != pData.FlightNumber))
                         || (prevCurrency == "NoInfo" || (prevCurrency != "NoInfo" && prevCurrency != pData.Currency))
                         )
@@ -73,7 +74,7 @@ namespace MaratukAdmin.Managers.Concrete
 
                         newInfo = new()
                         {
-                            DepartureDate = pData.DepartureDate,
+                            FlightDate = pData.FlightDate,
                             FlightNumber = pData.FlightNumber,
                             WaitingCount = pData.MaratukAgentStatusId == (int)Enums.enumBookStatusForMaratuk.Waiting ? pData.StatusesCount : 0,
                             ConfirmedCount = pData.MaratukAgentStatusId == (int)Enums.enumBookStatusForMaratuk.Confirmed ? pData.StatusesCount : 0,
@@ -128,7 +129,7 @@ namespace MaratukAdmin.Managers.Concrete
                         newInfo.TotalPassCount = passengersCountTotal;
                     }
 
-                    prevDepartureDate = pData.DepartureDate;
+                    prevDepartureDate = pData.FlightDate;
                     prevFlightNumber = pData.FlightNumber;
                     prevCurrency = pData.Currency;
 
@@ -161,9 +162,6 @@ namespace MaratukAdmin.Managers.Concrete
             return retValue;
         }
 
-        //public async Task<List<ReportTouristInfoHotel>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId)
-        //public async Task<List<IReportTouristInfo>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId)
-        //public async Task<T> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, int priceBlockId) where T : class
         public async Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, bool includeRate = false) where T : class
         {
             //var commission = await _contractExportRepository.GetFlightCommission(priceBlockId);

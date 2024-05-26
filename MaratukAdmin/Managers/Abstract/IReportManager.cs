@@ -5,11 +5,11 @@ namespace MaratukAdmin.Managers.Abstract
 {
     public interface IReportManager
     {
-        Task<List<ReportFlightInfo>> GetReportFlightInfo();
+        Task<List<ReportFlightInfo>> GetReportFlightInfo(enumFlightReportType reportType, string flightNumber);
         //Task<ReportFlightInfo> GetReportFlightInfo();
         //Task<BookUniqueDepartureDatesByFlights> GetBookUniqueDepartureDates();
-        Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates();
-        Task<List<FlightReportPreparedData>> GetFlightReportPreparedData();
+        Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates(enumFlightReportType reportType, string flightNumber);
+        Task<List<FlightReportPreparedData>> GetFlightReportPreparedData(enumFlightReportType reportType, string flightNumber);
         //Task<List<ReportTouristInfoHotel>> GetReportTouristInfo(enumTouristReportType reportType, int priceBlockId);
         //Task<T> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, int priceBlockId) where T : class;
         Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, bool includeRate = false) where T : class;

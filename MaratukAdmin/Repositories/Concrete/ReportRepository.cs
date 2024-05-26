@@ -26,7 +26,7 @@ namespace MaratukAdmin.Repositories.Concrete
 
 
         //public async Task<BookUniqueDepartureDatesByFlights> GetBookUniqueDepartureDates()
-        public async Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates()
+        public async Task<List<BookUniqueDepartureDatesByFlights>> GetBookUniqueDepartureDates(enumFlightReportType reportType, string flightNumber)
         {
             //var uniqueDepartureDates = _dbContext.BookedFlights
             //    .Where(bf => bf.TourEndDate != null)
@@ -62,17 +62,18 @@ namespace MaratukAdmin.Repositories.Concrete
             return result;
         }
 
-        public async Task<List<FlightReportPreparedData>> GetFlightReportPreparedData()
+        public async Task<List<FlightReportPreparedData>> GetFlightReportPreparedData(enumFlightReportType reportType, string flightNumber)
         {
             var query = from dbf in _dbContext.BookedFlights
-                        join f in _dbContext.Flight on dbf.StartFlightId equals f.Id
+                        join f in _dbContext.Flight on (reportType == enumFlightReportType.Departure) ? dbf.StartFlightId : dbf.EndFlightId equals f.Id
                         join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
-                        where dbf.TourStartDate != null
+                        where ((reportType == enumFlightReportType.Departure) ? dbf.TourStartDate != null : dbf.TourEndDate != null) 
+                                && f.FlightValue == (flightNumber == null ? f.FlightValue : flightNumber)
                         group new { mas, dbf, f } by new { mas.Id, mas.Name, dbf.TourStartDate.Date, f.FlightValue, dbf.StartFlightId, dbf.Rate } into grouped
                         orderby grouped.Key.Date
                         select new FlightReportPreparedData
                         {
-                            DepartureDate = grouped.Key.Date,
+                            FlightDate = grouped.Key.Date,
                             FlightNumber = grouped.Key.FlightValue,
                             StartFlightId = grouped.Key.StartFlightId,
                             MaratukAgentStatusId = grouped.Key.Id,
@@ -80,7 +81,7 @@ namespace MaratukAdmin.Repositories.Concrete
                             StatusesCount = grouped.Count(),
                             TotalPrice = grouped.Sum(x => x.dbf.TotalPrice),
                             Currency = grouped.Key.Rate,
-                            PassengersCount = grouped.Count(x => x.dbf.StartFlightId != null)
+                            PassengersCount = grouped.Count(x => (reportType == enumFlightReportType.Departure) ? x.dbf.StartFlightId != null : x.dbf.EndFlightId != null)
                         };
 
             List<FlightReportPreparedData> flightReportDataList = await query.ToListAsync();

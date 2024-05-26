@@ -2,7 +2,7 @@
 {
     public class ReportFlightInfo
     {
-        public DateTime DepartureDate {  get; set; }
+        public DateTime FlightDate {  get; set; }
         public string FlightNumber { get; set; }
         public int WaitingCount { get; set; }
         public int ConfirmedCount { get; set; }
