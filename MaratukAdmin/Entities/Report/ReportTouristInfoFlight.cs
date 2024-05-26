@@ -1,6 +1,6 @@
 ﻿namespace MaratukAdmin.Entities.Report
 {
-    public class ReportTouristInfoFlight : IReportTouristInfo
+    public class ReportTouristInfoFlight
     {
         public string? ToureTypeId { get; set; }
         public string? OrderNumber { get; set; }
@@ -16,7 +16,7 @@
         public string? EndFlightArrivalTime { get; set; }
 
         public string? Tiitle { get; set; }
-        public DateTime? Dob {  get; set; }
+        public DateTime? Dob { get; set; }
         public double Paid { get; set; }
         public double TotalPrice { get; set; }
         public string? Currency { get; set; }

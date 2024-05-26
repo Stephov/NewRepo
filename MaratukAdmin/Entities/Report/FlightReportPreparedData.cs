@@ -2,7 +2,7 @@
 {
     public class FlightReportPreparedData
     {
-        public DateTime DepartureDate { get; set; }
+        public DateTime FlightDate { get; set; }
         public string FlightNumber { get; set; }
         public int StartFlightId { get; set; }
         public int MaratukAgentStatusId { get; set; }

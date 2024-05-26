@@ -1,7 +1,7 @@
 ﻿
 namespace MaratukAdmin.Entities.Report
 {
-    public class ReportTouristInfoHotel : IReportTouristInfo
+    public class ReportTouristInfoHotel
     {
         public DateTime? Date { get; set; }
         public string? Name { get; set; }

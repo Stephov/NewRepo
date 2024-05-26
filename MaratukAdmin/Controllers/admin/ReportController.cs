@@ -22,9 +22,9 @@ namespace MaratukAdmin.Controllers.admin
         [HttpGet("GetReportFlightInfo")]
         //public async Task<IActionResult> GetReportFlightInfo()
         //public async Task<List<ReportFlightInfo>> GetReportFlightInfo()
-        public async Task<List<ReportFlightInfo>> GetReportFlightInfo()
+        public async Task<List<ReportFlightInfo>> GetReportFlightInfo(enumFlightReportType reportType, string? flightNumber = null)
         {
-            var result = await _reportManager.GetReportFlightInfo();
+            var result = await _reportManager.GetReportFlightInfo(reportType, flightNumber);
 
             //return Ok(result);
             return result;
