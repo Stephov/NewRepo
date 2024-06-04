@@ -259,8 +259,10 @@ namespace MaratukAdmin.Managers.Concrete
 
             foreach (var group in groupedBookedFlights)
             {
-                var bookedUsers = group.Select(flight => new BookedUserInfo
+                //var bookedUsers = group.Select(flight => new BookedUserInfo
+                var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                 {
+                    Id = flight.Id,
                     Name = flight.Name,
                     Surname = flight.Surname,
                     PhoneNumber = flight.PhoneNumber,
@@ -270,6 +272,7 @@ namespace MaratukAdmin.Managers.Concrete
                     PasportExpiryDate = flight.PasportExpiryDate,
                     GenderName = (flight.GenderId == 1) ? "Male" : "Female",
                     PassengerTypeId = flight.PassengerTypeId,
+                    TicketNumber = flight.TicketNumber
                 }).ToList();
 
                 var firstFlightInGroup = group.First();
@@ -1574,8 +1577,10 @@ namespace MaratukAdmin.Managers.Concrete
 
             foreach (var group in groupedBookedFlights)
             {
-                var bookedUsers = group.Select(flight => new BookedUserInfo
+                //var bookedUsers = group.Select(flight => new BookedUserInfo
+                var bookedUsers = group.Select(flight => new BookedUserInfoForMaratuk
                 {
+                    Id = flight.Id,
                     Name = flight.Name,
                     Surname = flight.Surname,
                     PhoneNumber = flight.PhoneNumber,
@@ -1584,7 +1589,8 @@ namespace MaratukAdmin.Managers.Concrete
                     Passport = flight.Passport,
                     PasportExpiryDate = flight.PasportExpiryDate,
                     PassengerTypeId = flight.PassengerTypeId,
-                    GenderName = (flight.GenderId == 1) ? "Male" : "Female"
+                    GenderName = (flight.GenderId == 1) ? "Male" : "Female",
+                    TicketNumber = flight.TicketNumber
                     // Map other properties as needed
                 }).ToList();
 

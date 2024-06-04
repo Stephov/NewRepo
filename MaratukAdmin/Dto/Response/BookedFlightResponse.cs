@@ -4,7 +4,8 @@ namespace MaratukAdmin.Dto.Response
 {
     public class BookedFlightResponse
     { 
-        public List<BookedUserInfo> bookedUsers { get; set; }
+        //public List<BookedUserInfo> bookedUsers { get; set; }
+        public List<BookedUserInfoForMaratuk> bookedUsers { get; set; }
         public int Id { get; set; }
         public string OrderNumber { get; set; }    
         public DateTime DateOfOrder { get; set; }
