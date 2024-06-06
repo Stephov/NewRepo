@@ -67,7 +67,7 @@ namespace MaratukAdmin.Repositories.Concrete
             var query = from dbf in _dbContext.BookedFlights
                         join f in _dbContext.Flight on (reportType == enumFlightReportType.Departure) ? dbf.StartFlightId : dbf.EndFlightId equals f.Id
                         join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
-                        where ((reportType == enumFlightReportType.Departure) ? dbf.TourStartDate != null : dbf.TourEndDate != null) 
+                        where ((reportType == enumFlightReportType.Departure) ? dbf.TourStartDate != null : dbf.TourEndDate != null)
                                 && f.FlightValue == (flightNumber == null ? f.FlightValue : flightNumber)
                         group new { mas, dbf, f } by new { mas.Id, mas.Name, dbf.TourStartDate.Date, f.FlightValue, dbf.StartFlightId, dbf.Rate } into grouped
                         orderby grouped.Key.Date
@@ -90,7 +90,7 @@ namespace MaratukAdmin.Repositories.Concrete
         }
 
         //public async Task<List<ReportTouristInfoHotel>> GetTouristInfoPreparedDataAsync(enumTouristReportType reportType)
-        public async Task<List<T>?> GetTouristInfoPreparedDataAsync<T>(enumTouristReportType reportType) where T : class
+        public async Task<List<T>?> GetTouristInfoPreparedDataAsync<T>(enumTouristReportType reportType, DateTime? orderDateFrom = null, DateTime? orderDateTo = null) where T : class
         {
             List<ReportTouristInfoHotel> touristReportDataList = new();
 
@@ -115,6 +115,11 @@ namespace MaratukAdmin.Repositories.Concrete
                                                       join shd1 in _dbContext.Schedule on bf.EndFlightId equals shd1.FlightId into gj
                                                       from subsh1 in gj.DefaultIfEmpty()
                                                       where bf.ToureTypeId == tourTypeString
+                                                            && (
+                                                                bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
+                                                                && bf.DateOfOrder.Date <= (orderDateTo == null ? bf.DateOfOrder.Date : orderDateTo)
+                                                                )
+                                                      //orderby bf.DateOfOrder
                                                       select new ReportTouristInfoFlight()
                                                       {
                                                           OrderNumber = bf.OrderNumber,
@@ -139,7 +144,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                                       //).ToListAsync()
                                                       ;
 
-                            var result = await reportFlight.ToListAsync();
+                            var result = await reportFlight.OrderBy(c => c.Date).ToListAsync();
                             //var result = reportFlight;
 
                             return result as List<T>;
@@ -164,7 +169,11 @@ namespace MaratukAdmin.Repositories.Concrete
                                                      join sh1 in _dbContext.Schedule on bf.EndFlightId equals sh1.FlightId into endFlights
                                                      from endFlight in endFlights.DefaultIfEmpty()
                                                      where bf.ToureTypeId == tourTypeString
-
+                                                            && (
+                                                                bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
+                                                                && bf.DateOfOrder.Date <= (orderDateTo == null ? bf.DateOfOrder.Date : orderDateTo)
+                                                                )
+                                                     //orderby bf.DateOfOrder
                                                      select new ReportTouristInfoFlight()
                                                      {
                                                          OrderNumber = bf.OrderNumber,
@@ -189,7 +198,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                                      //).ToListAsync()
                                                      ;
 
-                            var result = await reportHotel.ToListAsync();
+                            var result = await reportHotel.OrderBy(c => c.Date).ToListAsync();
                             return result as List<T>;
                         }
                     case enumTouristReportType.Accountant:
@@ -209,6 +218,11 @@ namespace MaratukAdmin.Repositories.Concrete
                                                join shd1 in _dbContext.Schedule on bf.EndFlightId equals shd1.FlightId into gj
                                                from subsh1 in gj.DefaultIfEmpty()
                                                where bf.ToureTypeId == tourTypeFlightString
+                                                        && (
+                                                            bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
+                                                            && bf.DateOfOrder.Date <= (orderDateTo == null ? bf.DateOfOrder.Date : orderDateTo)
+                                                            )
+                                               //orderby bf.DateOfOrder
                                                select new
                                                {
                                                    OrderNumber = bf.OrderNumber,
@@ -248,6 +262,11 @@ namespace MaratukAdmin.Repositories.Concrete
                                               join sh1 in _dbContext.Schedule on bf.EndFlightId equals sh1.FlightId into endFlights
                                               from endFlight in endFlights.DefaultIfEmpty()
                                               where bf.ToureTypeId == tourTypeHotelString
+                                                    && (
+                                                        bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
+                                                        && bf.DateOfOrder.Date <= (orderDateTo == null ? bf.DateOfOrder.Date : orderDateTo)
+                                                        )
+                                              //orderby bf.DateOfOrder
                                               select new
                                               {
                                                   OrderNumber = bf.OrderNumber,
@@ -296,7 +315,8 @@ namespace MaratukAdmin.Repositories.Concrete
                                     Currency = x.Currency
                                 });
 
-                            var resultList = await combinedQuery.OrderBy(c => c.Date).OrderBy(c1 => c1.ToureTypeId).ToListAsync();
+                            //var resultList = await combinedQuery.OrderBy(c => c.Date).OrderBy(c1 => c1.ToureTypeId).ToListAsync();
+                            var resultList = await combinedQuery.OrderBy(c => c.Date).ToListAsync();
 
                             //******************
 

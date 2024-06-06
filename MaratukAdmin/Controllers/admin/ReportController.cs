@@ -34,13 +34,13 @@ namespace MaratukAdmin.Controllers.admin
         [HttpGet("GetTouristInfo")]
         //public async Task<List<ReportTouristInfoHotel>> GetTouristInfo(enumTouristReportType reportType, int priceBlockId)
         //public async Task<IActionResult> GetTouristInfo(enumTouristReportType reportType, int priceBlockId)
-        public async Task<IActionResult> GetTouristInfo(enumTouristReportType reportType, bool includeRate = false)
+        public async Task<IActionResult> GetTouristInfo(enumTouristReportType reportType, DateTime? orderDateFrom = null, DateTime? orderDateTo = null, bool includeRate = false)
         {
             //if (reportType == enumTouristReportType.Flight)
             if (Enum.IsDefined(typeof(enumTouristReportType), reportType))
             {
                 //var result = await _reportManager.GetReportTouristInfoAsync<ReportTouristInfoFlight> (reportType, priceBlockId);
-                var result = await _reportManager.GetReportTouristInfoAsync<ReportTouristInfoFlight> (reportType, includeRate);
+                var result = await _reportManager.GetReportTouristInfoAsync<ReportTouristInfoFlight>(reportType, orderDateFrom, orderDateTo, includeRate);
                 return Ok(result);
             }
             else
