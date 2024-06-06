@@ -162,13 +162,13 @@ namespace MaratukAdmin.Managers.Concrete
             return retValue;
         }
 
-        public async Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, bool includeRate = false) where T : class
+        public async Task<List<T>?> GetReportTouristInfoAsync<T>(enumTouristReportType reportType, DateTime? orderDateFrom = null, DateTime? orderDateTo = null, bool includeRate = false) where T : class
         {
             //var commission = await _contractExportRepository.GetFlightCommission(priceBlockId);
 
             //if (reportType == enumTouristReportType.Flight)
             //{
-            var touristReportPreparedData = await _reportRepository.GetTouristInfoPreparedDataAsync<T>(reportType);
+            var touristReportPreparedData = await _reportRepository.GetTouristInfoPreparedDataAsync<T>(reportType, orderDateFrom, orderDateTo);
 
             if (touristReportPreparedData != null && includeRate)
             {
