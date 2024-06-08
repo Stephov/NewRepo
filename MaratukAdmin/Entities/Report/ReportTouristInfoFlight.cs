@@ -15,6 +15,15 @@
         public string? EndFlightDepartureTime { get; set; }
         public string? EndFlightArrivalTime { get; set; }
 
+        public string? DepartureFlightValue { get; set; }
+        public string? ArrivalFlightValue { get; set; }
+        public string? DepartureCountryName { get; set; }
+        public string? ArrivalCountryName { get; set; }
+        public string? DepartureCityName { get; set; }
+        public string? ArrivalCityName { get; set; }
+        public string? DepartureAirportName { get; set; }
+        public string? ArrivalAirportName { get; set; }
+
         public string? Tiitle { get; set; }
         public DateTime? Dob { get; set; }
         public double Paid { get; set; }

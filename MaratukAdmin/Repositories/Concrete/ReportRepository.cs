@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal;
 using Bogus.DataSets;
+using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Report;
 using MaratukAdmin.Entities.Sansejour;
@@ -114,6 +115,22 @@ namespace MaratukAdmin.Repositories.Concrete
                                                       join sh in _dbContext.Schedule on bf.StartFlightId equals sh.FlightId
                                                       join shd1 in _dbContext.Schedule on bf.EndFlightId equals shd1.FlightId into gj
                                                       from subsh1 in gj.DefaultIfEmpty()
+                                                      join depFlight in _dbContext.Flight on bf.StartFlightId equals depFlight.Id
+                                                      join arrFlight in _dbContext.Flight on bf.EndFlightId equals arrFlight.Id into arrFlightGroup
+                                                      from arrFlight in arrFlightGroup.DefaultIfEmpty()
+                                                      join depCountry in _dbContext.Country on depFlight.DepartureCountryId equals depCountry.Id into depCountryGroup
+                                                      from depCountry in depCountryGroup.DefaultIfEmpty()
+                                                      join arrCountry in _dbContext.Country on arrFlight.DepartureCountryId equals arrCountry.Id into arrCountryGroup
+                                                      from arrCountry in arrCountryGroup.DefaultIfEmpty()
+                                                      join depCity in _dbContext.City on depFlight.DepartureCityId equals depCity.Id into depCityGroup
+                                                      from depCity in depCityGroup.DefaultIfEmpty()
+                                                      join arrCity in _dbContext.City on arrFlight.DepartureCityId equals arrCity.Id into arrCityGroup
+                                                      from arrCity in arrCityGroup.DefaultIfEmpty()
+                                                      join depAirport in _dbContext.Airport on depFlight.DepartureAirportId equals depAirport.Id into depAirportGroup
+                                                      from depAirport in depAirportGroup.DefaultIfEmpty()
+                                                      join arrAirport in _dbContext.Airport on arrFlight.DepartureAirportId equals arrAirport.Id into arrAirportGroup
+                                                      from arrAirport in arrAirportGroup.DefaultIfEmpty()
+
                                                       where bf.ToureTypeId == tourTypeString
                                                             && (
                                                                 bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
@@ -135,6 +152,14 @@ namespace MaratukAdmin.Repositories.Concrete
                                                           ArrivalTime = sh.ArrivalTime != null ? sh.ArrivalTime.ToString("HH:mm") : string.Empty,
                                                           EndFlightDepartureTime = subsh1 != null && subsh1.DepartureTime != null ? subsh1.DepartureTime.ToString("HH:mm") : string.Empty,
                                                           EndFlightArrivalTime = subsh1 != null && subsh1.ArrivalTime != null ? subsh1.ArrivalTime.ToString("HH:mm") : string.Empty,
+                                                          DepartureFlightValue = depFlight.FlightValue,
+                                                          ArrivalFlightValue=arrFlight.FlightValue,
+                                                          DepartureCountryName=depCountry.NameENG,
+                                                          ArrivalCountryName=arrCountry.NameENG,
+                                                          DepartureCityName=depCity.NameEng,
+                                                          ArrivalCityName=arrCity.NameEng,
+                                                          DepartureAirportName=depAirport.Name,
+                                                          ArrivalAirportName = arrAirport.Name,
                                                           Tiitle = pt.TypeDescription,
                                                           Dob = bf.BirthDay,
                                                           Paid = bf.Paid,
@@ -168,6 +193,21 @@ namespace MaratukAdmin.Repositories.Concrete
                                                      from startFlight in startFlights.DefaultIfEmpty()
                                                      join sh1 in _dbContext.Schedule on bf.EndFlightId equals sh1.FlightId into endFlights
                                                      from endFlight in endFlights.DefaultIfEmpty()
+                                                     join depFlight in _dbContext.Flight on bf.StartFlightId equals depFlight.Id
+                                                     join arrFlight in _dbContext.Flight on bf.EndFlightId equals arrFlight.Id into arrFlightGroup
+                                                     from arrFlight in arrFlightGroup.DefaultIfEmpty()
+                                                     join depCountry in _dbContext.Country on depFlight.DepartureCountryId equals depCountry.Id into depCountryGroup
+                                                     from depCountry in depCountryGroup.DefaultIfEmpty()
+                                                     join arrCountry in _dbContext.Country on arrFlight.DepartureCountryId equals arrCountry.Id into arrCountryGroup
+                                                     from arrCountry in arrCountryGroup.DefaultIfEmpty()
+                                                     join depCity in _dbContext.City on depFlight.DepartureCityId equals depCity.Id into depCityGroup
+                                                     from depCity in depCityGroup.DefaultIfEmpty()
+                                                     join arrCity in _dbContext.City on arrFlight.DepartureCityId equals arrCity.Id into arrCityGroup
+                                                     from arrCity in arrCityGroup.DefaultIfEmpty()
+                                                     join depAirport in _dbContext.Airport on depFlight.DepartureAirportId equals depAirport.Id into depAirportGroup
+                                                     from depAirport in depAirportGroup.DefaultIfEmpty()
+                                                     join arrAirport in _dbContext.Airport on arrFlight.DepartureAirportId equals arrAirport.Id into arrAirportGroup
+                                                     from arrAirport in arrAirportGroup.DefaultIfEmpty()
                                                      where bf.ToureTypeId == tourTypeString
                                                             && (
                                                                 bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
@@ -189,6 +229,14 @@ namespace MaratukAdmin.Repositories.Concrete
                                                          ArrivalTime = string.Empty,
                                                          EndFlightDepartureTime = string.Empty,
                                                          EndFlightArrivalTime = string.Empty,
+                                                         DepartureFlightValue = depFlight.FlightValue,
+                                                         ArrivalFlightValue = arrFlight.FlightValue,
+                                                         DepartureCountryName = depCountry.NameENG,
+                                                         ArrivalCountryName = arrCountry.NameENG,
+                                                         DepartureCityName = depCity.NameEng,
+                                                         ArrivalCityName = arrCity.NameEng,
+                                                         DepartureAirportName = depAirport.Name,
+                                                         ArrivalAirportName = arrAirport.Name,
                                                          Tiitle = pt.TypeDescription,
                                                          Dob = bf.BirthDay,
                                                          Paid = bf.Paid,
@@ -217,6 +265,21 @@ namespace MaratukAdmin.Repositories.Concrete
                                                join sh in _dbContext.Schedule on bf.StartFlightId equals sh.FlightId
                                                join shd1 in _dbContext.Schedule on bf.EndFlightId equals shd1.FlightId into gj
                                                from subsh1 in gj.DefaultIfEmpty()
+                                               join depFlight in _dbContext.Flight on bf.StartFlightId equals depFlight.Id
+                                               join arrFlight in _dbContext.Flight on bf.EndFlightId equals arrFlight.Id into arrFlightGroup
+                                               from arrFlight in arrFlightGroup.DefaultIfEmpty()
+                                               join depCountry in _dbContext.Country on depFlight.DepartureCountryId equals depCountry.Id into depCountryGroup
+                                               from depCountry in depCountryGroup.DefaultIfEmpty()
+                                               join arrCountry in _dbContext.Country on arrFlight.DepartureCountryId equals arrCountry.Id into arrCountryGroup
+                                               from arrCountry in arrCountryGroup.DefaultIfEmpty()
+                                               join depCity in _dbContext.City on depFlight.DepartureCityId equals depCity.Id into depCityGroup
+                                               from depCity in depCityGroup.DefaultIfEmpty()
+                                               join arrCity in _dbContext.City on arrFlight.DepartureCityId equals arrCity.Id into arrCityGroup
+                                               from arrCity in arrCityGroup.DefaultIfEmpty()
+                                               join depAirport in _dbContext.Airport on depFlight.DepartureAirportId equals depAirport.Id into depAirportGroup
+                                               from depAirport in depAirportGroup.DefaultIfEmpty()
+                                               join arrAirport in _dbContext.Airport on arrFlight.DepartureAirportId equals arrAirport.Id into arrAirportGroup
+                                               from arrAirport in arrAirportGroup.DefaultIfEmpty()
                                                where bf.ToureTypeId == tourTypeFlightString
                                                         && (
                                                             bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
@@ -239,6 +302,14 @@ namespace MaratukAdmin.Repositories.Concrete
                                                    EndFlightDepartureTime = (DateTime?)subsh1.DepartureTime,
                                                    //EndFlightArrivalTime = subsh1 != null && subsh1.ArrivalTime != null ? subsh1.ArrivalTime.TimeOfDay.ToString("HH:mm") : null,
                                                    EndFlightArrivalTime = (DateTime?)subsh1.ArrivalTime,
+                                                   DepartureFlightValue = depFlight.FlightValue,
+                                                   ArrivalFlightValue = arrFlight.FlightValue,
+                                                   DepartureCountryName = depCountry.NameENG,
+                                                   ArrivalCountryName = arrCountry.NameENG,
+                                                   DepartureCityName = depCity.NameEng,
+                                                   ArrivalCityName = arrCity.NameEng,
+                                                   DepartureAirportName = depAirport.Name,
+                                                   ArrivalAirportName = arrAirport.Name,
                                                    Tiitle = pt.TypeDescription,
                                                    Dob = bf.BirthDay,
                                                    Paid = bf.Paid,
@@ -261,6 +332,21 @@ namespace MaratukAdmin.Repositories.Concrete
                                               from startFlight in startFlights.DefaultIfEmpty()
                                               join sh1 in _dbContext.Schedule on bf.EndFlightId equals sh1.FlightId into endFlights
                                               from endFlight in endFlights.DefaultIfEmpty()
+                                              join depFlight in _dbContext.Flight on bf.StartFlightId equals depFlight.Id
+                                              join arrFlight in _dbContext.Flight on bf.EndFlightId equals arrFlight.Id into arrFlightGroup
+                                              from arrFlight in arrFlightGroup.DefaultIfEmpty()
+                                              join depCountry in _dbContext.Country on depFlight.DepartureCountryId equals depCountry.Id into depCountryGroup
+                                              from depCountry in depCountryGroup.DefaultIfEmpty()
+                                              join arrCountry in _dbContext.Country on arrFlight.DepartureCountryId equals arrCountry.Id into arrCountryGroup
+                                              from arrCountry in arrCountryGroup.DefaultIfEmpty()
+                                              join depCity in _dbContext.City on depFlight.DepartureCityId equals depCity.Id into depCityGroup
+                                              from depCity in depCityGroup.DefaultIfEmpty()
+                                              join arrCity in _dbContext.City on arrFlight.DepartureCityId equals arrCity.Id into arrCityGroup
+                                              from arrCity in arrCityGroup.DefaultIfEmpty()
+                                              join depAirport in _dbContext.Airport on depFlight.DepartureAirportId equals depAirport.Id into depAirportGroup
+                                              from depAirport in depAirportGroup.DefaultIfEmpty()
+                                              join arrAirport in _dbContext.Airport on arrFlight.DepartureAirportId equals arrAirport.Id into arrAirportGroup
+                                              from arrAirport in arrAirportGroup.DefaultIfEmpty()
                                               where bf.ToureTypeId == tourTypeHotelString
                                                     && (
                                                         bf.DateOfOrder.Date >= (orderDateFrom == null ? bf.DateOfOrder.Date : orderDateFrom)
@@ -284,6 +370,14 @@ namespace MaratukAdmin.Repositories.Concrete
                                                   ArrivalTime = (DateTime?)null,
                                                   EndFlightDepartureTime = (DateTime?)null,
                                                   EndFlightArrivalTime = (DateTime?)null,
+                                                  DepartureFlightValue = depFlight.FlightValue,
+                                                  ArrivalFlightValue = arrFlight.FlightValue,
+                                                  DepartureCountryName = depCountry.NameENG,
+                                                  ArrivalCountryName = arrCountry.NameENG,
+                                                  DepartureCityName = depCity.NameEng,
+                                                  ArrivalCityName = arrCity.NameEng,
+                                                  DepartureAirportName = depAirport.Name,
+                                                  ArrivalAirportName = arrAirport.Name,
                                                   Tiitle = pt.TypeDescription,
                                                   Dob = bf.BirthDay,
                                                   Paid = bf.Paid,
@@ -308,6 +402,16 @@ namespace MaratukAdmin.Repositories.Concrete
                                     ArrivalTime = x.ArrivalTime != null ? ((DateTime)x.ArrivalTime).ToString(@"HH:mm") : string.Empty,
                                     EndFlightDepartureTime = x.EndFlightDepartureTime != null ? ((DateTime)x.EndFlightDepartureTime).ToString(@"HH:mm") : string.Empty,
                                     EndFlightArrivalTime = x.EndFlightArrivalTime != null ? ((DateTime)x.EndFlightArrivalTime).ToString(@"HH:mm") : string.Empty,
+
+                                    DepartureFlightValue = x.DepartureFlightValue,
+                                    ArrivalFlightValue = x.ArrivalFlightValue,
+                                    DepartureCountryName = x.DepartureCountryName,
+                                    ArrivalCountryName = x.ArrivalCountryName,
+                                    DepartureCityName = x.DepartureCityName,
+                                    ArrivalCityName = x.ArrivalCityName,
+                                    DepartureAirportName = x.DepartureAirportName,
+                                    ArrivalAirportName = x.ArrivalAirportName,
+
                                     Tiitle = x.Tiitle,
                                     Dob = x.Dob,
                                     Paid = x.Paid,
