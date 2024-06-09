@@ -350,6 +350,7 @@ namespace MaratukAdmin.Managers.Concrete
                 PasswordSalt = salt,
                 IsActivated = true,
                 IsAproved = 1,
+                RegisterDate = DateTime.Now,
                 Role = "Agent"
             };
 
