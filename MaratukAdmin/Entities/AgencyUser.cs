@@ -26,7 +26,7 @@ namespace MaratukAdmin.Entities
         public int? IsAproved { get; set; } = 0;
         public string Role { get; set; }
         
-        public DateTime RegisterDate { get; set; }
+        public DateTime RegisterDate { get; set; } = DateTime.Now;
 
         public DateTime? ApprovedDate { get; set; }
 
