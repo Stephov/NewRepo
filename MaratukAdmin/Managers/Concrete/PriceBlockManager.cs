@@ -343,25 +343,25 @@ namespace MaratukAdmin.Managers.Concrete
 
 
             var groupedFlights = result
-     .GroupBy(f => new
-     {
-         f.DepartureCountryName,
-         f.DepartureCountryId,
-         f.DepartureCityName,
-         f.DepartureCityId,
-         f.DepartureAirportName,
-         f.DepartureAirportCode,
-     })
-     .Select(group => new GroupedFlight
-     {
-         Id = ++identity,
-         DepartureCountryName = group.Key.DepartureCountryName,
-         DepartureCountryId = group.Key.DepartureCountryId,
-         DepartureCityName = group.Key.DepartureCityName,
-         DepartureCityId = group.Key.DepartureCityId,
-         DepartureAirportName = group.Key.DepartureAirportName,
-         DepartureAirportCode = group.Key.DepartureAirportCode,
-         Destination = group
+             .GroupBy(f => new
+             {
+                 f.DepartureCountryName,
+                 f.DepartureCountryId,
+                 f.DepartureCityName,
+                 f.DepartureCityId,
+                 f.DepartureAirportName,
+                 f.DepartureAirportCode,
+             })
+             .Select(group => new GroupedFlight
+             {
+                 Id = ++identity,
+                 DepartureCountryName = group.Key.DepartureCountryName,
+                 DepartureCountryId = group.Key.DepartureCountryId,
+                 DepartureCityName = group.Key.DepartureCityName,
+                 DepartureCityId = group.Key.DepartureCityId,
+                 DepartureAirportName = group.Key.DepartureAirportName,
+                 DepartureAirportCode = group.Key.DepartureAirportCode,
+                 Destination = group
              .Select(des => new Destination
              {
                  FlightId = des.FlightId,

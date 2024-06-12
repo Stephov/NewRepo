@@ -25,7 +25,7 @@
         //public double? Price { get; set;}
         public double? Price
         {
-            get => _price;
+            get => _price = (_price == null) ? 0 : Math.Ceiling((double)_price);
             set => _price = (value == null) ? 0 : Math.Ceiling((double)value);
         }
         public DateTime DepartureTime { get; set; }

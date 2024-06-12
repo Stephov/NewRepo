@@ -61,8 +61,12 @@ namespace MaratukAdmin.Repositories.Concrete
             try
             {
                 var results = await _context.FlightInfoResults
-           .FromSqlRaw("EXEC GetFlightInfoByTripType @p0, @p1", TripTypeId, isOnlyFligth)
-           .ToListAsync();
+                           .FromSqlRaw("EXEC GetFlightInfoByTripType @p0, @p1", TripTypeId, isOnlyFligth)
+                           .ToListAsync();
+                
+                //results.ForEach(r => r.Price = Math.Ceiling((double)r.Price));
+
+
                 return results;
 
             }
@@ -82,6 +86,7 @@ namespace MaratukAdmin.Repositories.Concrete
                 var results = await _context.SearchResultFunctionOneWay
            .FromSqlRaw("EXEC GetFlightResultOneWay @p0, @p1", FlightId, FlightDate)
            .ToListAsync();
+
                 return results;
 
             }
@@ -98,6 +103,7 @@ namespace MaratukAdmin.Repositories.Concrete
             var results = await _context.SearchResultFunctionTwoWay
        .FromSqlRaw("EXEC GetFlightResultTwoWay @p0, @p1, @p2, @p3", FlightOneWayId, FlightReturnedId, FlightStartDate, FlightEndDate)
        .ToListAsync();
+
             return results;
 
 

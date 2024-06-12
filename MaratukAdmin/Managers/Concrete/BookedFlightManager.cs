@@ -71,10 +71,13 @@ namespace MaratukAdmin.Managers.Concrete
             _cityManager = cityManager;
         }
 
-        public async Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlight)
+        //public async Task<bool> AddBookedFlightAsync(List<AddBookedFlight> addBookedFlight)
+        public async Task<bool> AddBookedFlightAsync(BookedFlightModel bookedFlightModel)
         {
             try
             {
+                List<AddBookedFlight> addBookedFlight = bookedFlightModel.BookedFlights;
+
                 var USDRate = _currencyRatesRepository.GetAsync(1).Result.OfficialRate;
                 string agentName = string.Empty;
                 string agentcompanyName = string.Empty;
