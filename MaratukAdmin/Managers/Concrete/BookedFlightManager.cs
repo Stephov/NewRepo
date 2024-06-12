@@ -202,10 +202,10 @@ namespace MaratukAdmin.Managers.Concrete
   <p>Phone Number: {agentPhone}</p>
   <p>Email: {agentEmail}</p>
   <p>Full list of arrivals: {listOfArrivalsString}</p>
-  <p>Departure Date: {addBookedFlight?.First().TourStartDate.ToString("yyyy-MM-dd")}</p>
-  <p>Arrival Time: {addBookedFlight?.First().TourEndDate?.ToString("yyyy-MM-dd")}</p>
-  <p>{StartFligthName} / {StartFlightNumber} / {schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>
-  {(schedule2 != null ? $"<p>{EndFligthName} / {EndFlightNumber} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay.ToString("HH:mm")}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay.ToString("HH:mm")}</p>" : "")}
+  <p>Departure Date: {addBookedFlight?.First().TourStartDate.ToString("dd.MM.yyyy")}</p>
+  <p>Arrival Time: {addBookedFlight?.First().TourEndDate?.ToString("dd.MM.yyyy")}</p>
+  <p>{StartFligthName} / {StartFlightNumber} / {schedule1.Schedules.First().DepartureTime.TimeOfDay.ToString("hh\\:mm")}-{schedule1.Schedules.First().ArrivalTime.TimeOfDay.ToString("hh\\:mm")}</p>
+  {(schedule2 != null ? $"<p>{EndFligthName} / {EndFlightNumber} / {schedule2?.Schedules.First().DepartureTime.TimeOfDay.ToString("hh\\:mm")}-{schedule2?.Schedules.First().ArrivalTime.TimeOfDay.ToString("hh\\:mm")}</p>" : "")}
   <p>Total payable: {totalPay}</p>
   <p>Date of sale: {date}</p>
 </body>
