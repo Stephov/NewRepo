@@ -1,6 +1,6 @@
 ﻿namespace MaratukAdmin.Entities.Sansejour
 {
-    public class BookedFlightAndHotelInvoiceData
+    public class BookedInvoiceData
     {
         public string? InvoiceOption { get; set; }
         public string? FirstName { get; set;}

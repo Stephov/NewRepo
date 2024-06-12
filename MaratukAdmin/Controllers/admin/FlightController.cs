@@ -2,6 +2,7 @@
 using MaratukAdmin.Dto.Request;
 using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Dto.Response;
+using MaratukAdmin.Entities.Sansejour;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -114,7 +115,8 @@ namespace MaratukAdmin.Controllers.admin
         [HttpPost("BookFlight")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> BookFlight([FromBody] List<AddBookedFlight> addBookedFlight)
+        //public async Task<ActionResult> BookFlight([FromBody] List<AddBookedFlight> addBookedFlight)
+        public async Task<ActionResult> BookFlight([FromBody] BookedFlightModel addBookedFlight)
         {
             try
             {

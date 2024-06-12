@@ -19,6 +19,6 @@ namespace MaratukAdmin.Entities.Sansejour
         public DateTime AccomodationStartDate { get; set; }
         public DateTime? AccomodationEndDate { get; set; }
         public bool LateCheckout { get; set; }
-        public BookedFlightAndHotelInvoiceData? BookInvoiceData { get; set; }
+        public BookedInvoiceData? BookInvoiceData { get; set; }
     }
 }
