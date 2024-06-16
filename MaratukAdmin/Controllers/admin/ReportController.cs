@@ -50,5 +50,13 @@ namespace MaratukAdmin.Controllers.admin
 
             //return Ok(result);
         }
+
+        [HttpGet("GetAgencyDebts")]
+        public async Task<IActionResult> GetAgencyDebtsInfo(DateTime? dateFrom = null, DateTime? dateTo = null)
+        {
+            var result = await _reportManager.GetReportAgencyDebtsAsync<ReportAgencyDebts>(dateFrom, dateTo);
+            return Ok(result);
+
+        }
     }
 }
