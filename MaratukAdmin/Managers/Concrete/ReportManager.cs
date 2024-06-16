@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Entities;
+﻿using MaratukAdmin.Dto.Response;
+using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Report;
 using MaratukAdmin.Managers.Abstract;
 using MaratukAdmin.Repositories.Abstract;
@@ -7,6 +8,7 @@ using MaratukAdmin.Repositories.Concrete.Sansejour;
 using MaratukAdmin.Utils;
 using Microsoft.AspNetCore.Routing.Constraints;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Net.Http.Headers;
 using static MaratukAdmin.Utils.Enums;
 
@@ -182,6 +184,31 @@ namespace MaratukAdmin.Managers.Concrete
             //}
 
             return touristReportPreparedData;
+        }
+
+        public async Task<List<T>?> GetReportAgencyDebtsAsync<T>(DateTime? dateFrom = null, DateTime? dateTo = null) where T : class
+        {
+            var agencyDebtsPreparedData = await _reportRepository.GetReportAgencyDebtsAsync<T>(dateFrom, dateTo);
+            List<CurrencyRatesResponse> currencyRatesList = new();
+            CurrencyRatesResponse? currRate = null;
+
+            foreach (var item in agencyDebtsPreparedData as List<ReportAgencyDebts>)
+            {
+                currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
+
+                if (currRate == null)
+                {
+                    var newRate = await _currencyRatesManager.GetCurrencyRatesAsync(item.FlightDate, item.Currency);
+                    currencyRatesList.AddRange(newRate);
+                    currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
+                }
+
+                item.PaidAMD = (currRate == null) ? 0 : (item.Paid * currRate.OfficialRate);
+                item.PaidAMD = (double)Math.Ceiling((double)item.PaidAMD);
+
+            }
+
+            return agencyDebtsPreparedData;
         }
     }
 }

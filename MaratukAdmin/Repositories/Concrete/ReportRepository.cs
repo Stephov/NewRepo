@@ -153,12 +153,12 @@ namespace MaratukAdmin.Repositories.Concrete
                                                           EndFlightDepartureTime = subsh1 != null && subsh1.DepartureTime != null ? subsh1.DepartureTime.ToString("HH:mm") : string.Empty,
                                                           EndFlightArrivalTime = subsh1 != null && subsh1.ArrivalTime != null ? subsh1.ArrivalTime.ToString("HH:mm") : string.Empty,
                                                           DepartureFlightValue = depFlight.FlightValue,
-                                                          ArrivalFlightValue=arrFlight.FlightValue,
-                                                          DepartureCountryName=depCountry.NameENG,
-                                                          ArrivalCountryName=arrCountry.NameENG,
-                                                          DepartureCityName=depCity.NameEng,
-                                                          ArrivalCityName=arrCity.NameEng,
-                                                          DepartureAirportName=depAirport.Name,
+                                                          ArrivalFlightValue = arrFlight.FlightValue,
+                                                          DepartureCountryName = depCountry.NameENG,
+                                                          ArrivalCountryName = arrCountry.NameENG,
+                                                          DepartureCityName = depCity.NameEng,
+                                                          ArrivalCityName = arrCity.NameEng,
+                                                          DepartureAirportName = depAirport.Name,
                                                           ArrivalAirportName = arrAirport.Name,
                                                           Tiitle = pt.TypeDescription,
                                                           Dob = bf.BirthDay,
@@ -437,5 +437,47 @@ namespace MaratukAdmin.Repositories.Concrete
             //return touristReportDataList;
         }
 
+        public async Task<List<T>?> GetReportAgencyDebtsAsync<T>(DateTime? dateFrom = null, DateTime? dateTo = null) where T : class
+        {
+            List<ReportAgencyDebts> agencyDebtsList = new();
+
+            try
+            {
+                var query =
+                            from dbf in _dbContext.BookedFlights
+                            join f in _dbContext.Flight on dbf.StartFlightId equals f.Id
+                            join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
+                            join au in _dbContext.AgencyUser on dbf.AgentId equals au.Id
+                            where dbf.TourStartDate != null
+                            group dbf by new
+                            {
+                                dbf.AgentId,
+                                dbf.TourStartDate,
+                                f.FlightValue,
+                                au.FullCompanyName,
+                                dbf.Rate
+                            } into grouped
+                            orderby grouped.Key.TourStartDate, grouped.Key.AgentId
+                            select new ReportAgencyDebts()
+                            {
+                                FlightDate = grouped.Key.TourStartDate.Date,
+                                FlightNumber = grouped.Key.FlightValue,
+                                AgencyName = grouped.Key.FullCompanyName,
+                                Currency = grouped.Key.Rate,
+                                Debt = grouped.Sum(g => g.Dept),
+                                Paid = grouped.Sum(g => g.Paid),
+                                PaidAMD = grouped.Sum(g => g.Paid),
+                                TotalAmount = grouped.Sum(g => g.TotalPrice)
+                            };
+
+                var result = await query.OrderBy(c => c.FlightDate).ToListAsync();
+
+                return result as List<T>;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
