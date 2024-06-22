@@ -21,6 +21,8 @@ using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Repositories.Abstract;
 using Org.BouncyCastle.Utilities;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using EFCore.BulkExtensions;
+using MaratukAdmin.Models;
 
 namespace MaratukAdmin.Repositories.Concrete.Sansejour
 {
@@ -29,14 +31,18 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         protected readonly MaratukDbContext _dbContext;
         protected readonly IFakeDataGenerationManager _fakeDataGenerationManager;
         protected readonly ITransactionRepository _transactionRepository;
+        List<SyncSejourRate> _syncSejourRate;
+        private readonly SyncSejourExecutionContext _executionContext;
 
         public ContractExportRepository(MaratukDbContext dbContext
                                         , IFakeDataGenerationManager fakeDataGenerationManager
-                                        , ITransactionRepository transactionRepository)
+                                        , ITransactionRepository transactionRepository
+                                        , SyncSejourExecutionContext executionContext)
         {
             _dbContext = dbContext;
             _fakeDataGenerationManager = fakeDataGenerationManager;
             _transactionRepository = transactionRepository;
+            _executionContext = executionContext;
         }
 
 
@@ -593,11 +599,40 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 throw;
             }
         }
+        public async Task<bool> InitializeSyncSejourRate()
+        {
+            if (_syncSejourRate == null || (_syncSejourRate != null && _syncSejourRate.Count == 0))
+            {
+                _syncSejourRate = await _dbContext.SyncSejourRate.ToListAsync();
+            }
+
+            return true;
+        }
+
+        public async Task<bool> BulkInsertAndSaveSyncSejourRate()
+        {
+            _dbContext.BulkInsert(_syncSejourRate);
+
+            //await Task.Run(() => _dbContext.SyncSejourRate.UpdateRange(_syncSejourRate));
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> TruncateSyncSejourRate()
+        {
+            string sqlQuery = @$"TRUNCATE TABLE {nameof(SyncSejourRate)}";
+            await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+            //await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
         public async Task<bool> GetSyncSejourRateExistenceByDateAndHotelAsync(string hotelCode, DateTime? exportDate = null)
         {
             try
             {
-                var exs = await _dbContext.SyncSejourRate.Where(c => c.SyncDate == (exportDate ?? c.SyncDate) && c.HotelCode == hotelCode).FirstOrDefaultAsync();
+                //var exs = await _dbContext.SyncSejourRate.Where(c => c.SyncDate == (exportDate ?? c.SyncDate) && c.HotelCode == hotelCode).FirstOrDefaultAsync();
+                var exs = await Task.Run(() => _syncSejourRate.FirstOrDefault(c => c.SyncDate == (exportDate ?? c.SyncDate) && c.HotelCode == hotelCode));
 
                 return (exs != null);
                 //return await _dbContext.SyncSejourRate.Where(c => c.SyncDate == (exportDate ?? c.SyncDate) && c.HotelCode == hotelCode).AnyAsync();
@@ -650,16 +685,23 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             try
             {
-                string expDatePart = "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
-                string hotelCodePart = "'" + hotelCode + "'";
+                if (_executionContext.IsOneHotelMode)
+                {
+                    string expDatePart = "'" + ((DateTime)exportDate).ToString("yyyy-MM-dd") + "'";
+                    string hotelCodePart = "'" + hotelCode + "'";
 
-                string sqlQuery = @$"DELETE FROM {nameof(SyncSejourRate)} 
-                                    WHERE {nameof(SyncSejourRate.SyncDate)} != {expDatePart} 
-                                    AND {nameof(SyncSejourRate.HotelCode)} = " + hotelCodePart;
+                    string sqlQuery = @$"DELETE FROM {nameof(SyncSejourRate)} 
+                                        WHERE {nameof(SyncSejourRate.SyncDate)} != {expDatePart} 
+                                        AND {nameof(SyncSejourRate.HotelCode)} = " + hotelCodePart;
 
-                await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
+                    await _dbContext.Database.ExecuteSqlRawAsync(sqlQuery);
 
-                await _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                await Task.Run(() => _syncSejourRate.RemoveAll(s => s.SyncDate != exportDate && s.HotelCode == hotelCode));
+
+
                 return true;
             }
             catch (Exception)
@@ -671,8 +713,13 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
         {
             try
             {
-                await _dbContext.SyncSejourRate.AddRangeAsync(contract);
-                await _dbContext.SaveChangesAsync();
+                if (_executionContext.IsOneHotelMode)
+                {
+                    await _dbContext.SyncSejourRate.AddRangeAsync(contract);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                await Task.Run(() => _syncSejourRate.AddRange(contract));
             }
             catch (Exception)
             {
@@ -737,7 +784,9 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                 //            .Distinct()
                 //            .ToListAsync();
 
-                return await _dbContext.SyncSejourRate
+                // ****************************************************
+
+                var retValue = _syncSejourRate
                             .Where(r => r.SyncDate == syncDate && r.RoomChdPax > 0)
                             .Select(r => new SyncSejourAccomodationType()
                             {
@@ -745,8 +794,28 @@ namespace MaratukAdmin.Repositories.Concrete.Sansejour
                                 Name = r.AccmdMenTypeName
                             })
                             .OrderBy(r => r.Code)
-                            .Distinct()
-                            .ToListAsync();
+                            .GroupBy(r => new { r.Code, r.Name })
+                            .Select(g => g.First())
+                            .ToList();
+
+                return await Task.Run(() =>
+                {
+                    return retValue;
+                });
+
+
+                //return await _dbContext.SyncSejourRate
+                //            .Where(r => r.SyncDate == syncDate && r.RoomChdPax > 0)
+                //            .Select(r => new SyncSejourAccomodationType()
+                //            {
+                //                Code = r.AccmdMenTypeCode,
+                //                Name = r.AccmdMenTypeName
+                //            })
+                //            .OrderBy(r => r.Code)
+                //            .Distinct()
+                //            .ToListAsync();
+
+
 
             }
             catch (Exception)

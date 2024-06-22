@@ -2,6 +2,7 @@
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete;
 using MaratukAdmin.Managers.Concrete.Sansejour;
+using MaratukAdmin.Models;
 
 namespace MaratukAdmin.Extensions
 {
@@ -41,7 +42,9 @@ namespace MaratukAdmin.Extensions
             .AddScoped<ICurrencyManager, CurrencyManager>()
             .AddScoped<ICurrencyRatesManager, CurrencyRatesManager>()
             .AddScoped<IPriceBlockManager, PriceBlockManager>()
-            .AddScoped<IReportManager, ReportManager>();
+            .AddScoped<IReportManager, ReportManager>()
+            .AddScoped<SyncSejourExecutionContext>();
+
         }
     }
 }
