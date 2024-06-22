@@ -41,6 +41,9 @@ namespace MaratukAdmin.Repositories.Abstract.Sansejour
 
         Task<SyncSejourRate> GetSyncSejourRateByIdAsync (int id);
         Task<List<SyncSejourRate>> GetSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null);
+        Task<bool> InitializeSyncSejourRate();
+        Task<bool> BulkInsertAndSaveSyncSejourRate();
+        Task<bool> TruncateSyncSejourRate();
         Task<bool> GetSyncSejourRateExistenceByDateAndHotelAsync(string hotelCode, DateTime? exportDate = null);
         Task<bool> DeleteSyncSejourRatesByDateAsync(DateTime exportDate, string? hotelCode = null);
         Task<bool> DeleteSyncSejourRatesByDateRAWAsync(DateTime? exportDate, string? hotelCode = null);

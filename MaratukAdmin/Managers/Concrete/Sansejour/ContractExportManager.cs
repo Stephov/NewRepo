@@ -24,6 +24,7 @@ using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Entities;
 using Org.BouncyCastle.Utilities;
 using System.Collections;
+using MaratukAdmin.Models;
 //using System.Transactions;
 //using MaratukAdmin.Infrastructure;
 
@@ -40,6 +41,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
         private readonly IDistributedCache _cache;
         private readonly IPriceBlockManager _priceBlockManager;
         //protected readonly MaratukDbContext _dbContext;
+        public bool syncOnlyOneHotel = false;
+        private readonly SyncSejourExecutionContext _executionContext;
 
 
         public ContractExportManager(IMainRepository<SyncSejourContractExportView> mainRepository,
@@ -49,7 +52,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                             IHttpRequestManager httpRequestManager,
                             ITransactionRepository transactionRepository,
                             IDistributedCache cache,
-                            IPriceBlockManager priceBlockManager
+                            IPriceBlockManager priceBlockManager,
+                            SyncSejourExecutionContext executionContext
             //MaratukDbContext dbContext
 
             )
@@ -62,6 +66,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
             _transactionRepository = transactionRepository;
             _cache = cache;
             _priceBlockManager = priceBlockManager;
+            _executionContext = executionContext;
             //_dbContext = dbContext;
         }
 
@@ -221,14 +226,23 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 //{ oldSyncDate = result.Value; }
 
                 // *** ARCHIVE SyncSejourRate table old data ***
-                if (string.IsNullOrWhiteSpace(hotelCode))
+                //if (string.IsNullOrWhiteSpace(hotelCode))
+                if (!_executionContext.IsOneHotelMode)
                 {
                     // todo NAEL
                     //var archiveResult = await _contractExportRepository.ArchiveSyncSejourRateData(oldSyncDate);
                     //if (!archiveResult)
                     //{ throw new Exception("Error archiving SyncSejourRate data"); }
                     dataWasArchived = true;
+
+                    // *** DELETE ALL DATA ***
+                    await _contractExportRepository.TruncateSyncSejourRate();
+                    // ***********************
                 }
+
+                // *** INITIALIZE SyncSejourRate ***
+                await _contractExportRepository.InitializeSyncSejourRate();
+                // *********************************
 
                 // *** Loop for HOTELS ***
                 foreach (var hotel in hotelsList)
@@ -246,22 +260,23 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                         HotelCode = hotel
                     };
 
-                    if (!syncDateIsKnown)
-                    {
-                        // Firts Hotel always fills because of not knowing sync date
-                    }
-                    if (syncDateIsKnown)
-                    {
-                        // *** Check Rates existence for this Hotel and SyncDate
-                        bool isHotelExists = await _contractExportRepository.GetSyncSejourRateExistenceByDateAndHotelAsync(hotel, syncDate);
 
-                        if (isHotelExists)
-                        {
-                            //previousDataDeleted = true;
-                            existedHotels++;
-                            continue;
-                        }
-                    }
+                    //if (!syncDateIsKnown)
+                    //{
+                    //    // First Hotel always fills because of not knowing sync date
+                    //}
+                    //if (syncDateIsKnown)
+                    //{
+                    //    // *** Check Rates existence for this Hotel and SyncDate
+                    //    bool isHotelExists = await _contractExportRepository.GetSyncSejourRateExistenceByDateAndHotelAsync(hotel, syncDate);
+
+                    //    if (isHotelExists)
+                    //    {
+                    //        //previousDataDeleted = true;
+                    //        existedHotels++;
+                    //        continue;
+                    //    }
+                    //}
 
                     dateStartHtmlQuery = DateTime.Now;
                     SyncSejourContractExportViewResponse sejourContracts = await _httpRequestManager.GetSejourContractExportViewAsync(reqModel);
@@ -303,6 +318,18 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     syncDate = DateTime.ParseExact(dateString, syncDateFormat, CultureInfo.InvariantCulture);
                     syncDateIsKnown = true;
 
+
+                    // *** Check Rates existence for this Hotel and SyncDate
+                    bool isHotelExists = await _contractExportRepository.GetSyncSejourRateExistenceByDateAndHotelAsync(hotel, syncDate);
+
+                    if (isHotelExists)
+                    {
+                        //previousDataDeleted = true;
+                        existedHotels++;
+                        continue;
+                    }
+
+
                     dateStartOtherOperations = DateTime.Now;
                     System.Diagnostics.Debug.WriteLine($"--- DELETING PREVIOUS DATA ---");
 
@@ -310,54 +337,16 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     //if (syncByChangedHotels == 1 || !string.IsNullOrWhiteSpace(hotelCode))
                     //{
                     // todo avtomat zapusk anel es funkcian
-                    // todo namaki texty dzel
                     // CountryId ev CityId avelacnel LowesPrices searchi mej
 
-                    // todo + ChangedHotelList cucakic vercnel miayn 6226 Country ev Sharm, Hurgada City-ner
-                    // todo + ChangedHotelList - ic price tarmacnelu jamanak ete tvyal chi gtnum, apa hin toghery petk chi heracnel. Heracvum en miayn en depqum, erb nor togher gtel enq.
-                    // todo + Price tarmacnogh funkcian kanchel ayl funkciayic, vortex stugel sxali haytnvely u 5 angam porcel sharunakel
-                    // todo + Price tarmacnelu yntacqum transaction petk el chi. Inchqany hascrec togh gri. Hetaga zapuskneri jamanak kareliya stugel, ete trvac SyncDate ev HotelCode-ov togher kan, apa dranq toghnel tenc ev ancnel myus Hotelin.
-                    // todo + Mek Hoteli tvyal kam ChangedHotelList-ov tarmacman ardyunqum petk chi SyncDate update anel, togh linen tarber.SyncSejourRate tablican khamarvi yntacik, ev poiski jamanak SyncDate kareli e hashvi charnel.
-                    // todo + Searchi jamanak SyncDate-in chnael, qani vor SyncSejourRate tablicayum arden karox en linel tarber amsatverov togher
                     // todo - Schedule(worker) vor tvyalnery tarmacni.Sxali depqum eli porci, Log gri inch-vor tablicayi mej, u noric porci kardal, asenq 5 angam
                     // todo - Amen or veronshyal Workeri ashxatanqi jamanak naev stugel AccomodationPeriodEnd-y ete ancel e, apa jnjel et Hoteli tvyalnery
-
-                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
-                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeAsync(syncDate, hotel);
-                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataBySyncDateAndHotelCodeAsync(oldSyncDate, hotel);
-
-                    // Delete all data for this Hotel
-                    //var deleteResult = await _contractExportRepository.DeleteSyncedDataBySyncDateAndHotelCodeAsync(default, hotel);
-
-                    //if (syncDateIsKnown)
-                    //{
-                    //    // *** Check Rates existence for this Hotel and SyncDate
-                    //    bool isHotelExists = await _contractExportRepository.GetSyncSejourRateExistenceByDateAndHotelAsync(hotel, syncDate);
-
-                    //    if (isHotelExists)
-                    //    {
-                    //        //previousDataDeleted = true;
-                    //        existedHotels++;
-                    //        continue;
-                    //    }
-                    //}
 
                     // Delete all data for this Hotel, EXCEPT EXISTING
                     var deleteResult = await _contractExportRepository.DeleteSyncedDataByHotelCodeExceptSyncDateAsync(syncDate, hotel);
 
                     if (!deleteResult)
                     { throw new Exception("Error deleting previous data"); }
-
-                    //}
-                    // Delete previous data by Sync Date
-                    //else if ((syncByChangedHotels == null || syncByChangedHotels == 0) && !previousDataDeleted)
-                    //{
-                    //    //var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync((DateTime)sejourContracts.Body.GetSejourContractExportViewResponse.GetSejourContractExportViewResult.Data.Export.Sanbilgisayar.Date);
-                    //    var deleteResult = await _contractExportRepository.DeleteSyncedDataByDateAsync(syncDate);
-                    //    if (!deleteResult)
-                    //    { throw new Exception("Error deleting previous data"); }
-                    //    previousDataDeleted = true;
-                    //}
 
                     string jsonSejourContracts = JsonConvert.SerializeObject(sejourContracts);
 
@@ -516,6 +505,10 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     System.Diagnostics.Debug.WriteLine($"--- TOTAL --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, Elapsed: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
                 }
 
+                // *** INITIALIZE SyncSejourRate ***
+                //await _contractExportRepository.InitializeSyncSejourRate();
+                // *********************************
+
                 #region AccomodationTypes
                 // *** GET possible AccomodationTypes from Rates 
                 List<SyncSejourAccomodationType> accmdTypes = await _contractExportRepository.GetSyncSejourAccomodationTypesFromRatesBySyncDateAsync(syncDate);
@@ -543,6 +536,13 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 //    if (!updateResult)
                 //    { throw new Exception("Error updating SyncSejourRate's SyncDate"); }
                 //}
+
+                // *** SAVE CHANGES IN SyncSejourRate ***
+                if (!_executionContext.IsOneHotelMode)
+                {
+                    await _contractExportRepository.BulkInsertAndSaveSyncSejourRate();
+                }
+                // **************************************
 
                 elapsed = DateTime.Now - dateStartSession;
                 System.Diagnostics.Debug.WriteLine($"--- FINISHED --- SKIPPED: {skippedHotels}, PROCESSED: {processedHotels}, EXISTED: {existedHotels}");
@@ -688,7 +688,7 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 {
                     double? commission = await _contractExportRepository.GetFlightCommission((int)searchRequest.PriceBlockId);
 
-                    var resultRoomSearch =  await _contractExportRepository.SearchRoomAsync(searchRequest);
+                    var resultRoomSearch = await _contractExportRepository.SearchRoomAsync(searchRequest);
 
                     foreach (var room in resultRoomSearch)
                     {

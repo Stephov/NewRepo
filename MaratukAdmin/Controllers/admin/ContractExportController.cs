@@ -4,6 +4,7 @@ using MaratukAdmin.Dto.Request.Sansejour;
 using MaratukAdmin.Infrastructure;
 using MaratukAdmin.Managers.Abstract.Sansejour;
 using MaratukAdmin.Managers.Concrete.Sansejour;
+using MaratukAdmin.Models;
 using MaratukAdmin.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +18,14 @@ namespace MaratukAdmin.Controllers.admin
     public class ContractExportController : BaseController
     {
         private readonly IContractExportManager _contractExportManager;
+        private readonly SyncSejourExecutionContext _executionContext;
 
         public ContractExportController(IContractExportManager contractExportManager,
-                                        JwtTokenService jwtTokenService) : base(jwtTokenService)
+                                        JwtTokenService jwtTokenService,
+                                        SyncSejourExecutionContext executionContext) : base(jwtTokenService)
         {
             _contractExportManager = contractExportManager;
+            _executionContext = executionContext;
         }
 
         [HttpGet("GetSejourContractExportView/")]
@@ -29,6 +33,8 @@ namespace MaratukAdmin.Controllers.admin
         public async Task<IActionResult> GetSejourContractExportView([FromQuery] int? syncByChangedHotels, string? hotelCode)
         {
             // syncByChangedHotels 1 - Yes, 0 - No (Sync by full Hotels list)
+
+            _executionContext.IsOneHotelMode = !(hotelCode == null);
 
             //var result = await _contractExportManager.GetSejourContractExportView(syncByChangedHotels, hotelCode);
             var result = await _contractExportManager.GetSejourContractExportViewWorker(syncByChangedHotels, hotelCode);
