@@ -1,4 +1,5 @@
-﻿using MaratukAdmin.Dto.Response;
+﻿using Bogus.DataSets;
+using MaratukAdmin.Dto.Response;
 using MaratukAdmin.Entities;
 using MaratukAdmin.Entities.Report;
 using MaratukAdmin.Managers.Abstract;
@@ -31,7 +32,7 @@ namespace MaratukAdmin.Managers.Concrete
 
 
 
-        public async Task<List<FlightReportPreparedData>> GetFlightReportPreparedData(enumFlightReportType reportType, string flightNumber)
+        public async Task<List<ReportFlightInfoPreparedData>> GetFlightReportPreparedData(enumFlightReportType reportType, string flightNumber)
         {
             return await _reportRepository.GetFlightReportPreparedData(reportType, flightNumber);
         }
@@ -52,7 +53,7 @@ namespace MaratukAdmin.Managers.Concrete
 
             //var commission = _contractExportRepository.GetFlightCommission(308);
 
-            List<FlightReportPreparedData> flightReportPreparedData = await GetFlightReportPreparedData(reportType, flightNumber);
+            List<ReportFlightInfoPreparedData> flightReportPreparedData = await GetFlightReportPreparedData(reportType, flightNumber);
 
             if (flightReportPreparedData != null)
             {
@@ -192,23 +193,65 @@ namespace MaratukAdmin.Managers.Concrete
             List<CurrencyRatesResponse> currencyRatesList = new();
             CurrencyRatesResponse? currRate = null;
 
-            foreach (var item in agencyDebtsPreparedData as List<ReportAgencyDebts>)
+            if (agencyDebtsPreparedData != null)
             {
-                currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
-
-                if (currRate == null)
+                foreach (var item in agencyDebtsPreparedData as List<ReportAgencyDebts>)
                 {
-                    var newRate = await _currencyRatesManager.GetCurrencyRatesAsync(item.FlightDate, item.Currency);
-                    currencyRatesList.AddRange(newRate);
                     currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
+
+                    if (currRate == null)
+                    {
+                        var newRate = await _currencyRatesManager.GetCurrencyRatesAsync(item.FlightDate, item.Currency);
+                        currencyRatesList.AddRange(newRate);
+                        currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
+                    }
+
+                    item.PaidAMD = (currRate == null) ? 0 : (item.Paid * currRate.OfficialRate);
+                    item.PaidAMD = (double)Math.Ceiling((double)item.PaidAMD);
+
                 }
-
-                item.PaidAMD = (currRate == null) ? 0 : (item.Paid * currRate.OfficialRate);
-                item.PaidAMD = (double)Math.Ceiling((double)item.PaidAMD);
-
             }
 
             return agencyDebtsPreparedData;
+        }
+
+        public async Task<List<ReportSalesByManager>?> GetSalesByManagersAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null) where T : class
+        {
+            List<ReportSalesByManager> retValue = new();
+            ReportSalesByManager newInfo = new();
+            var salesByManagersPreparedData = await _reportRepository.GetSalesByManagersPreparedDataAsync<T>(orderDateFrom, orderDateTo);
+
+            if (salesByManagersPreparedData != null)
+            {
+                foreach (var item in salesByManagersPreparedData as List<ReportSalesByManagerPreparedData>)
+                {
+                    newInfo = new()
+                    {
+                        Date = item.Date,
+                        OrderNumber = item.OrderNumber,
+                        AgencyName = item.AgencyName,
+                        PassengerName = item.PassengerName + (item.PassengerSurName == null ? "" : " " + item.PassengerSurName),
+                        CostPerTicketInCurrency = Math.Round((double)(item.TicketsCostTotal / item.PassengersCount), 2),
+                        HotelName = item.HotelName,
+                        TicketsCostTotal = item.TicketsCostTotal,
+                        Rate = item.Rate,
+                        TicketsCostInAMD = item.TicketsCostInAMD,
+                        HotelCostInAMD = item.HotelCostInAMD,
+                        Dates = item.TourStartDate?.ToString("dd.MM.yyyy") + (item.TourEndDate == null ? "" : " - " + item.TourEndDate?.ToString("dd.MM.yyyy")),
+                        Direction = item.Direction1 + (item.Direction2 == null ? "" : ", " + item.Direction2),
+                        ManagerName = item.ManagerName,
+                        TicketsCount = item.TicketsCount,
+                        TotalInAMD = item.TicketsCostInAMD + item.HotelCostInAMD
+                    };
+                    retValue.Add(newInfo);
+                }
+            }
+
+            return retValue;
+            //return salesByManagersPreparedData;
+
+
+
         }
     }
 }

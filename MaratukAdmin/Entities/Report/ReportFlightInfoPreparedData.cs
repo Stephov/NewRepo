@@ -1,6 +1,6 @@
 ﻿namespace MaratukAdmin.Entities.Report
 {
-    public class FlightReportPreparedData
+    public class ReportFlightInfoPreparedData
     {
         public DateTime FlightDate { get; set; }
         public string FlightNumber { get; set; }
