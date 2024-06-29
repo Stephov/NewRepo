@@ -63,7 +63,7 @@ namespace MaratukAdmin.Repositories.Concrete
             return result;
         }
 
-        public async Task<List<FlightReportPreparedData>> GetFlightReportPreparedData(enumFlightReportType reportType, string flightNumber)
+        public async Task<List<ReportFlightInfoPreparedData>> GetFlightReportPreparedData(enumFlightReportType reportType, string flightNumber)
         {
             var query = from dbf in _dbContext.BookedFlights
                         join f in _dbContext.Flight on (reportType == enumFlightReportType.Departure) ? dbf.StartFlightId : dbf.EndFlightId equals f.Id
@@ -72,7 +72,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                 && f.FlightValue == (flightNumber == null ? f.FlightValue : flightNumber)
                         group new { mas, dbf, f } by new { mas.Id, mas.Name, dbf.TourStartDate.Date, f.FlightValue, dbf.StartFlightId, dbf.Rate } into grouped
                         orderby grouped.Key.Date
-                        select new FlightReportPreparedData
+                        select new ReportFlightInfoPreparedData
                         {
                             FlightDate = grouped.Key.Date,
                             FlightNumber = grouped.Key.FlightValue,
@@ -85,7 +85,7 @@ namespace MaratukAdmin.Repositories.Concrete
                             PassengersCount = grouped.Count(x => (reportType == enumFlightReportType.Departure) ? x.dbf.StartFlightId != null : x.dbf.EndFlightId != null)
                         };
 
-            List<FlightReportPreparedData> flightReportDataList = await query.ToListAsync();
+            List<ReportFlightInfoPreparedData> flightReportDataList = await query.ToListAsync();
 
             return flightReportDataList;
         }
@@ -471,6 +471,59 @@ namespace MaratukAdmin.Repositories.Concrete
                             };
 
                 var result = await query.OrderBy(c => c.FlightDate).ToListAsync();
+
+                return result as List<T>;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<T>?> GetSalesByManagersPreparedDataAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null) where T : class
+        {
+            List<ReportSalesByManagerPreparedData> sales = new();
+            try
+            {
+                var query = from dbf in _dbContext.BookedFlights
+                            join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
+                            join au in _dbContext.AgencyUser on dbf.AgentId equals au.Id
+                            join u in _dbContext.Users on dbf.MaratukFlightAgentId equals u.Id
+                            join f1 in _dbContext.Flight on dbf.StartFlightId equals f1.Id
+                            join bh in _dbContext.BookedHotel on dbf.OrderNumber equals bh.OrderNumber into bhGroup
+                            from bh in bhGroup.DefaultIfEmpty()
+                            join h in _dbContext.Hotel on bh.HotelCode equals h.Code into hGroup
+                            from h in hGroup.DefaultIfEmpty()
+                            join f2 in _dbContext.Flight on dbf.EndFlightId equals f2.Id into f2Group
+                            from f2 in f2Group.DefaultIfEmpty()
+                            where dbf.TourStartDate != null
+                            && (
+                                dbf.DateOfOrder.Date >= (orderDateFrom == null ? dbf.DateOfOrder.Date : orderDateFrom)
+                                && dbf.DateOfOrder.Date <= (orderDateTo == null ? dbf.DateOfOrder.Date : orderDateTo)
+                                )
+                            select new ReportSalesByManagerPreparedData()
+                            {
+                                Date = dbf.TourStartDate.Date,
+                                OrderNumber = dbf.OrderNumber,
+                                AgencyName = au.FullCompanyName,
+                                PassengerName = dbf.Name,
+                                PassengerSurName = dbf.Surname,
+                                PassengersCount = dbf.PassengersCount,
+                                HotelName = h.Name,
+                                TicketsCostTotal = dbf.TotalPrice,
+                                Rate = dbf.Rate,
+                                TicketsCostInAMD = dbf.TotalPriceAmd,
+                                HotelCostInAMD = bh.HotelTotalPriceAmd,
+                                TourStartDate = dbf.TourStartDate,
+                                TourEndDate = dbf.TourEndDate,
+                                Direction1 = f1.Name,
+                                Direction2 = f2.Name,
+                                ManagerName = u.Name,
+                                TicketsCount = 1 // as a constant value
+                            };
+
+
+                var result = await query.OrderBy(c => c.Date).ToListAsync();
 
                 return result as List<T>;
             }

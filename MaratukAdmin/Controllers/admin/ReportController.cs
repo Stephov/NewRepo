@@ -58,5 +58,13 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
 
         }
+        
+        [HttpGet("GetSalesByManagers")]
+        public async Task<IActionResult> GetSalesByManagersInfo(DateTime? orderDateFrom = null, DateTime? orderDateTo = null)
+        {
+            var result = await _reportManager.GetSalesByManagersAsync<ReportSalesByManagerPreparedData>(orderDateFrom, orderDateTo);
+            return Ok(result);
+
+        }
     }
 }
