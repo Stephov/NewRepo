@@ -534,5 +534,61 @@ namespace MaratukAdmin.Repositories.Concrete
                 throw;
             }
         }
+
+        public async Task<List<T>?> GetReportTotalPreparedDataAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null, enumBookStatusForMaratuk bookStatus = enumBookStatusForMaratuk.All) where T : class
+        {
+            try
+            {
+                var query = from dbf in _dbContext.BookedFlights
+                            join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
+                            join au in _dbContext.AgencyUser on dbf.AgentId equals au.Id
+                            join u in _dbContext.Users on dbf.MaratukFlightAgentId equals u.Id
+                            join f1 in _dbContext.Flight on dbf.StartFlightId equals f1.Id
+                            join s1 in _dbContext.Schedule on dbf.StartFlightId equals s1.FlightId
+                            join bh in _dbContext.BookedHotel on dbf.OrderNumber equals bh.OrderNumber into bhGroup
+                            from bh in bhGroup.DefaultIfEmpty()
+                            join h in _dbContext.Hotel on bh.HotelCode equals h.Code into hGroup
+                            from h in hGroup.DefaultIfEmpty()
+                            join f2 in _dbContext.Flight on dbf.EndFlightId equals f2.Id into f2Group
+                            from f2 in f2Group.DefaultIfEmpty()
+                            join s2 in _dbContext.Schedule on dbf.EndFlightId equals s2.FlightId into s2Group
+                            from s2 in s2Group.DefaultIfEmpty()
+                            where dbf.TourStartDate != null
+                                && dbf.ToureTypeId == "Flight + Hotel"
+                                && (
+                                    dbf.DateOfOrder.Date >= (orderDateFrom == null ? dbf.DateOfOrder.Date : orderDateFrom)
+                                    && dbf.DateOfOrder.Date <= (orderDateTo == null ? dbf.DateOfOrder.Date : orderDateTo)
+                                    )
+                                && mas.Id == (bookStatus == enumBookStatusForMaratuk.All ? mas.Id : (int)bookStatus)
+                            orderby dbf.TourStartDate, dbf.AgentId
+                            select new ReportTotalPreparedData()
+                            {
+                                DateOfOrder = dbf.DateOfOrder,
+                                OrderNumber = dbf.OrderNumber,
+                                TourManager = u.Name,
+                                CompanyName = au.FullCompanyName,
+                                PassengerName = dbf.Name,
+                                PassengerSurName = dbf.Surname,
+                                FlightStartDate = s1.FlightStartDate,
+                                DepartureTime = s1.DepartureTime,
+                                FlightEndDate = s2.FlightEndDate,
+                                ArrivalTime = s2.ArrivalTime,
+                                BookStatus = mas.Name,
+                                //RoomPrice 
+                                AccomodationDaysCount = bh.AccomodationDaysCount ?? 0,
+                                Rate = dbf.Rate,
+                                HotelTotal = (bh.HotelTotalPrice == null ? 0: bh.HotelTotalPrice),
+                                HotelTotalAMD = (bh.HotelTotalPriceAmd == null ? 0 : bh.HotelTotalPriceAmd)
+                            };
+
+                var result = await query.OrderBy(c => c.DateOfOrder).ToListAsync();
+
+                return result as List<T>;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

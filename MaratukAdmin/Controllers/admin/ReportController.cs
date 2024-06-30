@@ -66,5 +66,13 @@ namespace MaratukAdmin.Controllers.admin
             return Ok(result);
 
         }
+        
+        [HttpGet("GetReportTotal")]
+        public async Task<IActionResult> GetReportTotalInfo(DateTime? orderDateFrom = null, DateTime? orderDateTo = null, enumBookStatusForMaratuk bookStatus = enumBookStatusForMaratuk.All)
+        {
+            var result = await _reportManager.GetReportTotalAsync<ReportTotalPreparedData>(orderDateFrom, orderDateTo, bookStatus);
+            return Ok(result);
+
+        }
     }
 }
