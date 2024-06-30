@@ -41,6 +41,7 @@ namespace MaratukAdmin.Utils
             CanceledByAccountant = 11
         }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public enum enumBookStatusForMaratuk
         {
             All = 0,
