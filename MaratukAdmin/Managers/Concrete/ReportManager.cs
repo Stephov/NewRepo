@@ -229,6 +229,7 @@ namespace MaratukAdmin.Managers.Concrete
                     {
                         Date = item.Date,
                         OrderNumber = item.OrderNumber,
+                        BookStatus = item.BookStatus,
                         AgencyName = item.AgencyName,
                         PassengerName = item.PassengerName + (item.PassengerSurName == null ? "" : " " + item.PassengerSurName),
                         //CostPerTicketInCurrency = Math.Round((double)(item.TicketsCostTotal / item.PassengersCount), 2),
