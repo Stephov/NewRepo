@@ -43,6 +43,7 @@ namespace MaratukAdmin.Utils
 
         public enum enumBookStatusForMaratuk
         {
+            All = 0,
             Waiting = 1,
             Canceled = 2,
             TicketIsConfirmed = 3,
@@ -81,7 +82,7 @@ namespace MaratukAdmin.Utils
             [EnumMember(Value = "CHD")]
             Child = 2,
             [EnumMember(Value = "INF")]
-            Infant =3
+            Infant = 3
         }
 
         public enum enumTouristReportType

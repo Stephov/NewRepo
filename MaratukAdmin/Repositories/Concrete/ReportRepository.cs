@@ -480,7 +480,7 @@ namespace MaratukAdmin.Repositories.Concrete
             }
         }
 
-        public async Task<List<T>?> GetSalesByManagersPreparedDataAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null) where T : class
+        public async Task<List<T>?> GetSalesByManagersPreparedDataAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null, enumBookStatusForMaratuk bookStatus = enumBookStatusForMaratuk.All) where T : class
         {
             List<ReportSalesByManagerPreparedData> sales = new();
             try
@@ -501,10 +501,12 @@ namespace MaratukAdmin.Repositories.Concrete
                                 dbf.DateOfOrder.Date >= (orderDateFrom == null ? dbf.DateOfOrder.Date : orderDateFrom)
                                 && dbf.DateOfOrder.Date <= (orderDateTo == null ? dbf.DateOfOrder.Date : orderDateTo)
                                 )
+                            && mas.Id == (bookStatus == enumBookStatusForMaratuk.All ? mas.Id : (int)bookStatus)
                             select new ReportSalesByManagerPreparedData()
                             {
                                 Date = dbf.TourStartDate.Date,
                                 OrderNumber = dbf.OrderNumber,
+                                BookStatus = mas.Name,
                                 AgencyName = au.FullCompanyName,
                                 PassengerName = dbf.Name,
                                 PassengerSurName = dbf.Surname,

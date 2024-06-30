@@ -4,6 +4,7 @@
     {
         public DateTime? Date { get; set; }
         public string? OrderNumber { get; set; }
+        public string? BookStatus { get; set; }
         public string? AgencyName { get; set; }
         public string? PassengerName { get; set; }
         public double? CostPerTicketInCurrency { get; set; }
