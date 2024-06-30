@@ -255,5 +255,47 @@ namespace MaratukAdmin.Managers.Concrete
 
 
         }
+
+        public async Task<List<ReportTotal>?> GetReportTotalAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null, enumBookStatusForMaratuk bookStatus = enumBookStatusForMaratuk.All) where T : class
+        {
+            List<ReportTotal> retValue = new();
+            ReportTotal newInfo = new();
+            var salesByManagersPreparedData = await _reportRepository.GetReportTotalPreparedDataAsync<T>(orderDateFrom, orderDateTo);
+
+            if (salesByManagersPreparedData != null && salesByManagersPreparedData.Count > 0)
+            {
+                foreach (var item in salesByManagersPreparedData as List<ReportTotalPreparedData>)
+                {
+                    newInfo = new()
+                    {
+                        DateOfOrder = item.DateOfOrder,
+                        OrderNumber = item.OrderNumber,
+                        BookStatus = item.BookStatus,
+                        CompanyName = item.CompanyName,
+                        PassengerName = item.PassengerName + (item.PassengerSurName == null ? "" : " " + item.PassengerSurName),
+                        RoomPrice = (item.AccomodationDaysCount == 0) ? Math.Round((double)item.HotelTotal, 2) : Math.Round((double)(item.HotelTotal / item.AccomodationDaysCount), 2),
+                        AccomodationDaysCount = item.AccomodationDaysCount,
+                        HotelTotal = item.HotelTotal,
+                        Total = item.HotelTotal,
+                        FlightStartDate = item.FlightStartDate,
+                        DepartureTime = item.DepartureTime.HasValue ? item.DepartureTime.Value.ToString("HH:mm") : string.Empty,
+                        FlightEndDate = item.FlightEndDate,
+                        ArrivalTime = item.ArrivalTime.HasValue ? item.ArrivalTime.Value.ToString("HH:mm") : string.Empty,
+                        TourManager = item.TourManager,
+                        Rate = item.Rate,
+                        PaymentMethod = string.Empty,
+                        PaidUnpaid = string.Empty,
+                        Confirm = string.Empty
+                    };
+                    retValue.Add(newInfo);
+                }
+            }
+
+            return retValue;
+            //return salesByManagersPreparedData;
+
+
+
+        }
     }
 }
