@@ -215,7 +215,7 @@ namespace MaratukAdmin.Managers.Concrete
             return agencyDebtsPreparedData;
         }
 
-        public async Task<List<ReportSalesByManager>?> GetSalesByManagersAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null) where T : class
+        public async Task<List<ReportSalesByManager>?> GetSalesByManagersAsync<T>(DateTime? orderDateFrom = null, DateTime? orderDateTo = null, enumBookStatusForMaratuk bookStatus = enumBookStatusForMaratuk.All) where T : class
         {
             List<ReportSalesByManager> retValue = new();
             ReportSalesByManager newInfo = new();
@@ -231,7 +231,8 @@ namespace MaratukAdmin.Managers.Concrete
                         OrderNumber = item.OrderNumber,
                         AgencyName = item.AgencyName,
                         PassengerName = item.PassengerName + (item.PassengerSurName == null ? "" : " " + item.PassengerSurName),
-                        CostPerTicketInCurrency = Math.Round((double)(item.TicketsCostTotal / item.PassengersCount), 2),
+                        //CostPerTicketInCurrency = Math.Round((double)(item.TicketsCostTotal / item.PassengersCount), 2),
+                        CostPerTicketInCurrency = Math.Round((double)item.TicketsCostTotal, 2),
                         HotelName = item.HotelName,
                         TicketsCostTotal = item.TicketsCostTotal,
                         Rate = item.Rate,

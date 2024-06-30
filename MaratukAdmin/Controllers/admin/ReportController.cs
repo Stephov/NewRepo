@@ -60,9 +60,9 @@ namespace MaratukAdmin.Controllers.admin
         }
         
         [HttpGet("GetSalesByManagers")]
-        public async Task<IActionResult> GetSalesByManagersInfo(DateTime? orderDateFrom = null, DateTime? orderDateTo = null)
+        public async Task<IActionResult> GetSalesByManagersInfo(DateTime? orderDateFrom = null, DateTime? orderDateTo = null, enumBookStatusForMaratuk bookStatus = enumBookStatusForMaratuk.All)
         {
-            var result = await _reportManager.GetSalesByManagersAsync<ReportSalesByManagerPreparedData>(orderDateFrom, orderDateTo);
+            var result = await _reportManager.GetSalesByManagersAsync<ReportSalesByManagerPreparedData>(orderDateFrom, orderDateTo, bookStatus);
             return Ok(result);
 
         }
