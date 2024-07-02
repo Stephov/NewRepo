@@ -195,20 +195,23 @@ namespace MaratukAdmin.Managers.Concrete
 
             if (agencyDebtsPreparedData != null)
             {
-                foreach (var item in agencyDebtsPreparedData as List<ReportAgencyDebts>)
+                foreach (var baseItem in agencyDebtsPreparedData as List<ReportAgencyDebts>)
                 {
-                    currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
-
-                    if (currRate == null)
+                    foreach (var item in baseItem.AgencyDebts)
                     {
-                        var newRate = await _currencyRatesManager.GetCurrencyRatesAsync(item.FlightDate, item.Currency);
-                        currencyRatesList.AddRange(newRate);
+
                         currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
+
+                        if (currRate == null)
+                        {
+                            var newRate = await _currencyRatesManager.GetCurrencyRatesAsync(baseItem.FlightDate, item.Currency);
+                            currencyRatesList.AddRange(newRate);
+                            currRate = currencyRatesList.FirstOrDefault(c => c.CodeIso == item.Currency);
+                        }
+
+                        item.PaidAMD = (currRate == null) ? 0 : (item.Paid * currRate.OfficialRate);
+                        item.PaidAMD = (double)Math.Ceiling((double)item.PaidAMD);
                     }
-
-                    item.PaidAMD = (currRate == null) ? 0 : (item.Paid * currRate.OfficialRate);
-                    item.PaidAMD = (double)Math.Ceiling((double)item.PaidAMD);
-
                 }
             }
 
@@ -241,7 +244,8 @@ namespace MaratukAdmin.Managers.Concrete
                         HotelCostInAMD = item.HotelCostInAMD,
                         Dates = item.TourStartDate?.ToString("dd.MM.yyyy") + (item.TourEndDate == null ? "" : " - " + item.TourEndDate?.ToString("dd.MM.yyyy")),
                         Direction = item.Direction1 + (item.Direction2 == null ? "" : ", " + item.Direction2),
-                        ManagerName = item.ManagerName,
+                        FlightManagerName = item.FlightManagerName,
+                        HotelManagerName = item.HotelManagerName,
                         TicketsCount = item.TicketsCount,
                         TotalInAMD = item.TicketsCostInAMD + item.HotelCostInAMD
                     };

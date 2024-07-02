@@ -16,7 +16,8 @@
         public double? TotalInAMD { get; set; }
         public string? Dates { get; set; }
         public string? Direction { get; set; }
-        public string? ManagerName { get; set; }
+        public string? FlightManagerName { get; set; }
+        public string? HotelManagerName { get; set; }
         public double? TicketsCount { get; set; }
     }
 }

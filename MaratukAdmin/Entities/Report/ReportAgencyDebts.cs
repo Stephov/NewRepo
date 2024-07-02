@@ -6,6 +6,11 @@ namespace MaratukAdmin.Entities.Report
     {
         public DateTime? FlightDate { get; set; }
         public string? FlightNumber { get; set; }
+        public List<AgencyDebtDetails>? AgencyDebts { get; set; }
+    }
+
+    public class AgencyDebtDetails
+    {
         public string? AgencyName { get; set; }
         public string? Currency { get; set; }
         public double? Debt { get; set; }

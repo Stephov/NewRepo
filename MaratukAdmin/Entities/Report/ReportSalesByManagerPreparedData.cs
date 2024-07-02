@@ -18,7 +18,8 @@
         public DateTime? TourEndDate { get; set; }
         public string? Direction1 { get; set; }
         public string? Direction2 { get; set; }
-        public string? ManagerName { get; set; }
+        public string? FlightManagerName { get; set; }
+        public string? HotelManagerName { get; set; }
         public double? TicketsCount { get; set; }
     }
 }

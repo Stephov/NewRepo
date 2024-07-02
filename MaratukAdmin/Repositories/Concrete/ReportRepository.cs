@@ -443,34 +443,66 @@ namespace MaratukAdmin.Repositories.Concrete
 
             try
             {
+                //var query =
+                //            from dbf in _dbContext.BookedFlights
+                //            join f in _dbContext.Flight on dbf.StartFlightId equals f.Id
+                //            join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
+                //            join au in _dbContext.AgencyUser on dbf.AgentId equals au.Id
+                //            where dbf.TourStartDate != null
+                //            group dbf by new
+                //            {
+                //                dbf.AgentId,
+                //                dbf.TourStartDate,
+                //                f.FlightValue,
+                //                au.FullCompanyName,
+                //                dbf.Rate
+                //            } into grouped
+                //            orderby grouped.Key.TourStartDate, grouped.Key.AgentId
+                //            select new ReportAgencyDebts()
+                //            {
+                //                FlightDate = grouped.Key.TourStartDate.Date,
+                //                FlightNumber = grouped.Key.FlightValue,
+                //                AgencyName = grouped.Key.FullCompanyName,
+                //                Currency = grouped.Key.Rate,
+                //                Debt = grouped.Sum(g => g.Dept),
+                //                Paid = grouped.Sum(g => g.Paid),
+                //                PaidAMD = grouped.Sum(g => g.Paid),
+                //                TotalAmount = grouped.Sum(g => g.TotalPrice)
+                //            };
                 var query =
                             from dbf in _dbContext.BookedFlights
                             join f in _dbContext.Flight on dbf.StartFlightId equals f.Id
                             join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
                             join au in _dbContext.AgencyUser on dbf.AgentId equals au.Id
-                            where dbf.TourStartDate != null
-                            group dbf by new
+                            where dbf.TourStartDate != null &&
+                                  dbf.DateOfOrder >= dateFrom &&
+                                  dbf.DateOfOrder <= dateTo
+                            group new { dbf, f, au } by new
                             {
-                                dbf.AgentId,
                                 dbf.TourStartDate,
-                                f.FlightValue,
-                                au.FullCompanyName,
-                                dbf.Rate
-                            } into grouped
-                            orderby grouped.Key.TourStartDate, grouped.Key.AgentId
-                            select new ReportAgencyDebts()
+                                f.FlightValue
+                            } into flightGroup
+                            select new ReportAgencyDebts
                             {
-                                FlightDate = grouped.Key.TourStartDate.Date,
-                                FlightNumber = grouped.Key.FlightValue,
-                                AgencyName = grouped.Key.FullCompanyName,
-                                Currency = grouped.Key.Rate,
-                                Debt = grouped.Sum(g => g.Dept),
-                                Paid = grouped.Sum(g => g.Paid),
-                                PaidAMD = grouped.Sum(g => g.Paid),
-                                TotalAmount = grouped.Sum(g => g.TotalPrice)
+                                FlightDate = flightGroup.Key.TourStartDate,
+                                FlightNumber = flightGroup.Key.FlightValue,
+                                AgencyDebts = flightGroup.GroupBy(g => new
+                                {
+                                    g.au.FullCompanyName,
+                                    g.dbf.Rate
+                                })
+                                .Select(agencyGroup => new AgencyDebtDetails
+                                {
+                                    AgencyName = agencyGroup.Key.FullCompanyName,
+                                    Currency = agencyGroup.Key.Rate,
+                                    Debt = agencyGroup.Sum(g => g.dbf.Dept),
+                                    Paid = agencyGroup.Sum(g => g.dbf.Paid),
+                                    TotalAmount = agencyGroup.Sum(g => g.dbf.TotalPrice)
+                                }).ToList()
                             };
 
-                var result = await query.OrderBy(c => c.FlightDate).ToListAsync();
+                var result = await query.OrderBy(c => c.FlightDate).ThenBy(c => c.FlightNumber).ToListAsync();
+
 
                 return result as List<T>;
             }
@@ -489,6 +521,8 @@ namespace MaratukAdmin.Repositories.Concrete
                             join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
                             join au in _dbContext.AgencyUser on dbf.AgentId equals au.Id
                             join u in _dbContext.Users on dbf.MaratukFlightAgentId equals u.Id
+                            join u1 in _dbContext.Users on dbf.MaratukHotelAgentId equals u1.Id into uGroup
+                            from u1 in uGroup.DefaultIfEmpty()
                             join f1 in _dbContext.Flight on dbf.StartFlightId equals f1.Id
                             join bh in _dbContext.BookedHotel on dbf.OrderNumber equals bh.OrderNumber into bhGroup
                             from bh in bhGroup.DefaultIfEmpty()
@@ -520,7 +554,8 @@ namespace MaratukAdmin.Repositories.Concrete
                                 TourEndDate = dbf.TourEndDate,
                                 Direction1 = f1.Name,
                                 Direction2 = f2.Name,
-                                ManagerName = u.Name,
+                                FlightManagerName = u.Name,
+                                HotelManagerName = u1.Name,
                                 TicketsCount = 1 // as a constant value
                             };
 
@@ -577,7 +612,7 @@ namespace MaratukAdmin.Repositories.Concrete
                                 //RoomPrice 
                                 AccomodationDaysCount = bh.AccomodationDaysCount ?? 0,
                                 Rate = dbf.Rate,
-                                HotelTotal = (bh.HotelTotalPrice == null ? 0: bh.HotelTotalPrice),
+                                HotelTotal = (bh.HotelTotalPrice == null ? 0 : bh.HotelTotalPrice),
                                 HotelTotalAMD = (bh.HotelTotalPriceAmd == null ? 0 : bh.HotelTotalPriceAmd)
                             };
 
