@@ -15,6 +15,7 @@
         public string? BookStatus { get; set; }
         public double? RoomPrice { get; set; }
         public int? AccomodationDaysCount { get; set; }
+        public int? TicketsCount {  get; set; }
         public double? HotelTotal { get; set; }
         public double? HotelTotalAMD { get; set; }
         public string? Rate { get; set; }

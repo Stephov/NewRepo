@@ -235,8 +235,8 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                     //{ throw new Exception("Error archiving SyncSejourRate data"); }
                     dataWasArchived = true;
 
-                    // *** DELETE ALL DATA ***
-                    await _contractExportRepository.TruncateSyncSejourRate();
+                    // *** DELETE ALL DATA *** moved down
+                    //await _contractExportRepository.TruncateSyncSejourRate();
                     // ***********************
                 }
 
@@ -536,6 +536,10 @@ namespace MaratukAdmin.Managers.Concrete.Sansejour
                 //    if (!updateResult)
                 //    { throw new Exception("Error updating SyncSejourRate's SyncDate"); }
                 //}
+
+                // *** DELETE ALL DATA ***
+                //await _contractExportRepository.TruncateSyncSejourRate();
+                // ***********************
 
                 // *** SAVE CHANGES IN SyncSejourRate ***
                 if (!_executionContext.IsOneHotelMode)

@@ -613,7 +613,8 @@ namespace MaratukAdmin.Repositories.Concrete
                                 AccomodationDaysCount = bh.AccomodationDaysCount ?? 0,
                                 Rate = dbf.Rate,
                                 HotelTotal = (bh.HotelTotalPrice == null ? 0 : bh.HotelTotalPrice),
-                                HotelTotalAMD = (bh.HotelTotalPriceAmd == null ? 0 : bh.HotelTotalPriceAmd)
+                                HotelTotalAMD = (bh.HotelTotalPriceAmd == null ? 0 : bh.HotelTotalPriceAmd),
+                                TicketsCount = 1
                             };
 
                 var result = await query.OrderBy(c => c.DateOfOrder).ToListAsync();

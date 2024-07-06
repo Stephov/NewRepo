@@ -289,7 +289,8 @@ namespace MaratukAdmin.Managers.Concrete
                         Rate = item.Rate,
                         PaymentMethod = string.Empty,
                         PaidUnpaid = string.Empty,
-                        Confirm = string.Empty
+                        Confirm = string.Empty,
+                        TicketsCount = item.TicketsCount
                     };
                     retValue.Add(newInfo);
                 }
