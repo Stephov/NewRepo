@@ -4,7 +4,8 @@
     {
         public DateTime? DateOfOrder { get; set; }
         public string? OrderNumber { get; set; }
-        public string? TourManager { get; set; }
+        public string? FlightManager { get; set; }
+        public string? HotelManager { get; set; }
         public string? CompanyName { get; set; }
         public string? PassengerName { get; set; }
         public string? PassengerSurName { get; set; }
