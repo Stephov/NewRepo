@@ -578,6 +578,8 @@ namespace MaratukAdmin.Repositories.Concrete
                             join mas in _dbContext.MaratukAgentStatus on dbf.BookStatusForMaratuk equals mas.Id
                             join au in _dbContext.AgencyUser on dbf.AgentId equals au.Id
                             join u in _dbContext.Users on dbf.MaratukFlightAgentId equals u.Id
+                            join u1 in _dbContext.Users on dbf.MaratukHotelAgentId equals u1.Id into u1Group
+                            from u1 in u1Group.DefaultIfEmpty()
                             join f1 in _dbContext.Flight on dbf.StartFlightId equals f1.Id
                             join s1 in _dbContext.Schedule on dbf.StartFlightId equals s1.FlightId
                             join bh in _dbContext.BookedHotel on dbf.OrderNumber equals bh.OrderNumber into bhGroup
@@ -600,13 +602,16 @@ namespace MaratukAdmin.Repositories.Concrete
                             {
                                 DateOfOrder = dbf.DateOfOrder,
                                 OrderNumber = dbf.OrderNumber,
-                                TourManager = u.Name,
+                                FlightManager = u.Name,
+                                HotelManager = u1.Name,
                                 CompanyName = au.FullCompanyName,
                                 PassengerName = dbf.Name,
                                 PassengerSurName = dbf.Surname,
-                                FlightStartDate = s1.FlightStartDate,
+                                //FlightStartDate = s1.FlightStartDate,
+                                FlightStartDate = dbf.TourStartDate,
                                 DepartureTime = s1.DepartureTime,
-                                FlightEndDate = s2.FlightEndDate,
+                                //FlightEndDate = s2.FlightEndDate,
+                                FlightEndDate = dbf.TourEndDate,
                                 ArrivalTime = s2.ArrivalTime,
                                 BookStatus = mas.Name,
                                 //RoomPrice 
